@@ -1,8 +1,10 @@
 <div class="il_ButtonGroup il_BigButton">
-    <script>
-        function open_window() {
-            window.open("{BUTTON_TARGET}")
-        }
-    </script>
-    <input type="button" class="submit il_BigButton" value="{BUTTON_TEXT}" onClick="open_window()">
+	<input type="button" class="btn btn-default" value="{BUTTON_TEXT}">
 </div>
+<script type="text/javascript">
+	(function($) {
+		$(function() {
+			window.open("{BUTTON_TARGET}");
+		});
+	})(jQuery);
+</script>
