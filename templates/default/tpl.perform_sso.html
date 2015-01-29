@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+    <title>{TITLE_PREFIX} - {OBJECT_TITLE}</title>
+    <script type="text/javascript" src="{SPINNER_SRC}"></script>
+    <script type="text/javascript">
+
+        /*<![CDATA[*/
+        Xavc_Sso = {
+            buildFrame: function(c) {
+                var n = 'f' + Math.floor(Math.random() * 99999);
+                var d = document.createElement('DIV');
+                d.innerHTML = '<iframe style="display:none" src="about:blank" id="'+n+'" name="'+n+'" onload="Xavc_Sso.loaded(\''+n+'\')"></iframe>';
+                document.body.appendChild(d);
+
+                var i = document.getElementById(n);
+                if (c && typeof(c.onComplete) == 'function') {
+                    i.onComplete = c.onComplete;
+                }
+
+                return n;
+            },
+
+            trigger: function(c) {
+                var f = Xavc_Sso.buildFrame(c);
+                var i = document.getElementById(f);
+                i.src = '{LOGOUT_URL}';
+                if (c && typeof(c.onStart) == 'function') {
+                    return c.onStart();
+                } else {
+                    return true;
+                }
+            },
+
+            loaded: function(id) {
+                var i = document.getElementById(id);
+                if (typeof(i.onComplete) == 'function') {
+                    i.onComplete();
+                }
+            }
+        }
+
+        window.onload = function() {
+            Xavc_Sso.trigger({'onStart' : function(){
+                var opts = {
+                    lines: 10, // The number of lines to draw
+                    length: 10, // The length of each line
+                    width: 10, // The line thickness
+                    radius: 10, // The radius of the inner circle
+                    corners: 1, // Corner roundness (0..1)
+                    rotate: 59, // The rotation offset
+                    direction: 1, // 1: clockwise, -1: counterclockwise
+                    color: '#000', // #rgb or #rrggbb
+                    speed: 1, // Rounds per second
+                    trail: 60, // Afterglow percentage
+                    shadow: false, // Whether to render a shadow
+                    hwaccel: false, // Whether to use hardware acceleration
+                    className: 'spinner', // The CSS class to assign to the spinner
+                    zIndex: 2e9, // The z-index (defaults to 2000000000)
+                    top: '100', // Top position relative to parent in px
+                    left: 'auto' // Left position relative to parent in px
+                };
+                var target = document.getElementById('preview');
+                var spinner = new Spinner(opts).spin(target);
+                
+                
+            }, 'onComplete' : function(){
+                window.location.href = '{URL}';
+            }});
+        };
+        /*]]>*/
+    </script>
+</head>
+<body>
+<div style="position:relative; height:200;width:200" id="preview"></div>
+<noscript>
+    <iframe style="display:none" src="{LOGOUT_URL}"></iframe><meta http-equiv="refresh" content="5; url={URL}" />
+</noscript>
+<p style="font-family:Verdana, Arial, Helvetica, sans-serif; font-size: .6em;">{INFO_TXT}</p>
+</body>
+</html>        

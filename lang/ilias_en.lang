@@ -1,0 +1,290 @@
+<!-- language file start -->
+obj_xavc#:#Adobe Meeting
+objs_xavc#:#Adobe Meetings
+obj_xavc_duplicate#:#Copy
+objs_xavc_duplicate#:#Copy Adobe Meeting
+obj_xavc_select#:#Select Adobe Meeting
+xavc_add#:#Add Adobe Meeting
+xavc_new#:#Add New Adobe Meeting
+contents#:#Contents
+records#:#Records
+participants#:#Participants
+properties#:#Settings
+edit_properties#:#Edit Settings
+title#:#Title
+description#:#Description
+start_date#:#Start date
+end_date#:#End date
+duration#:#Duration
+file#:#File
+files#:#Files
+save#:#Save
+cancel#:#Cancel
+view#:#View
+edit#:#Edit
+add#:#Add
+delete#:#Delete
+upload#:#Upload
+search#:#Search
+status#:#Status
+offline#:#Offline
+access#:#Access
+info_start_date#:#Start date of the Adobe Meeting
+info_end_date#:#End date of the Adobe Meeting
+access_link#:#Link
+access_meeting_title#:#Access Meeting
+meeting_not_available#:#Meeting is not available
+meeting_content#:#Meeting Contents
+content_name#:#Name
+content_date_created#:#Date Created
+content_date_modified#:#Date Modified
+content_duration#:#Duration
+content_link#:#Content Link
+meeting_record#:#Meeting Records
+edit_content#:#Edit Content
+view_content#:#View Content
+upload_file#:#Upload File
+virtualClassroom_content_updated#:#Adobe Meeting content updated
+virtualClassroom_content_added#:#Adobe Meeting content added
+virtualClassroom_content_deleted#:#Adobe Meeting content deleted
+add_new_content#:#Add new file
+sure_delete_contents#:#Do you really want to delete the following content(s)?
+content_select_one#:#Please select at least one content
+no_contents_created#:#No Adobe Meeting contents created
+no_records_created#:#No Adobe Meeting records created
+user_name#:#User Name
+detach_participant#:#Detach Participant
+user_search#:#User Search
+search_term#:#Search Term(s)
+participants_matches_in_no_results#:#Your search did not match any results.
+users#:#Users
+participants_select_one#:#Please select at least one participant
+participant_added_successfully#:#Participant added successfully
+participants_detached_successfully#:#Participant(s) detached succesfully
+add_content_from_ilias#:#Add content from ILIAS
+files_matches_in_no_results#:#Your search did not match any results.
+num_vc_same_time#:#Number of Adobe Meetings at the same time on the server:
+new_ac_user_mail#:#It has created an account for access to Adobe Connect. To access, use your mail account as user and this password::
+new_ac_user_subject#:#Adobe Connect account has been created
+error_connect_ac_server#:#Error connecting to Adobe Connect server
+room_allocation#:#Room Allocation
+adobe_invite_private_room#:#Enter Private Virtual Classroom
+extt_adobe#:#Adobe Connect
+extt_adobe_desc#:#Provides virtual classrooms. Commercial service. For an account and further information please contact www.adobe.com
+redirect_in_progress#:#You will be redirected in a few seconds...
+join#:#Join
+add_cnt_err_duplicate#:#A content with this title/filename already exists. Please rename the file and try it again.
+schedule_free_slots#:#Available Meeting-Times for the next %s days
+sched_from#:#From Time
+sched_to#:#To Time
+sched_size#:#Max. Length in hours
+maximum_concurrent_vcs_reached#The number of maximum concurrent meetings is reached
+min_duration_error#:#Please enter a duration
+is_already_participant#:#This user is already participant
+users_added#:#Users added successfully
+no_users_selected#:#No users selected
+xavc_visible#:#Adobe Meeting is visible
+xavc_read#:#Adobe Meeting is readable
+xavc_write#:#Adobe Meeting is writable
+xavc_delete#:#Adobe Meeting delete
+xavc_copy#:#Adobe Meeting kopieren
+xavc_edit_permission#:#Change permissions
+at_least_one_presenter#:#At least one presenter must be assigned
+no_private_meeting_available#:#There is currently no meeting room available
+meeting_not_available_no_slots#:#The meeting could not be started because there are no free rooms available
+root_create_xavc#:#Create new Adobe Meeting
+user_already_invited#:#The user %s has already been invited. Please wait until he accepted or refused the invitation.
+private#:#Private
+notification_invitation_title#:#Adobe Connect Invitation
+notification_invitation#:#You recieved an invitation for room ##raum## .
+update#:#Update
+detach_member#:#Detach Member-Role
+assign_admin#:#Assign Administrator-Role
+detach_admin#:#AdDetach Administrator-Role
+presenter#:#Presenter
+moderator#:#Moderator
+participant#:#Participant
+admins#:#Administrators
+members#:#Members
+at_least_one_admin#:#There must be at least one Administrator assigned
+xavc_connection_error#:#A connection error occured
+xavc_reached_number_of_connections#:#Reached number of maximum connections
+xavc_folder_not_available#:#The Adobe Connect meeting-folder is not available
+xavc_authentication_error#:#Authentification error
+xavc_meeting_creation_error#:#Create meetingroom failed
+new_ac_user_login#:#Created new Adobe Connect-Account. To authentificat please use this login: %s and password: %s
+user_only_exists_at_ac_server#:#This Participants was not added by ILIAS!
+add_crs_grp_members#:#Add Course/Group-Members
+administrators_assigned_successfully#:#Administrator-Role is assigned successfully
+please_check_required_fields#:#Please check all required fields
+active_users#:#Active Users
+invite#:#Invite
+login_name#:#Login
+invited#:#Invited
+allocation_pool#:#Allocation-Pool
+invitation_send#:#Klick here <a href="##link##">hier</a> to accept or refuse the invitation.
+invitation_accepted_title#:#Your invitation was accepted
+invitation_accepted#:#The user ##username## has accepted your invitation. Please klick here <a href="##link##" target="_blank">hier</a> to enter the room.
+invitation_refused_title#:#Your invitation was refused
+invitation_refused#:#Your invitation to ##username## was refused.
+please_confirm_refuse#:#Would you like to accept this invitation
+accept#:#Accept
+refuse#:#Refuse
+sure_detach_admin#:#Are you sure you want to detach the administrator-role of the following users?
+sure_detach_member#:#Are you sure you want to detach the member-role of the following users?
+send_invitation_success#:#The selected User has been invited successfully
+enter_vc#:#Enter Adobe Meeting
+knock_at_vc#:#Knock
+redirect_failed#:#Redirect failed!!
+already_member#:#You already have been added as member
+xavc_lead_time_mismatch#:#The start date or expected duration can only be changed if it is scheduled after %s. Other modifications (e.g. title or description) has been applied.
+user_status#:#Status at Adobe Connect
+no_active_pool#:#There is no private meeting active 
+no_active_vcpool#:#There is no Adobe Meeting active 
+no_read_access#:#No visibility and read access
+adobe_settings#:#Adobe Connect-Settings
+adobe_plugin_must_be_installed_first#:#To make settings for the Adobe Connect server, you first need to install the Adobe Connect plugin.
+enter_public_vc#:#Join Virtual Conference Room
+adobe_num_max_vc#:#Maximum number of simultaneous connections
+pd_public_vc#:#Enable virtual conference room
+private_vc_enabled#:#Enable private classroom
+allocation_mode#:#Allocation-Mode
+no_allocation_rule#:#No allocation rule
+establish_allocation#:#Establish allocation
+user_assignment_mode#:#Adobe Connect-Registration-Mode
+assign_users_with_email#:#Adobe Connect-User anhand der E-Mail-Adresse anlegen
+assign_users_with_ilias_login#:#Create Adobe Connect-User using the ILIAS-Username
+assignment_info#:#Set the standard for Adobe Connect user name for creating new Adobe Connect accounts. Later changing over this setting is not possible!
+extt_adobe_room_allocation_saved#:#The allocation has been saves
+adobe_num_priv_vc#:#Maximum number of private classroom
+ac_interface_objects#:#Maximum number of concurrent Adobe Connect ILIAS objects
+canceled_update_settings#:#The changes were not incorporated.
+check_input#:#Please check your input
+err_invalid_num_max_vc#:#The maximum number is invalid
+err_invalid_server#:#The registered server is unreachable.
+err_authentication_failed#:#The authentication on the registered server failed with the specified credentials.
+err_num_of_required_rooms_gt_max_vc#:#The number of required connections is not sufficient, for the sum of the defined rooms. 
+sco_id#:#Meeting-Id
+sco_title#:#Meeting-Name
+sco_url#:#Meeting-URL
+access_type#:#Meeting-Type
+online_status#:#Status
+update_online_status#:#Change status 
+create_privatevc_info#:#When enabled, it will automatically create a private classroom
+enter_number_of_scos#:#Please indicate the maximum number of concurrent meetings which are allowed to be scheduled at a time.<br>Please note the necessary buffer of 30 minutes to start and end of the new schedule.<br>If you insert "0" there will be no limitation.
+add_privatevc#:#Create private Classroom
+sure_delete_vc#:#Are you sure you want to delete this Adobe Meeting?
+deleting_last_privatevc#:#ou are going to delete the last private classroom. The setting: Use private classrooms will be disabled.
+deleting_publicvc#:#You are going to delete the virtual conference room. The setting: use virtual conference room will be disabled.
+no_sco_id_given#:#No Meeting-Id given
+delete_meeting_failed#:#The deletion of the Adobe Meeting on the Adobe Connect Server failed.
+create_publicvc_info#:#If enabled, a virtual conferenceroom will be created automatically
+please_enable_privatevcs_first#:#To be able to create private classrooms, it is necessary to activate the setting: Enable private classrooms
+xavc_pool_overview#:#Adobe Meetings - Overview
+current_num_rooms#:#Current number of accessible rooms:
+xavc_port_info#:#Enter a port within the range of 0 and 65535, for example, 8080.
+xavc_host_info#:#Enter here the Adobe Connect Host
+ac_buffer#:#Allocation
+enter_number_of_sco_buffer#:#Please enter how many connections should be available as meeting buffer
+adobe_num_max_vc_info#:#Please enter, how many meetings should be available simultaneously
+schedule_lead_time#:#Minimum lead time in hours for the creation of new Adobe Connect repository objects
+schedule_lead_time_info#:#New objects have to be created in advance (at least  the specified number of hours before the scheduled start time). This setting has also impact on the processing of the scheduled start time and duration of existing objects.
+min_private_meeting_schedule_time#:#Minimum time in hours that should be available for a private meeting, so that it can be created.
+presentation_server#:#Presentation-Server
+presentation_port#:#Presentation-Port
+xavc_presentation_host_info#:#Enter here the Adobe Connect host for the presentation
+xavc_presentation_port_info#:#Enter a port within the range of 0 and 65535, for example, 443.
+presentation_server_settings#:#Presentation-Server-Settings
+editAdobeSettings#:#Adobe-Settings
+editRoomAllocation#:#Allocation Settings
+showAllocationPool#:#Allocation Pool
+auth_mode#:#Authentification-Mode
+auth_mode_password#:#Use Password Authentification
+auth_mode_header#:#HTTP Header Authentification 
+auth_mode_dfn#:#Session Cookie based Authentication with DFN Server
+xavc_x_user_id_info#:#Please note that you need to change the configuration file (web.xml) of your Adobe Connect installation accordingly. For more detailed information, see the Adobe Connect documentation.
+authentification_mode_info#:#Please choose which authentification method you want to use. 
+x_user_id_header_var#:#Header-Variable for the HTTP Header-Authentification 
+assigned_users_s#:#The user has been added successfully
+assigned_users_p#:#The users were added successfully
+choose_creation_type#:#Type of object creation
+create_new#:#Create a new Adobe Connect room
+select_existing#:#Reuse an existing Adobe Connect Meeting
+available_rooms#:#Available Adobe Meetings
+xavc_meeting_not_available#:#This Adobe Meeting is not available
+no_available_rooms#:#No Adobe Meetings available
+editIliasSettings#:#ILIAS-Settings
+general_settings#:#General Settings
+object_creation_settings#:#Object Creation Settings
+cb_simple#:#Simple
+cb_extended#:#Extended
+default_crs_mapping#:#Course-Permission-Mapping
+default_grp_mapping#:#Group-Permission-Mapping
+denied#:#Denied
+allow_reuse_existing_rooms#:#Allow reuse of existing rooms
+no_template_id_given#:#No Template-Id given
+template_not_found#:#Template not found
+xavc_participants#:#Adobe Connect-Participants
+allow_crs_grp_trigger#:#Enable Course-/Group-Trigger
+allow_crs_grp_trigger_info#:#If enabled, new course/group participants will be automatically added as Adobe Connect-Participants
+show_free_slots#:#Show available Meeting-Times
+show_free_slots_info#:#If enabled, an overview for the available Meeting-Times is visible within the "Edit Settings"-Overview of the depending object.
+permanent_room#:#Permanent open Room
+permanent_room_info#:#If enabled, the participants are allowed to enter this room outside the specified session time.
+perm_upload_content#:#Upload and Delete Content
+perm_change_role#:#Change Adobe Connect Role
+ac_permissions#:#Adobe Connect Permissions
+default_perm_room#:#Default-Value for Permanent open Rooms
+default_perm_room_info#:#If enabled, the checkbox 'Permanent open Room' will be checked per default, within the creation of a new object.
+perm_edit_participants#:#Show Participants List
+perm_add_participants#:#Add and Delete Participants
+assign_users_with_switch_aai_login#:#SWITCH AAI Login
+auth_mode_switchaai#:#SWITCH AAI-Authentification
+choose_existing_room#:#Please select an existing Adobe-Connect Meeting to create a new ILIAS object.
+sure_delete_participant_p#:#Are you sure, you  want do to delete the following participants?
+sure_delete_participant_s#:#Are you sure, you  want do to delete the following participant?
+crs_grp_trigger_enabled_info#:#The Course- /Group-Trigger ist enabled. New course/group participants will be automatically added as Adobe Connect-Participants. User that are not Course- /Group-Participants any more will be detached automatically.
+err_duplicate_meeting#:#There is an Adobe Connect-Meeting already existing with the entered name. Please choose another title.
+time_type_selection#:#Temporal availability of the meeting
+with_limitation#:#With a time limit
+content#:#Content
+record#:#Record
+content_type#:#Type
+add_to_desktop#:#Add to personal desktop 
+add_to_desktop_info#:#If enabled, a link to the Adobe Connect room, will be added to the personal desktop of new Adobe Connect participants.  
+template_info#:#The setting templates that you select, will be available for the lecturers when they create new meeting rooms. Choose 'Basic Settings',  if only a minimum set of technical options should be visible. Choose 'Advanced Settings',  if you want to provide more options to people and backgrounds.
+perm_read_records#:#Show Records
+login_failed#:#The Login failed
+add_cnt_err#:#The uploaded content could not be created on the Adobe Connect server. Please rename the file and try it again.
+adobe_meeting_room#:#Adobe Meetingroom
+file_uploads#:#File Uploads
+records#:#Records
+enter_room_host_info#:#The room can only be used, if a host has entered the room.
+private_room#:#Nur registrierte Benutzer haben Zugang zum Raum (Gastzugriff gesperrt).
+protected_room#:#Only registered users and accepted guests may enter the room
+public_room#:#Anyone who has the URL for the meeting can enter the room
+content_file_types#:#Allowed file types for content uploads
+content_file_types_info#:#Please enter the allowed file types, which can be uploaded into an Adobe Connect Meeting.   
+contact_information#:#Contact information
+office#:#Office
+mobile#:#Mobile
+meeting_url#:#URL for the meeting
+general#:#General
+read_contents#:#Show Contents
+read_records#:#Show records
+perm_read_contents#:#Read Contents
+use_user_folders#:#Us individual User Folders
+use_user_folders_info#:#If activated, a personal folder will be created for the user at the Adobe Connect Server. This personal user folder will contain all new meeting rooms created by the user.
+owner_info#:#Owners get advanced management capabilities for their own meetings at the Adobe Connect Server. This responsibility is defined at room creation, and can not be changed later.
+auth_mode_switchaai_accounts#:#Select the account types (beside SWITCH AAI) which should perform SWITCH AAI-Authentification to the Adobe Connect-Server
+auth_mode_switchaai_local#:#Local
+auth_mode_switchaai_ldap#:#LDAP
+assign_users_with_email_dfn#:#DFN: Adobe Connect-User anhand der E-Mail-Adresse anlegen
+il_xavc_member#:#Member
+il_xavc_admin#:#Administrator
+crs_create_xavc#:#Create Adobe Meeting
+grp_create_xavc#:#Create Adobe Meeting
+fold_create_xavc#:#Create Adobe Meeting
+root_create_xavc#:#Create Adobe Meeting
+cat_create_xavc#:#Create Adobe Meeting
+perm_edit_records#:#Edit and delete records
