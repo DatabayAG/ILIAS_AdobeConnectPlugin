@@ -76,16 +76,11 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 	public static function _hasMemberRole($a_user_id, $a_ref_id)
 	{
 		/**
-		 * @var $rbacreview    ilRbacReview
+		 * @var $rbacreview ilRbacReview
 		 */
-
 		global $rbacreview;
 
-		//check isParticipant
-		$role_folder = $rbacreview->getRoleFolderOfObject($a_ref_id);
-
-		$roles = $rbacreview->getRoleListByObject($role_folder['child']);
-
+		$roles  = $rbacreview->getRoleListByObject($a_ref_id);
 		$result = false;
 
 		foreach($roles as $role)
@@ -111,15 +106,11 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 		/**
 		 * @var $rbacreview ilRbacReview
 		 */
-
 		global $rbacreview;
 
-		//check isParticipant
-		$role_folder = $rbacreview->getRoleFolderOfObject($a_ref_id);
-
-		$roles = $rbacreview->getRoleListByObject($role_folder['child']);
-
+		$roles  = $rbacreview->getRoleListByObject($a_ref_id);
 		$result = false;
+
 		foreach($roles as $role)
 		{
 			if(strpos($role['title'], 'il_xavc_admin') !== false)
@@ -354,11 +345,11 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 		$res_1        = $ilDB->queryF('
 				SELECT ops_id, operation FROM rbac_operations
 				WHERE class = %s
-				AND operation = %s
+				AND (operation = %s
 				OR operation = %s
 				OR operation = %s
 				OR operation = %s
-				OR operation = %s',
+				OR operation = %s)',
 			array('text', 'text', 'text', 'text', 'text', 'text'),
 			array('general', 'visible', 'read', 'write', 'delete', 'copy'));
 
