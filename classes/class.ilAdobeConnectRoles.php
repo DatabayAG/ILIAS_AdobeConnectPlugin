@@ -45,14 +45,7 @@ class ilAdobeConnectRoles
 		 */
 		global $rbacreview, $rbacadmin, $lng;
 		
-		$role_folder_id = $rbacreview->getRoleFolderIdOfObject($this->getRefId());
-		if(!$role_folder_id)
-		{
-			ilUtil::sendFailure($lng->txt('missing_rolefolder'));
-			return false;
-		}
-
-		$role_list = $rbacreview->getRoleListByObject($role_folder_id);
+		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		if(!$role_list)
 		{
 			ilUtil::sendFailure($lng->txt('missing_rolelist'));
@@ -86,8 +79,7 @@ class ilAdobeConnectRoles
 		 */		
 		global $rbacreview, $rbacadmin;
 		
-		$role_folder_id = $rbacreview->getRoleFolderIdOfObject($this->getRefId());
-		$role_list = $rbacreview->getRoleListByObject($role_folder_id);
+		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		$a_rol_id = null;
 		
 		foreach ($role_list as $role)
@@ -115,8 +107,7 @@ class ilAdobeConnectRoles
 		 */
 		global $rbacreview;
 
-		$role_folder = $rbacreview->getRoleFolderOfObject($this->getRefId());
-		$roles = $rbacreview->getRoleListByObject($role_folder['child']);
+		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$assigned_users = null;
 		foreach($roles as $role)
 		{
@@ -139,8 +130,7 @@ class ilAdobeConnectRoles
 		
 		global $rbacreview;
 
-		$role_folder = $rbacreview->getRoleFolderOfObject($this->getRefId());
-		$roles = $rbacreview->getRoleListByObject($role_folder['child']);
+		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$assigned_users = array();
 		foreach($roles as $role)
 		{
@@ -168,8 +158,7 @@ class ilAdobeConnectRoles
 		 */
 		global $rbacreview, $rbacadmin;
 
-		$role_folder_id = $rbacreview->getRoleFolderIdOfObject($this->getRefId());
-		$role_list = $rbacreview->getRoleListByObject($role_folder_id);
+		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		
 		$a_rol_id = null;
 		
@@ -198,8 +187,7 @@ class ilAdobeConnectRoles
 		 */
 		global $rbacreview, $rbacadmin;
 
-		$role_folder_id = $rbacreview->getRoleFolderIdOfObject($this->getRefId());
-		$role_list = $rbacreview->getRoleListByObject($role_folder_id);
+		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		$a_rol_id = null;
 		foreach ($role_list as $role)
 		{
@@ -226,9 +214,7 @@ class ilAdobeConnectRoles
 		 */
 		global $rbacreview;
 
-		$role_folder = $rbacreview->getRoleFolderOfObject($this->getRefId());
-
-		$roles = $rbacreview->getRoleListByObject($role_folder['child']);
+		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$assigned_users = array();
 		
 		foreach($roles as $role)
@@ -254,8 +240,7 @@ class ilAdobeConnectRoles
 		 */
 		global $rbacreview;
 
-		$role_folder = $rbacreview->getRoleFolderOfObject($this->getRefId());
-		$roles = $rbacreview->getRoleListByObject($role_folder['child']);
+		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$admins = array();
 		$members = array();
 		foreach($roles as $role)
