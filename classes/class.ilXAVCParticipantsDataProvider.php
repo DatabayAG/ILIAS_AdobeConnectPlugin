@@ -116,16 +116,14 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
 
 	protected function getAdditionalItems($data)
 	{
-		$xavc_participants = array();
 		$xavc_participants = $this->parent_obj->object->getParticipants();
+		$selected_user_ids = array();
 
 		foreach($data['items'] as $db_item)
 		{
 			$selected_user_ids[] = (int)$db_item['user_id'];
 		}
 
-		$additional_items = array();
-		
 		if ($xavc_participants != NULL)
 		{
 			foreach($xavc_participants as $participant)
