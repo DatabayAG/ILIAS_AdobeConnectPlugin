@@ -1482,53 +1482,36 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		global $rbacadmin, $rbacreview;
 
 		include_once 'class.ilObjAdobeConnectAccess.php';
-		// create role folder
-		$rolf = $this->createRoleFolder();
+		include_once './Services/AccessControl/classes/class.ilObjRole.php';
 
-		//// ADMIN ROLE ////
+		ilObjAdobeConnectAccess::getLocalAdminRoleTemplateId();
+		ilObjAdobeConnectAccess::getLocalMemberRoleTemplateId();
 
-		// create role and assign role to rolefolder...
-		$admin_role = $rolf->createRole("il_xavc_admin_" . $this->ref_id, "Admin of Adobe Connect Interface Object obj_no." . $this->getId());
+		$admin_role = ilObjRole::createDefaultRole(
+			'il_xavc_admin_' . $this->getRefId(),
+			'Admin of Adobe Connect object with obj_no.' . $this->getId(),
+			'il_xavc_admin',
+			$this->getRefId()
+		);
 
-		$admin_rolt_id = ilObjAdobeConnectAccess::getLocalAdminRoleTemplateId();
-		$rbacadmin->copyRoleTemplatePermissions($admin_rolt_id, ROLE_FOLDER_ID, $rolf->getRefId(), $admin_role->getId());
+		$member_role = ilObjRole::createDefaultRole(
+			'il_xavc_member_' . $this->getRefId(),
+			'Member of Adobe Connect object with obj_no.' . $this->getId(),
+			'il_xavc_member',
+			$this->getRefId()
+		);
 
-		// set object permissions assigned on xcvc object per default
-		$xcvc_obj_ops = $rbacreview->getOperationsOfRole($admin_role->getId(), 'xavc', $rolf->getRefId());
-		$rbacadmin->grantPermission($admin_role->getId(), $xcvc_obj_ops, $this->ref_id);
+		$ops = $rbacreview->getOperationsOfRole($member_role->getId(), 'xavc', $this->getRefId());
 
-		// set object permissions of role folder object
-		$xcvc_rolf_ops = $rbacreview->getOperationsOfRole($admin_role->getId(), 'rolf', $rolf->getRefId());
-		$rbacadmin->grantPermission($admin_role->getId(), $xcvc_rolf_ops, $rolf->getRefId());
-
-		//// MEMBER ROLE ////
-
-		// create role and assign role to rolefolder...
-		$member_role = $rolf->createRole('il_xavc_member_' . $this->ref_id, 'Member of Adobe Connect Interface Object obj_no.' . $this->getId());
-
-		$member_rolt_id = ilObjAdobeConnectAccess::getLocalMemberRoleTemplateId();
-		$rbacadmin->copyRoleTemplatePermissions($member_rolt_id, ROLE_FOLDER_ID, $rolf->getRefId(), $member_role->getId());
-
-		// set object permissions assigned on xcvc object per default
-		$ops = $rbacreview->getOperationsOfRole($member_role->getId(), 'xavc', $rolf->getRefId());
-		$rbacadmin->grantPermission($member_role->getId(), $ops, $this->ref_id);
-
-		$rbacadmin->grantPermission(self::RBAC_DEFAULT_ROLE_ID, $ops, $this->ref_id);
-		/*
-		 * set view permission for guests
-		 */
-		$rbacadmin->grantPermission(self::RBAC_GUEST_ROLE_ID, array(2), $this->ref_id);
-
-		// clean up and return ids of created roles
+		// Set view permission for users
+		$rbacadmin->grantPermission(self::RBAC_DEFAULT_ROLE_ID, $ops, $this->getRefId());
+		// Set view permission for guests
+		$rbacadmin->grantPermission(self::RBAC_GUEST_ROLE_ID, array(2), $this->getRefId());
 
 		$roles = array(
 			$admin_role->getId(),
 			$member_role->getId()
 		);
-
-		unset($admin_role);
-		unset($member_role);
-		unset($rolf);
 
 		return $roles ? $roles : array();
 	}
