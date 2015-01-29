@@ -1,0 +1,75 @@
+<!-- language file start -->
+obj_xavc#:#Clase Virtual
+objs_xavc#:#Clases Virtuales
+obj_xavc_duplicate#:#Copiar
+objs_xavc_duplicate#:#Copiar Clase Virtual
+obj_xavc_select#:#Seleccionar Clase Virtual
+xavc_add#:#Añadir una Clase Virtual
+xavc_new#:#Añadir una nueva Clase Virtual
+contents#:#Contenidos
+records#:#Grabaciones
+participants#:#Participantes
+properties#:#Propiedades
+edit_properties#:#Editar Propiedades
+title#:#Título
+description#:#Descripción
+start_date#:#Fecha de comienzo
+end_date#:#Fecha de finalización
+duration#:#Duración
+file#:#Archivo
+files#:#Archivos
+save#:#Guardar
+cancel#:#Cancelar
+view#:#Ver
+edit#:#Editar
+add#:#Añadir
+delete#:#Eliminar
+upload#:#Cargar
+search#:#Buscar
+status#:#Estado
+offline#:#Offline
+access#:#Acceder
+info_start_date#:#Fecha de comienzo de la Clase Virtual
+info_end_date#:#Fecha de finalización de la Clase Virtual
+access_link#:#Enlace
+access_meeting_title#:#Acceder a la Clase Virtual
+meeting_not_available#:#La Clase Virtual no está disponible
+meeting_content#:#Contenidos de la Clase Virtual
+content_name#:#Nombre
+content_date_created#:#Fecha de creación
+content_date_modified#:#Fecha de modificación
+content_duration#:#Duración
+content_link#:#Enlace al contenido
+meeting_record#:#Grabaciones de la Clase Virtual
+edit_content#:#Editar Contenido
+view_content#:#Ver Contenido
+upload_file#:#Cargar Archivo
+virtualClassroom_content_updated#:#Contenido de la Clase Virtual actualizado
+virtualClassroom_content_added#:#Contenido de la Clase Virtual añadido
+virtualClassroom_content_deleted#:#Contenido de la Clase Virtual eliminado
+add_new_content#:#Añadir nuevo contenido
+sure_delete_contents#:#¿Realmente quiere eliminar los siguientes contenido(s)?
+content_select_one#:#Por favor seleccione al menos un contenido
+no_contents_created#:#No hay contenidos de la Clase Virtual creados
+no_records_created#:#No hay grabaciones de la Clase Virtual creadas
+user_name#:#Nombre del usuario
+detach_participant#:#Quitar participante
+user_search#:#Buscar usuario
+search_term#:#Término(s) de búsqueda
+participants_matches_in_no_results#:#Su búsqueda no devolvió ningún resultado
+users#:#Usuarios
+participants_select_one#:#Por favor seleccione al menos un participante
+participant_added_successfully#:#Participante añadido satisfactoriamente
+participants_detached_successfully#:#Participante(s) quitado(s) satisfactoriamente
+add_content_from_ilias#:#Añadir contenido desde ILIAS
+files_matches_in_no_results#:#Su búsqueda no devolvió ningún resultado
+num_vc_same_time#:#Número de Clases Virtuales que coinciden en el tiempo en el servidor:
+new_ac_user_mail#:#Se le ha creado una cuenta de acceso a Adobe Connect. Para acceder, use su cuenta de correo como usuario y esta contraseña:
+new_ac_user_subject#:#Cuenta de Adobe Connect creada
+error_connect_ac_server#:#Error al conectar con el servidor de Adobe Connect
+choose_creation_type#:#Type of object creation
+create_new#:#Create a new Adobe Connect room
+select_existing#:#Reuse an existing Adobe Connect classroom
+available_rooms#:#Available Classrooms
+xavc_meeting_not_available#:#This classroom is not available
+no_available_rooms#:#No classrooms available
