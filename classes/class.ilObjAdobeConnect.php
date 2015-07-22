@@ -619,141 +619,75 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			$type          = 'grp';
 		}
 
-		if($type == 'crs' || $type == 'grp')
+		if(!in_array($type, array('crs', 'grp')))
 		{
-			$role_map = ilAdobeConnectServer::getRoleMap();
+			return;
+		}
 
-			/** @var $oParticipants  ilGroupParticipants | ilCourseParticipants */
-			$admins  = $oParticipants->getAdmins();
-			$tutors  = $oParticipants->getTutors();
-			$members = $oParticipants->getMembers();
+		$role_map = ilAdobeConnectServer::getRoleMap();
 
-			if(is_array($member_ids) && count($member_ids) > 0)
+		/** @var $oParticipants  ilGroupParticipants | ilCourseParticipants */
+		$admins  = $oParticipants->getAdmins();
+		$tutors  = $oParticipants->getTutors();
+		$members = $oParticipants->getMembers();
+
+		if(is_array($member_ids) && count($member_ids) > 0)
+		{
+			$all_participants = $member_ids;
+
+			$admins  = array_uintersect($member_ids, $admins, 'strcmp');
+			$tutors  = array_uintersect($member_ids, $tutors, 'strcmp');
+			$members = array_uintersect($member_ids, $members, 'strcmp');
+		}
+		else
+		{
+			$all_participants = array_unique(array_merge($admins, $tutors, $members));
+		}
+
+		$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
+		$xavcRoles = new ilAdobeConnectRoles($ref_id);
+
+		if(ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH)
+		{
+			foreach($all_participants as $user_id)
 			{
-				$all_participants = $member_ids;
+				$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
 
-				$admins  = array_uintersect($member_ids, $admins, 'strcmp');
-				$tutors  = array_uintersect($member_ids, $tutors, 'strcmp');
-				$members = array_uintersect($member_ids, $members, 'strcmp');
-			}
-			else
-			{
-				$all_participants = array_unique(array_merge($admins, $tutors, $members));
-			}
+				//check if there is an adobe connect account at the ac-server
+				$ilAdobeConnectUser = new ilAdobeConnectUserUtil($user_id);
+				$ilAdobeConnectUser->ensureAccountExistance();
 
-			$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
-			$xavcRoles = new ilAdobeConnectRoles($ref_id);
-
-			if(ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH)
-			{
-				foreach($all_participants as $user_id)
+				// add to desktop
+				if(ilAdobeConnectServer::getSetting('add_to_desktop') == 1)
 				{
-					$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
-
-					//check if there is an adobe connect account at the ac-server
-					$ilAdobeConnectUser = new ilAdobeConnectUserUtil($user_id);
-					$ilAdobeConnectUser->ensureAccountExistance();
-
-					// add to desktop
-					if(ilAdobeConnectServer::getSetting('add_to_desktop') == 1)
-					{
-						ilObjUser::_addDesktopItem($user_id, $ref_id, 'xavc');
-					}
+					ilObjUser::_addDesktopItem($user_id, $ref_id, 'xavc');
 				}
 			}
+		}
 
-			// receive breeze session
-			$session = $this->xmlApi->getBreezeSession();
+		// receive breeze session
+		$session = $this->xmlApi->getBreezeSession();
 
-			$this->pluginObj->includeClass('class.ilXAVCMembers.php');
+		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 
-			if($session != NULL && $this->xmlApi->login($this->adminLogin, $this->adminPass, $session))
+		if($session != NULL && $this->xmlApi->login($this->adminLogin, $this->adminPass, $session))
+		{
+			foreach($admins as $user_id)
 			{
-				foreach($admins as $user_id)
+				if($user_id == $this->getOwner())
 				{
-					$xavcRoles->addAdministratorRole($user_id);
-
-					$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
-					// local member table
-					$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
-
-					$status = $role_map[$type . '_admin'];
-
-					$xavcMemberObj->setStatus($status);
-					$xavcMemberObj->setScoId($sco_id);
-
-					if($is_member)
-					{
-						$xavcMemberObj->updateXAVCMember();
-					}
-					else
-					{
-						$xavcMemberObj->insertXAVCMember();
-					}
-
-					$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
+					continue;
 				}
 
-				foreach($tutors as $user_id)
-				{
-					$xavcRoles->addAdministratorRole($user_id);
+				$xavcRoles->addAdministratorRole($user_id);
 
-					$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
-					// local member table
-					$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
-
-					$status = $role_map[$type . '_tutor'];
-
-					$xavcMemberObj->setStatus($status);
-					$xavcMemberObj->setScoId($sco_id);
-
-					if($is_member)
-					{
-						$xavcMemberObj->updateXAVCMember();
-					}
-					else
-					{
-						$xavcMemberObj->insertXAVCMember();
-					}
-
-					$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
-				}
-
-				foreach($members as $user_id)
-				{
-					$xavcRoles->addMemberRole($user_id);
-					$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
-					// local member table
-					$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
-
-					$status = $role_map[$type . '_member'];
-
-					$xavcMemberObj->setStatus($status);
-					$xavcMemberObj->setScoId($sco_id);
-
-					if($is_member)
-					{
-						$xavcMemberObj->updateXAVCMember();
-					}
-					else
-					{
-						$xavcMemberObj->insertXAVCMember();
-					}
-
-					$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
-				}
-
-				$owner_id = ilObject::_lookupOwner($obj_id);
-
-				$xavcRoles->addAdministratorRole($owner_id);
-
-				$is_member = ilXAVCMembers::_isMember($owner_id, $ref_id);
+				$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
 				// local member table
-				$xavcMemberObj = new ilXAVCMembers($ref_id, $owner_id);
+				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
 
-				$status = $role_map[$type . '_owner'];
+				$status = $role_map[$type . '_admin'];
+
 				$xavcMemberObj->setStatus($status);
-
 				$xavcMemberObj->setScoId($sco_id);
 
 				if($is_member)
@@ -765,8 +699,91 @@ class ilObjAdobeConnect extends ilObjectPlugin
 					$xavcMemberObj->insertXAVCMember();
 				}
 
-				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($owner_id), $session, $status);
+				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
 			}
+
+			foreach($tutors as $user_id)
+			{
+				if($user_id == $this->getOwner())
+				{
+					continue;
+				}
+
+				$xavcRoles->addAdministratorRole($user_id);
+
+				$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
+				// local member table
+				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
+
+				$status = $role_map[$type . '_tutor'];
+
+				$xavcMemberObj->setStatus($status);
+				$xavcMemberObj->setScoId($sco_id);
+
+				if($is_member)
+				{
+					$xavcMemberObj->updateXAVCMember();
+				}
+				else
+				{
+					$xavcMemberObj->insertXAVCMember();
+				}
+
+				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
+			}
+
+			foreach($members as $user_id)
+			{
+				if($user_id == $this->getOwner())
+				{
+					continue;
+				}
+
+				$xavcRoles->addMemberRole($user_id);
+				$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
+				// local member table
+				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
+
+				$status = $role_map[$type . '_member'];
+
+				$xavcMemberObj->setStatus($status);
+				$xavcMemberObj->setScoId($sco_id);
+
+				if($is_member)
+				{
+					$xavcMemberObj->updateXAVCMember();
+				}
+				else
+				{
+					$xavcMemberObj->insertXAVCMember();
+				}
+
+				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
+			}
+
+			$owner_id = ilObject::_lookupOwner($obj_id);
+
+			$xavcRoles->addAdministratorRole($owner_id);
+
+			$is_member = ilXAVCMembers::_isMember($owner_id, $ref_id);
+			// local member table
+			$xavcMemberObj = new ilXAVCMembers($ref_id, $owner_id);
+
+			$status = $role_map[$type . '_owner'];
+			$xavcMemberObj->setStatus($status);
+
+			$xavcMemberObj->setScoId($sco_id);
+
+			if($is_member)
+			{
+				$xavcMemberObj->updateXAVCMember();
+			}
+			else
+			{
+				$xavcMemberObj->insertXAVCMember();
+			}
+
+			$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($owner_id), $session, $status);
 		}
 	}
 
