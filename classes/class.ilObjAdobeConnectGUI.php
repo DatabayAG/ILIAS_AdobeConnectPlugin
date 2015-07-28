@@ -706,6 +706,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                     $sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
                     $sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
                     $sso_tpl->show();
+					exit;
                 }
             }
             else
