@@ -485,10 +485,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	public function publishCreationAC($obj_id, $title, $description, $start_date, $end_date, $instructions, $contact_info, $permanent_room, $access_level = ACCESS_LEVEL_PROTECTED, $read_contents, $read_records, $folder_id )
 	{
 		/**
-		 * @var $ilUser ilObjUser
 		 * @var $ilDB   ilDB
 		 * */
-		global $ilUser, $ilDB;
+		global $ilDB;
 
 		$owner_id = ilObject::_lookupOwner($obj_id);
 		$ownerObj = new ilObjUser($owner_id); 
@@ -516,6 +515,12 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			throw new ilException('xavc_folder_not_available');
 		}
 
+		$obj_title_suffix_enabled = ilAdobeConnectServer::getSetting('obj_title_suffix');
+		if($obj_title_suffix_enabled)
+		{
+			$title = $title.'_'.CLIENT_ID.'_'.$obj_id;
+		}	
+		
 		// create meeting room
 		$arr_meeting = $this->xmlApi->addMeeting
 			(
@@ -536,7 +541,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		{
 			throw new ilException('xavc_meeting_creation_error');
 		}
-
 
 		if(ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH)
 		{

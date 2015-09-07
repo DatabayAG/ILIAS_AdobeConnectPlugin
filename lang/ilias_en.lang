@@ -288,3 +288,7 @@ fold_create_xavc#:#Create Adobe Meeting
 root_create_xavc#:#Create Adobe Meeting
 cat_create_xavc#:#Create Adobe Meeting
 perm_edit_records#:#Edit and delete records
+ac_user#:#Adobe Connect User
+ilias_user#:#ILIAS User
+obj_title_suffix#:#Create Meeting room name with an unique suffix
+obj_title_suffix_info#:If activated, a suffix will be added to the meeting room name (i.e.: room_name/client_id/_/object_id/). Ilias shows the object-title without suffix. 

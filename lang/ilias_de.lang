@@ -294,3 +294,7 @@ fold_create_xavc#:#Neues Adobe Meeting anlegen
 root_create_xavc#:#Neues Adobe Meeting anlegen
 cat_create_xavc#:#Neues Adobe Meeting anlegen
 perm_edit_records#:#Aufnahmen bearbeiten und löschen
+ac_user#:#Adobe Connect Benutzer
+ilias_user#:#ILIAS Benutzer
+obj_title_suffix#:#Raum-Namen mit einem eindeutigen Suffix anlegen
+obj_title_suffix_info#:#Wenn dies aktiviert ist, wird bei dem Erstellen eines Raumes ein Suffix an Raum-Namen angehangen (Bsp.: raumname_/mandant_id/_/objekt_id/). In Ilias wird der Objekt-Titel ohne Suffix angezeigt 

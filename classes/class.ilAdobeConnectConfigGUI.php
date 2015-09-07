@@ -547,6 +547,10 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 		$cb_group->setInfo($this->pluginObj->txt('template_info'));
 		$this->form->addItem($cb_group);
 		
+		$obj_title_suffix = new ilCheckboxInputGUI($this->pluginObj->txt('obj_title_suffix'), 'obj_title_suffix');
+		$obj_title_suffix->setInfo($this->pluginObj->txt('obj_title_suffix_info'));
+		$this->form->addItem($obj_title_suffix);
+		
 		$crs_grp_trigger = new ilCheckboxInputGUI($this->pluginObj->txt('allow_crs_grp_trigger'), 'allow_crs_grp_trigger');
 		$crs_grp_trigger->setInfo($this->pluginObj->txt('allow_crs_grp_trigger_info'));
 		$this->form->addItem($crs_grp_trigger);
@@ -654,6 +658,7 @@ $tbl .= "</table>";
 		$values = array();
 		
 		$values['obj_creation_settings'] = unserialize(ilAdobeConnectServer::getSetting('obj_creation_settings')) ? unserialize(ilAdobeConnectServer::getSetting('obj_creation_settings')) : '0';
+		$values['obj_title_suffix'] = ilAdobeConnectServer::getSetting('obj_title_suffix') ? ilAdobeConnectServer::getSetting('obj_title_suffix'): 0;  
 		$values['allow_crs_grp_trigger'] = ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') ? ilAdobeConnectServer::getSetting('allow_crs_grp_trigger'): 0;  
 		$values['show_free_slots'] = ilAdobeConnectServer::getSetting('show_free_slots') ? ilAdobeConnectServer::getSetting('show_free_slots'): 0;
 		$values['default_perm_room'] = ilAdobeConnectServer::getSetting('default_perm_room') ? ilAdobeConnectServer::getSetting('default_perm_room'): 0;
@@ -702,6 +707,7 @@ $tbl .= "</table>";
 			ilAdobeConnectServer::setSetting('obj_creation_settings', serialize($this->form->getInput('obj_creation_settings')));
 
 			ilAdobeConnectServer::setSetting('allow_crs_grp_trigger', (int)$this->form->getInput('allow_crs_grp_trigger'));
+			ilAdobeConnectServer::setSetting('obj_title_suffix', (int)$this->form->getInput('obj_title_suffix'));
 			ilAdobeConnectServer::setSetting('show_free_slots', (int)$this->form->getInput('show_free_slots'));
 			ilAdobeConnectServer::setSetting('default_perm_room', (int)$this->form->getInput('default_perm_room'));
 			ilAdobeConnectServer::setSetting('add_to_desktop', (int)$this->form->getInput('add_to_desktop'));
