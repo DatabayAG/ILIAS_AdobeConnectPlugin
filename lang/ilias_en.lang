@@ -291,4 +291,5 @@ perm_edit_records#:#Edit and delete records
 ac_user#:#Adobe Connect User
 ilias_user#:#ILIAS User
 obj_title_suffix#:#Create Meeting room name with an unique suffix
-obj_title_suffix_info#:If activated, a suffix will be added to the meeting room name (i.e.: room_name/client_id/_/object_id/). Ilias shows the object-title without suffix. 
+obj_title_suffix_info#:If activated, a suffix will be added to the meeting room name (i.e.: room_name/client_id/_/object_id/). Ilias shows the object-title without suffix.
+members_gallery#:#Members Gallery

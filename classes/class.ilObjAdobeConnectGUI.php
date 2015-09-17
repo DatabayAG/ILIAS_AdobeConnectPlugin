@@ -7,6 +7,7 @@ include_once 'Services/Search/classes/class.ilObjectSearchFactory.php';
 include_once './Services/User/classes/class.ilPublicUserProfileGUI.php';
 include_once('Services/Search/classes/class.ilRepositorySearchGUI.php');
 require_once dirname(__FILE__) . '/../interfaces/interface.AdobeConnectPermissions.php';
+require_once './Services/User/classes/class.ilUsersGalleryGUI.php';
 
 /**
 * User Interface class for Adobe Connect repository object.
@@ -14,7 +15,7 @@ require_once dirname(__FILE__) . '/../interfaces/interface.AdobeConnectPermissio
 * User interface classes process GET and POST parameter and call
 * application classes to fulfill certain tasks.
 *
-* @author Nadia Ahmad <nahmad@databay.de>
+* @author Nadia Matuschek <nmatuschek@databay.de>
 * @author Martin Studer <ms@studer-raimann.ch>
 *
 * $Id$
@@ -334,7 +335,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 						$this->tabs->addSubTab("addCrsGrpMembers",$this->txt("add_crs_grp_members"),$this->ctrl->getLinkTarget($this,'addCrsGrpMembers'));
 					}
 				}
-				$this->tabs->addSubTab("showMembersGallery",$lng->txt("crs_members_gallery"),$this->ctrl->getLinkTarget($this,'showMembersGallery'));
+				$this->tabs->addSubTab("showMembersGallery",$this->pluginObj->txt('members_gallery'),$this->ctrl->getLinkTarget($this,'showMembersGallery'));
 			break;
 		}
     }
@@ -1206,99 +1207,22 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		 * @var $tpl $tpl
 		 */
 		global $tpl;
-
-        include_once("./Services/Table/classes/class.ilTableGUI.php");
-
-		$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
-
-		$xavcRoles = new ilAdobeConnectRoles($this->object->getRefId());
-
-        $this->tabs->activateTab('participants');
+		
+		include_once './Services/User/classes/class.ilUsersGalleryGUI.php';
+		$this->pluginObj->includeClass('class.ilAdobeConnectGalleryUsers.php');
+		$this->tabs->activateTab('participants');
 		$this->__setSubTabs('participants');
 		$this->tabs->activateSubTab("showMembersGallery");
 
-		$this->mytpl = new ilTemplate('tpl.crs_members_gallery.html',true,true,'Modules/Course');
-		$members = $xavcRoles->getUsers();
-
-		// MEMBERS
-		if(count($members))
-		{
-			$ordered_members = array();
-
-			foreach($members as $member_id)
-			{
-				if(!($usr_obj = ilObjectFactory::getInstanceByObjId($member_id,false)))
-				{
-					continue;
-				}
-
-				// please do not use strtoupper on first/last name for output
-				// this messes up with some unicode characters, i guess
-				// depending on php verion, alex
-				array_push($ordered_members,array("id" => $member_id,
-								  "login" => $usr_obj->getLogin(),
-								  "lastname" => $usr_obj->getLastName(),
-								  "firstname" => $usr_obj->getFirstName(),
-								  "sortlastname" => strtoupper($usr_obj->getLastName()).strtoupper($usr_obj->getFirstName()),
-								  "usr_obj" => $usr_obj));
-			}
-
-			$ordered_members=ilUtil::sortArray($ordered_members,"sortlastname","asc");
-
-			foreach($ordered_members as $member)
-			{
-				$usr_obj = $member["usr_obj"];
-
-				if(!$usr_obj->getActive())
-				{
-					continue;
-				}
-
-				$public_profile = in_array($usr_obj->getPref("public_profile"), array("y", "g")) ? "y" : "";
-
-				// SET LINK TARGET FOR USER PROFILE
-				$this->ctrl->setParameterByClass("ilpublicuserprofilegui", "user", $member["id"]);
-				$profile_target = $this->ctrl->getLinkTargetByClass("ilpublicuserprofilegui", "getHTML");
-
-				// GET USER IMAGE
-				$file = $usr_obj->getPersonalPicturePath("xsmall");
-
-				if($public_profile == "y")
-				{
-					$this->mytpl->setCurrentBlock("member_linked");
-					$this->mytpl->setVariable("LINK_PROFILE", $profile_target);
-					$this->mytpl->setVariable("SRC_USR_IMAGE", $file);
-					$this->mytpl->parseCurrentBlock();
-				}
-				else
-				{
-					$this->mytpl->setCurrentBlock("member_not_linked");
-					$this->mytpl->setVariable("SRC_USR_IMAGE", $file);
-					$this->mytpl->parseCurrentBlock();
-				}
-				$this->mytpl->setCurrentBlock("member");
-				$this->mytpl->setVariable("MEMBER_CLASS", "il_Member");
-				// do not show name, if public profile is not activated
-				if($public_profile == "y")
-				{
-					$this->mytpl->setVariable("FIRSTNAME", $member["firstname"]);
-					$this->mytpl->setVariable("LASTNAME", $member["lastname"]);
-				}
-				$this->mytpl->setVariable("LOGIN", $member["login"]);
-				$this->mytpl->parseCurrentBlock();
-
-			}
-			$this->mytpl->setCurrentBlock("members");
-			$this->mytpl->setVariable("MEMBERS_TABLE_HEADER",$this->lng->txt('crs_members_title'));
-			$this->mytpl->parseCurrentBlock();
-
-		}
-
-		$this->mytpl->setVariable("TITLE",$this->lng->txt('crs_members_print_title'));
-		$this->mytpl->setVariable("CSS_PATH",ilUtil::getStyleSheetLocation());
-
+		$provider    = new ilAdobeConnectGalleryUsers();
+		$gallery_gui = new ilUsersGalleryGUI($provider);
+		$this->ctrl->setCmd('view');
+		$gallery_gui->executeCommand();
+		
 		$tpl->getStandardTemplate();
-		$tpl->setContent($this->mytpl->get());
+		$tpl->show();
+		
+		return;
 	}
 	
 	public function requestAdobeConnectContent()

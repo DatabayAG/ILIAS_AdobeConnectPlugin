@@ -73,3 +73,83 @@ select_existing#:#Reuse an existing Adobe Connect classroom
 available_rooms#:#Available Classrooms
 xavc_meeting_not_available#:#This classroom is not available
 no_available_rooms#:#No classrooms available
+editIliasSettings#:#ILIAS-Settings
+general_settings#:#General Settings
+object_creation_settings#:#Object Creation Settings
+cb_simple#:#Simple
+cb_extended#:#Extended
+default_crs_mapping#:#Course-Permission-Mapping
+default_grp_mapping#:#Group-Permission-Mapping
+denied#:#Denied
+allow_reuse_existing_rooms#:#Allow reuse of existing rooms
+no_template_id_given#:#No Template-Id given
+template_not_found#:#Template not found
+xavc_participants#:#Adobe Connect-Participants
+allow_crs_grp_trigger#:#Enable Course-/Group-Trigger
+allow_crs_grp_trigger_info#:#If enabled, new course/group participants will be automatically added as Adobe Connect-Participants
+show_free_slots#:#Show available Meeting-Times
+show_free_slots_info#:#If enabled, an overview for the available Meeting-Times is visible within the "Edit Settings"-Overview of the depending object.
+permanent_room#:#Permanent open Room
+permanent_room_info#:#If enabled, the participants are allowed to enter this room outside the specified session time.
+perm_upload_content#:#Upload and Delete Content
+perm_change_role#:#Change Adobe Connect Role
+ac_permissions#:#Adobe Connect Permissions
+default_perm_room#:#Default-Value for Permanent open Rooms
+default_perm_room_info#:#If enabled, the checkbox 'Permanent open Room' will be checked per default, within the creation of a new object.
+perm_edit_participants#:#Show Participants List
+perm_add_participants#:#Add and Delete Participants
+assign_users_with_switch_aai_login#:#SWITCH AAI Login
+auth_mode_switchaai#:#SWITCH AAI-Authentification
+choose_existing_room#:#Please select an existing Adobe-Connect Meeting to create a new ILIAS object.
+sure_delete_participant_p#:#Are you sure, you  want do to delete the following participants?
+sure_delete_participant_s#:#Are you sure, you  want do to delete the following participant?
+crs_grp_trigger_enabled_info#:#The Course- /Group-Trigger ist enabled. New course/group participants will be automatically added as Adobe Connect-Participants. User that are not Course- /Group-Participants any more will be detached automatically.
+err_duplicate_meeting#:#There is an Adobe Connect-Meeting already existing with the entered name. Please choose another title.
+time_type_selection#:#Temporal availability of the meeting
+with_limitation#:#With a time limit
+content#:#Content
+record#:#Record
+content_type#:#Type
+add_to_desktop#:#Add to personal desktop 
+add_to_desktop_info#:#If enabled, a link to the Adobe Connect room, will be added to the personal desktop of new Adobe Connect participants.  
+template_info#:#The setting templates that you select, will be available for the lecturers when they create new meeting rooms. Choose 'Basic Settings',  if only a minimum set of technical options should be visible. Choose 'Advanced Settings',  if you want to provide more options to people and backgrounds.
+perm_read_records#:#Show Records
+login_failed#:#The Login failed
+add_cnt_err#:#The uploaded content could not be created on the Adobe Connect server. Please rename the file and try it again.
+adobe_meeting_room#:#Adobe Meetingroom
+file_uploads#:#File Uploads
+records#:#Records
+enter_room_host_info#:#The room can only be used, if a host has entered the room.
+private_room#:#Nur registrierte Benutzer haben Zugang zum Raum (Gastzugriff gesperrt).
+protected_room#:#Only registered users and accepted guests may enter the room
+public_room#:#Anyone who has the URL for the meeting can enter the room
+content_file_types#:#Allowed file types for content uploads
+content_file_types_info#:#Please enter the allowed file types, which can be uploaded into an Adobe Connect Meeting.   
+contact_information#:#Contact information
+office#:#Office
+mobile#:#Mobile
+meeting_url#:#URL for the meeting
+general#:#General
+read_contents#:#Show Contents
+read_records#:#Show records
+perm_read_contents#:#Read Contents
+use_user_folders#:#Us individual User Folders
+use_user_folders_info#:#If activated, a personal folder will be created for the user at the Adobe Connect Server. This personal user folder will contain all new meeting rooms created by the user.
+owner_info#:#Owners get advanced management capabilities for their own meetings at the Adobe Connect Server. This responsibility is defined at room creation, and can not be changed later.
+auth_mode_switchaai_accounts#:#Select the account types (beside SWITCH AAI) which should perform SWITCH AAI-Authentification to the Adobe Connect-Server
+auth_mode_switchaai_local#:#Local
+auth_mode_switchaai_ldap#:#LDAP
+assign_users_with_email_dfn#:#DFN: Adobe Connect-User anhand der E-Mail-Adresse anlegen
+il_xavc_member#:#Member
+il_xavc_admin#:#Administrator
+crs_create_xavc#:#Create Adobe Meeting
+grp_create_xavc#:#Create Adobe Meeting
+fold_create_xavc#:#Create Adobe Meeting
+root_create_xavc#:#Create Adobe Meeting
+cat_create_xavc#:#Create Adobe Meeting
+perm_edit_records#:#Edit and delete records
+ac_user#:#Adobe Connect User
+ilias_user#:#ILIAS User
+obj_title_suffix#:#Create Meeting room name with an unique suffix
+obj_title_suffix_info#:If activated, a suffix will be added to the meeting room name (i.e.: room_name/client_id/_/object_id/). Ilias shows the object-title without suffix.
+members_gallery#:#Members Gallery
