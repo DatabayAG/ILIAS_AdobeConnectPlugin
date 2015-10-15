@@ -711,6 +711,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
             }
             else
             {
+				$GLOBALS['DEBUGACSSO'] = true;
                 $ilAdobeConnectUser = new ilAdobeConnectUserUtil( $this->user->getId() );
                 $ilAdobeConnectUser->ensureAccountExistance();
 

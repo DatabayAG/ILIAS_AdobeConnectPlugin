@@ -171,7 +171,11 @@ class ilAdobeConnectXMLAPI
 				'user-id' => $user_id
 			));
 			$xml = simplexml_load_file($url);
-		
+			if($GLOBALS['DEBUGACSSO'])
+			{
+				global $ilLog;
+				$ilLog->write(__METHOD__ . ': Updated password for user ' . $username . ' ' . (is_object($xml) ? $xml->asXML() : ''));
+			}
 			return $xml instanceof SimpleXMLElement && $xml->status['code'] == 'ok';
 		}
 		return false;
@@ -1230,7 +1234,11 @@ class ilAdobeConnectXMLAPI
 			'session' 		=> $session
 		));
         $xml = simplexml_load_file($url);
-
+		if($GLOBALS['DEBUGACSSO'])
+		{
+			global $ilLog;
+			$ilLog->write(__METHOD__ . ': Searched user ' . $login . ' ' . (is_object($xml) ? $xml->asXML() : ''));
+		}
         if ($xml->{'report-bulk-users'}->row['principal-id'] !='')
 		{
 			return (string)$xml->{'report-bulk-users'}->row['principal-id'];

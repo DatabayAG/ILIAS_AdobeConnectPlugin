@@ -104,6 +104,11 @@ class ilAdobeConnectUserUtil
 		{
 			$this->xavc_login = $row['xavc_login'];
 		}
+		if($GLOBALS['DEBUGACSSO'])
+		{
+			global $ilLog;
+			$ilLog->write(__METHOD__ . ': Found adobe user login ' . $this->xavc_login . ' by ILIAS usr_id ' . $this->getId());
+		}
 	}
 	
 	private function ensureLocalAccountExistance()
