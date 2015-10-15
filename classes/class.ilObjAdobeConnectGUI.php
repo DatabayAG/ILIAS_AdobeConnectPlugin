@@ -671,7 +671,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	 */
 	public function performSso()
 	{
-		global $ilSetting;
+		global $ilSetting, $ilLog;
 
 		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
 		$this->pluginObj->includeClass('class.ilAdobeConnectQuota.php');
@@ -715,6 +715,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                 $ilAdobeConnectUser->ensureAccountExistance();
 
                 $xavc_login = $ilAdobeConnectUser->getXAVCLogin();
+				$ilLog->write(__METHOD__ . ': Tried SSO for user ' . $xavc_login);
 
                 $quota = new ilAdobeConnectQuota();
 
@@ -728,9 +729,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                     $xmlAPI->logout( $_SESSION['xavc_last_sso_sessid'] );
                     //login current user session
                     $session = $ilAdobeConnectUser->loginUser();
+					$ilLog->write(__METHOD__ . ': Using breezesession ' . $session . ' for user ' . $xavc_login);
                     $_SESSION['xavc_last_sso_sessid'] = $session;
                     $url = $presentation_url.$this->object->getURL().'?session='.$session;
-
+					$ilLog->write(__METHOD__ . ': Using url ' . $url . ' for user ' . $xavc_login);
                     $presentation_url = ilAdobeConnectServer::getPresentationUrl(true);
                     $logout_url = $presentation_url.'/api/xml?action=logout';
 
