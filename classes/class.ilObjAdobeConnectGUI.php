@@ -868,6 +868,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         global $ilUser;
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
 		$this->pluginObj->includeClass('class.ilAdobeConnectRecordsTableGUI.php');
+		$this->pluginObj->includeClass('class.ilAdobeConnectContentTableGUI.php');
 		$this->pluginObj->includeClass('class.ilXAVCPermissions.php');
 
 		$server = ilAdobeConnectServer::getPresentationUrl();
