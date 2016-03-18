@@ -1443,6 +1443,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$parent_grp_ref = $tree->checkForParentType($this->object->getRefId(), 'grp');
 		$role_map = ilAdobeConnectServer::getRoleMap();
 
+		$status        = false;
+		$oParticipants = null;
+		$type          = '';
+		$owner         = 0;
+
 		if($parent_crs_ref)
 		{
 			$type = 'crs';
@@ -1455,27 +1460,29 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$owner = ilObject::_lookupOwner(ilObject::_lookupObjectId($parent_grp_ref));
 			$oParticipants = ilGroupParticipants::_getInstanceByObjId(ilObject::_lookupObjId($parent_grp_ref));
 		}
-		
-		$user_is_admin = $oParticipants->isAdmin($user_id);
-		$user_is_tutor = $oParticipants->isTutor($user_id);
-		
-		if($owner == $this->user->getId())
+
+		if($oParticipants instanceof ilParticipants)
 		{
-			$status = $role_map[$type.'_owner'];
+			$user_is_admin = $oParticipants->isAdmin($user_id);
+			$user_is_tutor = $oParticipants->isTutor($user_id);
+			if($owner == $this->user->getId())
+			{
+				$status = $role_map[$type . '_owner'];
+			}
+			else if($user_is_admin)
+			{
+				$status = $role_map[$type . '_admin'];
+			}
+			else if($user_is_tutor)
+			{
+				$status = $role_map[$type . '_tutor'];
+			}
+			else
+			{
+				$status = $role_map[$type . '_member'];
+			}
 		}
-		else if( $user_is_admin)
-		{
-			$status = $role_map[$type.'_admin'];
-		}
-		else if($user_is_tutor)
-		{
-			$status = $role_map[$type.'_tutor'];
-		}
-		else
-		{
-			$status = $role_map[$type.'_member'];
-		}
-		
+
 		if(!$status)
 		{
 			if($owner == $this->user->getId())
