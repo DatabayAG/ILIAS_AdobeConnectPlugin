@@ -463,6 +463,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		}
         $duration = $this->object->getDuration();
 
+        $values["start_date"] = $this->object->getStartDate();
         $values["duration"] = array("hh"=>$duration["hours"],"mm"=>$duration["minutes"]);
 		$values['instructions'] = $this->object->getInstructions();
 
@@ -513,7 +514,19 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		if($formValid && $durationValid)
 		{
-			$newStartDate = $this->form->getItemByPostVar("start_date")->getDate();
+			$new_start_date_input = $this->form->getItemByPostVar('start_date');
+			if(
+				$new_start_date_input instanceof ilDateTimeInputGUI &&
+				$new_start_date_input->getDate() instanceof ilDateTime
+			)
+			{
+				$newStartDate = $new_start_date_input->getDate();
+			}
+			else
+			{
+				$newStartDate = new ilDateTime(time(), IL_CAL_UNIX);
+			}
+
 			$newDuration = $this->form->getInput("duration");
 			
 			$unix_newStartDate = $newStartDate->getUnixTime();
@@ -551,7 +564,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 			if(!$time_mismatch || $this->form->getInput('time_type_selection') == 'permanent_room')
 			{
-				$this->object->setStartDate($this->form->getItemByPostVar("start_date")->getDate());
+				$this->object->setStartDate($newStartDate);
 				$duration = $this->form->getInput("duration");
 				$this->object->setDuration(array("hours"=> $duration["hh"], "minutes"=> $duration["mm"]));
 			}
