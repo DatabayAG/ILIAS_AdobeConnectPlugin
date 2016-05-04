@@ -170,6 +170,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					case "editItem":
 					case "editRecord":
 					case "updateContent":
+					case "updateRecord":
 					case "showAddContent":
 					case "addContent":
 					case "assignAdmin":
@@ -2097,7 +2098,16 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->is_record = true;
 			$this->editItem();
 	}
-	
+
+	/**
+	 * 
+	 */
+	protected function updateRecord()
+	{
+		$this->is_record = true;
+		$this->updateContent();
+	}
+
     /**
      * Updates a content on the Adobe Connect server
 	 *
@@ -2258,17 +2268,19 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         switch ($a_mode)
         {
             case self::CONTENT_MOD_EDIT:
+				$positive_cmd = ($this->is_record ? 'updateRecord' : 'updateContent');
+
 				// Header
 				$this->ctrl->setParameter($this,'content_id',(int) $_REQUEST['content_id']);
 				$this->cform->setTitle($this->txt('edit_content'));
 				// Buttons
-				$this->cform->addCommandButton('updateContent', $this->txt('save'));
+				$this->cform->addCommandButton($positive_cmd, $this->txt('save'));
 				$this->cform->addCommandButton('showContent', $this->txt('cancel'));
 
 				// Form action
 				if($a_content_id)
 					$this->ctrl->setParameter($this, 'content_id', $a_content_id);
-        		$this->cform->setFormAction($this->ctrl->getFormAction($this, 'updateContent'));
+        		$this->cform->setFormAction($this->ctrl->getFormAction($this, $positive_cmd));
 				break;
             case self::CONTENT_MOD_ADD:
                 // Header
