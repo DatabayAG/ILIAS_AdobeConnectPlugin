@@ -558,10 +558,14 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 		$show_free_slots = new ilCheckboxInputGUI($this->pluginObj->txt('show_free_slots'), 'show_free_slots');
 		$show_free_slots->setInfo($this->pluginObj->txt('show_free_slots_info'));
 		$this->form->addItem($show_free_slots);
-
+		
+		$enable_perm_room = new ilCheckboxInputGUI($this->pluginObj->txt('enable_perm_room'), 'enable_perm_room');
+		$enable_perm_room->setInfo($this->pluginObj->txt('enable_perm_room_info'));
+		
 		$default_perm_room = new ilCheckboxInputGUI($this->pluginObj->txt('default_perm_room'), 'default_perm_room');
 		$default_perm_room->setInfo($this->pluginObj->txt('default_perm_room_info'));
-		$this->form->addItem($default_perm_room);
+		$enable_perm_room->addSubItem($default_perm_room);
+		$this->form->addItem($enable_perm_room);
 		
 		$add_to_desktop = new ilCheckboxInputGUI($this->pluginObj->txt('add_to_desktop'), 'add_to_desktop');
 		$add_to_desktop->setInfo($this->pluginObj->txt('add_to_desktop_info'));
@@ -661,6 +665,7 @@ $tbl .= "</table>";
 		$values['obj_title_suffix'] = ilAdobeConnectServer::getSetting('obj_title_suffix') ? ilAdobeConnectServer::getSetting('obj_title_suffix'): 0;  
 		$values['allow_crs_grp_trigger'] = ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') ? ilAdobeConnectServer::getSetting('allow_crs_grp_trigger'): 0;  
 		$values['show_free_slots'] = ilAdobeConnectServer::getSetting('show_free_slots') ? ilAdobeConnectServer::getSetting('show_free_slots'): 0;
+		$values['enable_perm_room'] = ilAdobeConnectServer::getSetting('enable_perm_room', '1') ? ilAdobeConnectServer::getSetting('enable_perm_room', '1'): 0;
 		$values['default_perm_room'] = ilAdobeConnectServer::getSetting('default_perm_room') ? ilAdobeConnectServer::getSetting('default_perm_room'): 0;
 		$values['add_to_desktop'] = ilAdobeConnectServer::getSetting('add_to_desktop') ? ilAdobeConnectServer::getSetting('add_to_desktop'): 0;
 		$values['content_file_types'] = strlen(ilAdobeConnectServer::getSetting('content_file_types')) > 1 ? ilAdobeConnectServer::getSetting('content_file_types'): 'ppt, pptx, flv, swf, pdf, gif, jpg, png, mp3, html';
@@ -709,7 +714,10 @@ $tbl .= "</table>";
 			ilAdobeConnectServer::setSetting('allow_crs_grp_trigger', (int)$this->form->getInput('allow_crs_grp_trigger'));
 			ilAdobeConnectServer::setSetting('obj_title_suffix', (int)$this->form->getInput('obj_title_suffix'));
 			ilAdobeConnectServer::setSetting('show_free_slots', (int)$this->form->getInput('show_free_slots'));
-			ilAdobeConnectServer::setSetting('default_perm_room', (int)$this->form->getInput('default_perm_room'));
+			
+			$enable_perm_room = (int)$this->form->getInput('enable_perm_room');
+			ilAdobeConnectServer::setSetting('enable_perm_room', (int)$this->form->getInput('enable_perm_room'));
+			ilAdobeConnectServer::setSetting('default_perm_room', $enable_perm_room == 0 ? 0 : (int)$this->form->getInput('default_perm_room'));
 			ilAdobeConnectServer::setSetting('add_to_desktop', (int)$this->form->getInput('add_to_desktop'));
 			ilAdobeConnectServer::setSetting('content_file_types', (string)$this->form->getInput('content_file_types'));
 			ilAdobeConnectServer::setSetting('use_user_folders', (int)$this->form->getInput('use_user_folders'));

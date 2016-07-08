@@ -357,7 +357,7 @@ class ilAdobeConnectServer
 		return $this->user_assignment_mode;
 	}
 
-	public static function getSetting($a_keyword)
+	public static function getSetting($a_keyword, $default_value = null)
 	{
 		/**
 		 * @var $ilDB ilDB
@@ -369,12 +369,13 @@ class ilAdobeConnectServer
 			$res = $ilDB->queryF('SELECT value FROM rep_robj_xavc_settings WHERE keyword = %s',
 				array('text'), array($a_keyword));
 
-			$row = $ilDB->fetchAssoc($res);
-
-			return $row['value'];
+			if($row = $ilDB->fetchAssoc($res))
+			{
+				return $row['value'];	
+			}
 		}
 
-		return null;
+		return $default_value;
 	}
 
 	public static function setSetting($a_keyword, $a_value)

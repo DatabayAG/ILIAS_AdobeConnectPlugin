@@ -297,4 +297,7 @@ perm_edit_records#:#Aufnahmen bearbeiten und löschen
 ac_user#:#Adobe Connect Benutzer
 ilias_user#:#ILIAS Benutzer
 obj_title_suffix#:#Raum-Namen mit einem eindeutigen Suffix anlegen
-obj_title_suffix_info#:#Wenn dies aktiviert ist, wird bei dem Erstellen eines Raumes ein Suffix an Raum-Namen angehangen (Bsp.: raumname_/mandant_id/_/objekt_id/). In Ilias wird der Objekt-Titel ohne Suffix angezeigt 
+obj_title_suffix_info#:#Wenn dies aktiviert ist, wird bei dem Erstellen eines Raumes ein Suffix an Raum-Namen angehangen (Bsp.: raumname_/mandant_id/_/objekt_id/). In Ilias wird der Objekt-Titel ohne Suffix angezeigt
+enable_perm_room#:#Permanent offene Räume erlauben
+enable_perm_room_info#:#Wenn dies aktiviert ist, können Räume als permanent offen gekennzeichnet werden 
+members_gallery#:#Mitgliedergalerie
