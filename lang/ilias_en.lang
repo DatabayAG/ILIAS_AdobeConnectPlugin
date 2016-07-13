@@ -234,8 +234,8 @@ permanent_room_info#:#If enabled, the participants are allowed to enter this roo
 perm_upload_content#:#Upload and Delete Content
 perm_change_role#:#Change Adobe Connect Role
 ac_permissions#:#Adobe Connect Permissions
-default_perm_room#:#Default-Value for Permanent open Rooms
-default_perm_room_info#:#If enabled, the checkbox 'Permanent open Room' will be checked per default, within the creation of a new object.
+default_perm_room#:#Default-Value for Permanent open rooms
+default_perm_room_info#:#If enabled, the checkbox 'Permanent open room' will be checked per default, within the creation of a new object.
 perm_edit_participants#:#Show Participants List
 perm_add_participants#:#Add and Delete Participants
 assign_users_with_switch_aai_login#:#SWITCH AAI Login
@@ -292,4 +292,6 @@ ac_user#:#Adobe Connect User
 ilias_user#:#ILIAS User
 obj_title_suffix#:#Create Meeting room name with an unique suffix
 obj_title_suffix_info#:If activated, a suffix will be added to the meeting room name (i.e.: room_name/client_id/_/object_id/). Ilias shows the object-title without suffix.
+enable_perm_room#:#Allow permanent open rooms
+enable_perm_room_info#:#If enabled, rooms can be signed as permanent open.
 members_gallery#:#Members Gallery

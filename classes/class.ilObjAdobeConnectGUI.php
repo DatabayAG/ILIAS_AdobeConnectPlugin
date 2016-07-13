@@ -346,8 +346,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	*/
 	public function editProperties()
 	{
-        global $ilUser;
-
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
 
         $this->object->doRead();
@@ -407,11 +405,12 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$radio_time_type = new ilRadioGroupInputGUI($this->pluginObj->txt('time_type_selection'), 'time_type_selection');
 
 		// option: permanent room
-		$permanent_room = new ilRadioOption( $this->pluginObj->txt('permanent_room'), 'permanent_room');
-//		$permanent_room_is_enabled = ilAdobeConnectServer::getSetting('default_perm_room');
-		$permanent_room->setInfo($this->pluginObj->txt('permanent_room_info'));
-		$radio_time_type->addOption($permanent_room);
-
+		if(ilAdobeConnectServer::getSetting('enable_perm_room', '1'))
+		{
+			$permanent_room = new ilRadioOption($this->pluginObj->txt('permanent_room'), 'permanent_room');
+			$permanent_room->setInfo($this->pluginObj->txt('permanent_room_info'));
+			$radio_time_type->addOption($permanent_room);
+		}
 		// option: date selection
 		$opt_date = new ilRadioOption( $this->pluginObj->txt('start_date'), 'date_selection');
 		// start date
@@ -454,7 +453,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$values['access_level'] = $this->object->getPermissionId();
 
-		if($this->object->getPermanentRoom() == 1)
+		if($this->object->getPermanentRoom() == 1 && ilAdobeConnectServer::getSetting('enable_perm_room', '1'))
 		{
 			$values['time_type_selection'] = 'permanent_room';
 		}
@@ -491,7 +490,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$duration = $this->form->getInput("duration");
 
-		if($this->form->getInput('time_type_selection') == 'permanent_room')
+		if($this->form->getInput('time_type_selection') == 'permanent_room' && ilAdobeConnectServer::getSetting('enable_perm_room', '1'))
 		{
 			$durationValid = true;
 		}
@@ -538,7 +537,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->object->setDescription($this->form->getInput("desc"));
 			$this->object->setInstructions($this->form->getInput('instructions'));
 			$this->object->setContactInfo($this->form->getInput('contact_info'));
-			$this->object->setPermanentRoom($this->form->getInput('time_type_selection') == 'permanent_room' ?  1 : 0 );
+			
+			$enable_perm_room = (ilAdobeConnectServer::getSetting('enable_perm_room','1') && $this->form->getInput('time_type_selection') == 'permanent_room') ? true: false;
+			$this->object->setPermanentRoom( $enable_perm_room ?  1 : 0 );
 
 			$this->object->setReadContents((int)$this->form->getInput('read_contents'));
 			$this->object->setReadRecords((int)$this->form->getInput('read_records'));
@@ -550,7 +551,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			}
 			$this->object->setPermission( $access_level);
 
-			if(!$time_mismatch || $this->form->getInput('time_type_selection') == 'permanent_room')
+			if(!$time_mismatch || ($this->form->getInput('time_type_selection') == 'permanent_room' && ilAdobeConnectServer::getSetting('enable_perm_room', '1') ))
 			{
 				$this->object->setStartDate($this->form->getItemByPostVar("start_date")->getDate());
 				$duration = $this->form->getInput("duration");
@@ -1222,7 +1223,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$gallery_gui->executeCommand();
 		
 		$tpl->getStandardTemplate();
-		$tpl->show();
 		
 		return;
 	}
@@ -2434,7 +2434,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	{
 		global $ilUser;
 
-
 		$settings = ilAdobeConnectServer::_getInstance();
 		//Login User - this creates a user if he not exists.
 		if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI)
@@ -2504,13 +2503,15 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$owner->setValue(ilObjUser::_lookupLogin($ilUser->getId()));
 
 		$radio_time_type = new ilRadioGroupInputGUI($this->pluginObj->txt('time_type_selection'), 'time_type_selection');
-
+		
 		// option: permanent room
-		$permanent_room = new ilRadioOption( $this->pluginObj->txt('permanent_room'), 'permanent_room');
-		$permanent_room_is_enabled = ilAdobeConnectServer::getSetting('default_perm_room');
-		$permanent_room->setInfo($this->pluginObj->txt('permanent_room_info'));
-		$radio_time_type->addOption($permanent_room);
-
+		if(ilAdobeConnectServer::getSetting('enable_perm_room','1'))
+		{
+			$permanent_room            = new ilRadioOption($this->pluginObj->txt('permanent_room'), 'permanent_room');
+			$permanent_room->setInfo($this->pluginObj->txt('permanent_room_info'));
+			$radio_time_type->addOption($permanent_room);
+			$radio_time_type->setValue('permanent_room');
+		}
 		// option: date selection
 		$opt_date = new ilRadioOption( $this->pluginObj->txt('start_date'), 'date_selection');
 		if($template_settings['start_date']['hide'] == '0')
@@ -2538,7 +2539,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		}
 		$radio_time_type->addOption($opt_date);
 		$radio_time_type->setRequired(true);
-		$radio_time_type->setValue('permanent_room');
+		if(!ilAdobeConnectServer::getSetting('enable_perm_room','1'))
+		{
+			$radio_time_type->setValue('date_selection');
+		}
 
 		// access-level of the meeting room
 		$radio_access_level = new ilRadioGroupInputGUI($this->pluginObj->txt('access'), 'access_level');
@@ -2550,8 +2554,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$radio_access_level->addOption($opt_protected);
 		$radio_access_level->addOption($opt_public);
 		$radio_access_level->setValue( ilObjAdobeConnect::ACCESS_LEVEL_PROTECTED);
-
-
+		
 		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
 		$ilAdobeConnectUser = new ilAdobeConnectUserUtil($this->user->getId());
 		$ilAdobeConnectUser->ensureAccountExistance();
@@ -2670,7 +2673,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$instructions_2->setRows(self::CREATION_FORM_TA_ROWS);
 			$instructions_2->setCols(self::CREATION_FORM_TA_COLS);
 			$form->addItem($instructions_2);
-			if($permanent_room_is_enabled)
+			if(ilAdobeConnectServer::getSetting('default_perm_room') && ilAdobeConnectServer::getSetting('enable_perm_room', '1') )
 			{
 				$info_text =  $this->pluginObj->txt('smpl_permanent_room_enabled');
 			}
@@ -2872,7 +2875,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				}
 				else
 				{
-					if($form->getInput('time_type_selection') == 'permanent_room')
+					if($form->getInput('time_type_selection') == 'permanent_room' && ilAdobeConnectServer::getSetting('enable_perm_room', '1') )
 					{
 						$duration['hh'] = 2;
 						$duration['mm'] = 0;
@@ -3237,7 +3240,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$info = new ilInfoScreenGUI($this);
 		$info->removeFormAction();
 		$info->addSection($this->pluginObj->txt('general'));
-		if($this->object->getPermanentRoom() == 1)
+		if($this->object->getPermanentRoom() == 1 && ilAdobeConnectServer::getSetting('enable_perm_room', '1') )
 		{
 			$duration_text = $this->pluginObj->txt('permanent_room');
 		}
