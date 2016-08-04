@@ -9,11 +9,11 @@ include_once("./Services/Calendar/classes/class.ilDateTime.php");
 
 /**
  * Main application class for Adobe Connect repository object
- * @author Nadia Ahmad <nahmad@databay.de>
+ * @author Nadia Matuschek <nmatuschek@databay.de>
  */
 class ilObjAdobeConnect extends ilObjectPlugin
 {
-
+	
 	const ACCESS_LEVEL_PRIVATE = 'denied';  // no guests !
 	const ACCESS_LEVEL_PROTECTED = 'remove';
 	const ACCESS_LEVEL_PUBLIC = 'view-hidden';
@@ -103,15 +103,39 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 * @var String
 	 */
 	private $adminPass;
-
+	
+	/**
+	 * @var null|void
+	 */
 	public $externalLogin;
-
+	/**
+	 * @var ilAdobeConnectDfnXMLAPI|ilAdobeConnectXMLAPI|ilSwitchAaiXMLAPI
+	 */
+	public $xmlApi;
+	
+	/**
+	 * @var
+	 */
 	private $permission;
-
+	
+	/**
+	 * @var null
+	 */
 	public $assignment_mode = null;
+	/**
+	 * @var null
+	 */
 	public $end_date = null;
-
+	
+	/**
+	 * @var null
+	 */
 	public $pluginObj = null;
+	
+	/**
+	 * @var null
+	 */
+	public $participants = null;
 	
 	/**
 	 * Constructor
@@ -142,7 +166,38 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	
 		$this->xmlApi = ilXMLApiFactory::getApiByAuthMode();
 	}
-
+	
+	/**
+	 * 
+	 */
+	private function initParticipantsObject()
+	{
+		if($this->getRefId() > 0)
+		{
+			global $tree;
+			
+			$this->pluginObj->includeClass('class.ilAdobeConnectParticipants.php');
+			
+			$parent_crs_ref     = $tree->checkForParentType($this->getRefId(), 'crs');
+			$parent_grp_ref     = $tree->checkForParentType($this->getRefId(), 'grp');
+			$object_id          = ilObject::_lookupObjectId($parent_grp_ref ? $parent_grp_ref : $parent_crs_ref);
+			$this->participants = ilAdobeConnectParticipants::getInstanceByObjId($object_id);
+		}
+	}
+	
+	/**
+	 * @return ilAdobeConnectParticipants|null
+	 */
+	public function getParticipantsObject()
+	{
+		if(!$this->participants instanceof ilAdobeConnectParticipants)
+		{
+			$this->initParticipantsObject();
+		}
+		
+		return $this->participants;
+	}
+	
 	/**
 	 * @param int $user_id
 	 * @return null|void
@@ -482,7 +537,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 * @throws ilException
 	 */
 
-	public function publishCreationAC($obj_id, $title, $description, $start_date, $end_date, $instructions, $contact_info, $permanent_room, $access_level = ACCESS_LEVEL_PROTECTED, $read_contents, $read_records, $folder_id )
+	public function publishCreationAC($obj_id, $title, $description, $start_date, $end_date, $instructions, $contact_info, $permanent_room, $access_level = self::ACCESS_LEVEL_PROTECTED, $read_contents, $read_records, $folder_id )
 	{
 		/**
 		 * @var $ilDB   ilDB
@@ -599,42 +654,19 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function addCrsGrpMembers($ref_id, $sco_id, $member_ids = null)
 	{
-		global $tree;
-		$parent_crs_ref = $tree->checkForParentType($ref_id, 'crs');
-		$parent_grp_ref = $tree->checkForParentType($ref_id, 'grp');
-		$node_data = $tree->getNodeData($ref_id);
-		$parent_ref = $node_data['parent'];
-
-		$type   = null;
-		$obj_id = 0;
-
-		if($parent_crs_ref && $parent_crs_ref == $parent_ref)
-		{
-			$obj_id = ilObject::_lookupObjectId($parent_crs_ref);
-			include_once 'Modules/Course/classes/class.ilCourseParticipants.php';
-			$oParticipants = ilCourseParticipants::_getInstanceByObjId($obj_id);
-			$type          = 'crs';
-		}
-		else if($parent_grp_ref && $parent_grp_ref == $parent_ref)
-		{
-			$obj_id = ilObject::_lookupObjectId($parent_grp_ref);
-			include_once 'Modules/Group/classes/class.ilGroupParticipants.php';
-			$oParticipants = ilGroupParticipants::_getInstanceByObjId($obj_id);
-			$type          = 'grp';
-		}
-
-		if(!in_array($type, array('crs', 'grp')))
+		$oParticipants = $this->getParticipantsObject();
+		if(!$oParticipants)
 		{
 			return;
 		}
-
+		
 		$role_map = ilAdobeConnectServer::getRoleMap();
 
 		/** @var $oParticipants  ilGroupParticipants | ilCourseParticipants */
 		$admins  = $oParticipants->getAdmins();
 		$tutors  = $oParticipants->getTutors();
 		$members = $oParticipants->getMembers();
-
+		
 		if(is_array($member_ids) && count($member_ids) > 0)
 		{
 			$all_participants = $member_ids;
@@ -689,7 +721,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				// local member table
 				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
 
-				$status = $role_map[$type . '_admin'];
+				$status = $role_map[$oParticipants->getType() . '_admin'];
 
 				$xavcMemberObj->setStatus($status);
 				$xavcMemberObj->setScoId($sco_id);
@@ -719,7 +751,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				// local member table
 				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
 
-				$status = $role_map[$type . '_tutor'];
+				$status = $role_map[$oParticipants->getType() . '_tutor'];
 
 				$xavcMemberObj->setStatus($status);
 				$xavcMemberObj->setScoId($sco_id);
@@ -748,7 +780,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				// local member table
 				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
 
-				$status = $role_map[$type . '_member'];
+				$status = $role_map[$oParticipants->getType() . '_member'];
 
 				$xavcMemberObj->setStatus($status);
 				$xavcMemberObj->setScoId($sco_id);
@@ -765,7 +797,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
 			}
 
-			$owner_id = ilObject::_lookupOwner($obj_id);
+			$owner_id = ilObject::_lookupOwner($oParticipants->getObjId());
 
 			$xavcRoles->addAdministratorRole($owner_id);
 
@@ -773,7 +805,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			// local member table
 			$xavcMemberObj = new ilXAVCMembers($ref_id, $owner_id);
 
-			$status = $role_map[$type . '_owner'];
+			$status = $role_map[$oParticipants->getType() . '_owner'];
 			$xavcMemberObj->setStatus($status);
 
 			$xavcMemberObj->setScoId($sco_id);
@@ -884,6 +916,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			
 			$this->access_level = $this->xmlApi->getPermissionId($this->sco_id, $session);
 		}
+		$this->initParticipantsObject();
 	}
 
 	/**
@@ -1226,7 +1259,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	/**
 	 *  Reads contents from Adobe Connect server
 	 * 
-	 * @param string null|content|record $by_type
+	 * @param string $by_type null|content|record 
 	 * @return bool
 	 */
 	public function readContents($by_type = NULL)
@@ -1674,4 +1707,3 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		return $icons;
 	}
 }
-?>
