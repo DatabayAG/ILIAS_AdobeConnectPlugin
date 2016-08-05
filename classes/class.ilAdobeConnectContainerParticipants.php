@@ -3,10 +3,10 @@
 include_once('./Services/Membership/classes/class.ilParticipants.php');
 
 /**
- * Class ilAdobeConnectParticipants
+ * Class ilAdobeConnectContainerParticipants
  * @author Nadia Matuschek <nmatuschek@databay.de>
  */
-class ilAdobeConnectParticipants extends ilParticipants
+class ilAdobeConnectContainerParticipants extends ilParticipants
 {
 	/**
 	 * @param int $a_obj_id
@@ -30,7 +30,8 @@ class ilAdobeConnectParticipants extends ilParticipants
 				return ilSessionParticipants::_getInstanceByObjId($a_obj_id);
 			
 			default:
-				return NULL;
+				include_once 'class.ilAdobeConnectParticipantsNullObject.php';
+				return new ilAdobeConnectParticipantsNullObject();
 		}
 	}
 }
