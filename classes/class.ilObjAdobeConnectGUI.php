@@ -244,7 +244,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	*/
 	public function getStandardCmd()
 	{
-//		return 'showContent';
 	}
 
 	/**
@@ -327,7 +326,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				{
 					$this->tabs->addSubTab("editParticipants",$lng->txt("crs_member_administration"),$this->ctrl->getLinkTarget($this,'editParticipants'));
 
-					if( !ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') && $this->object->getParticipantsObject() != null)
+					if( !ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') && count($this->object->getParticipantsObject()->getParticipants()) > 0)
 					{
 						$this->tabs->addSubTab("addCrsGrpMembers",$this->txt("add_crs_grp_members"),$this->ctrl->getLinkTarget($this,'addCrsGrpMembers'));
 					}
@@ -689,8 +688,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
             $settings = ilAdobeConnectServer::_getInstance();
             if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI)
             {
-//                $quota = new ilAdobeConnectQuota();
-
                 //@Todo MST check this IF-Statement
                 if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink()))
                 {
@@ -722,8 +719,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                 $ilAdobeConnectUser->ensureAccountExistance();
 
                 $xavc_login = $ilAdobeConnectUser->getXAVCLogin();
-
-//                $quota = new ilAdobeConnectQuota();
 
                 if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink())
                     && $this->object->isParticipant( $xavc_login ))
@@ -1358,7 +1353,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$type          = '';
 		$owner         = 0;
 
-		if($this->object->getParticipantsObject() instanceof ilParticipants)
+		if(count($this->object->getParticipantsObject()->getParticipants()) > 0)
 		{
 			$user_is_admin = $this->object->getParticipantsObject()->isAdmin($user_id);
 			$user_is_tutor = $this->object->getParticipantsObject()->isTutor($user_id);
@@ -3010,7 +3005,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$my_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.meeting_participant_table.html", true, true);
 
 		$has_access = ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_ADD_PARTICIPANTS);
-		if($this->object->getParticipantsObject() == null && $has_access)
+		if(count($this->object->getParticipantsObject()->getParticipants()) == 0 && $has_access)
 		{
 			global $ilToolbar;
 
@@ -3068,7 +3063,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 
-		if ($this->object->getParticipantsObject())
+		if (count($this->object->getParticipantsObject()->getParticipants()) > 0 )
 		{
 			$sco_id = ilObjAdobeConnect::_lookupScoId(ilObject::_lookupObjectId($this->object->getRefId()));
 			$current_member_ids = ilXAVCMembers::getMemberIds($this->object->getRefId());

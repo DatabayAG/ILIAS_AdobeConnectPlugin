@@ -176,21 +176,25 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		{
 			global $tree;
 			
-			$this->pluginObj->includeClass('class.ilAdobeConnectParticipants.php');
+			$this->pluginObj->includeClass('class.ilAdobeConnectContainerParticipants.php');
 			
-			$parent_crs_ref     = $tree->checkForParentType($this->getRefId(), 'crs');
-			$parent_grp_ref     = $tree->checkForParentType($this->getRefId(), 'grp');
-			$object_id          = ilObject::_lookupObjectId($parent_grp_ref ? $parent_grp_ref : $parent_crs_ref);
-			$this->participants = ilAdobeConnectParticipants::getInstanceByObjId($object_id);
+			$parent_ref = $tree->checkForParentType($this->getRefId(), 'grp');
+			if(!$parent_ref)
+			{
+				$parent_ref = $tree->checkForParentType($this->getRefId(), 'crs');
+			}
+
+			$object_id          = ilObject::_lookupObjectId($parent_ref);
+			$this->participants = ilAdobeConnectContainerParticipants::getInstanceByObjId($object_id);
 		}
 	}
 	
 	/**
-	 * @return ilAdobeConnectParticipants|null
+	 * @return ilAdobeConnectContainerParticipants|null
 	 */
 	public function getParticipantsObject()
 	{
-		if(!$this->participants instanceof ilAdobeConnectParticipants)
+		if(!$this->participants instanceof ilAdobeConnectContainerParticipants)
 		{
 			$this->initParticipantsObject();
 		}
@@ -495,17 +499,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 					$session
 				);
 		}
-//// @todo delete old meeting-participants ?
-//		$oldParticipants = $this->xmlApi->getMeetingsParticipants($sco_id, $session);
-//		foreach($oldParticipants as $oP)
-//		{
-//			$this->deleteParticipant($oP['login']);
-//		}
 
 		$this->xmlApi->updateMeetingParticipant($sco_id, $this->externalLogin, $session, 'host');
 
-//		$this->xmlApi->setMeetingPublic($sco_id);
-		
 		$start_date = time();
 		$end_date = strtotime('+2 hours');			
 
@@ -976,10 +972,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
 		$ilDB->manipulateF('DELETE FROM rep_robj_xavc_members WHERE sco_id = %s',
 			array('integer'), array($this->sco_id));
-
-//		$ilDB->manipulateF('DELETE FROM rep_robj_xavc_invite WHERE sco_id = %s',
-//						   array('integer'), array($this->sco_id));
-
 	}
 
 	/**
