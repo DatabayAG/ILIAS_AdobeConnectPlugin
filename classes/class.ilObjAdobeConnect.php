@@ -651,11 +651,11 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	public function addCrsGrpMembers($ref_id, $sco_id, $member_ids = null)
 	{
 		$oParticipants = $this->getParticipantsObject();
-		if(!$oParticipants)
+		if(count($oParticipants->getParticipants()) == 0)
 		{
 			return;
 		}
-		
+
 		$role_map = ilAdobeConnectServer::getRoleMap();
 
 		/** @var $oParticipants  ilGroupParticipants | ilCourseParticipants */
