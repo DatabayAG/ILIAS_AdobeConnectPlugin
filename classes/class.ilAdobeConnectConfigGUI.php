@@ -108,6 +108,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 		$this->form->addItem($form_login);
 
 		$form_passwd = new ilPasswordInputGUI($lng->txt('password'), 'password');
+		$form_passwd->setSkipSyntaxCheck(true);
 		$form_passwd->setRequired(true);
 		$form_passwd->setRetype(false);
 		$this->form->addItem($form_passwd);
