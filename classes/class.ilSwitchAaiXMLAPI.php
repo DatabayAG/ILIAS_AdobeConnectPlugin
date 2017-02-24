@@ -19,10 +19,12 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	/**
 	 * Logs in user on Adobe Connect server. This is done by redirection to the cave server.
 	 * @ilObjUser $ilUser
-	 * @param  $user
+	 * @param null $user
+	 * @param null $pass
+	 * @param null $session
 	 * @return String       Session id
 	 */
-	public function externalLogin()
+	public function externalLogin($user = null, $pass = null, $session = null )
 	{
 		/*
 		 * @var $ilUser ilObjUser

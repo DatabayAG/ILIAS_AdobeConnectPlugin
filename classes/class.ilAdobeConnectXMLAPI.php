@@ -181,11 +181,12 @@ class ilAdobeConnectXMLAPI
      *  Logs in user on Adobe Connect server using external authentication
      * 
      * @ilObjUser $ilUser
-     *
-     * @param  $user
-     * @return String       Session id
-     */
-    public function externalLogin($user)
+	 * @param null $user
+	 * @param null $pass
+	 * @param null $session
+	 * @return bool|mixed|null|String
+	 */
+    public function externalLogin($user = null, $pass = null, $session = null )
     {
 		if($this->adcInfo->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_HEADER)
 		{
