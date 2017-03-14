@@ -258,8 +258,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 		$this->initAdobeSettingsForm();
 		if($this->form->checkInput())
 		{
-			$url = parse_url($this->form->getInput('server'));
-			$url_2 = parse_url($this->form->getInput('presentation_server'));
+			$url = parse_url(trim($this->form->getInput('server')));
+			$url_2 = parse_url(trim($this->form->getInput('presentation_server')));
 
 			if((ilUtil::isIPv4($url['host']) || ilUtil::isDN($url['host'])) 
 			&& (ilUtil::isIPv4($url_2['host']) || ilUtil::isDN($url_2['host'])))
@@ -292,12 +292,12 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 				// Set values from form into database
 				foreach($params as $key => $v)
 				{
-					$value = $this->form->getInput($key);
+					$value = trim($this->form->getInput($key));
 					if(in_array($key, array('server', 'presentation_server')) && '/' == substr($value, -1))
 					{
 						$value = substr($value, 0, -1);
 					}
-					ilAdobeConnectServer::setSetting($key, $value);
+					ilAdobeConnectServer::setSetting($key, trim($value));
 				}
 				ilAdobeConnectServer::setSetting('auth_mode_switchaai_account_type',serialize($this->form->getInput('auth_mode_switchaai_account_type')));
 
@@ -318,7 +318,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                             throw new ilException('err_invalid_server');
                         }
 
-                        if(!$xmlAPI->login($this->form->getInput('login'), $this->form->getInput('password'), $session))
+                        if(!$xmlAPI->login(trim($this->form->getInput('login')), trim($this->form->getInput('password')), $session))
                         {
                             throw new ilException('err_authentication_failed');
                         }
@@ -337,7 +337,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 					// rollback
 					foreach($params as $key => $val)
 					{						
-						ilAdobeConnectServer::setSetting($key, $val);
+						ilAdobeConnectServer::setSetting($key, trim($val));
 					}
 					
 					ilAdobeConnectServer::_getInstance()->commitSettings();
