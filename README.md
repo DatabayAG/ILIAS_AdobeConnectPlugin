@@ -13,6 +13,9 @@ ILIAS Plugin for Adobe Connect Virtual Classrooms
 
 ### General
 * Please keep in mind that the *Adobe Connect-Registration-Mode* cannot be changed (only by direct database access) after it is selected once.
+
+![Login Policy](https://mjansendatabay.github.io/ILIAS/Plugins/AdobeConnect/loginpolicy.png)
+
 * An API connection by a proxy is currently not implemented.
 
 ### Own Server Mode
