@@ -507,26 +507,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		if($formValid && $durationValid)
 		{
-			$newStartDate = $this->form->getItemByPostVar("start_date")->getDate();
-			$newDuration = $this->form->getInput("duration");
-			
-			$unix_newStartDate = $newStartDate->getUnixTime();
-			$newEndDate = new ilDateTime($unix_newStartDate + $newDuration['hh'] * 3600 + $newDuration['mm'] * 60, IL_CAL_UNIX);
-
-			if(!ilDateTime::_equals($newStartDate, $oldObject->getStartDate()) || !ilDateTime::_equals($newEndDate, $oldObject->getEndDate()))
-			{
-				$serverConfig = ilAdobeConnectServer::_getInstance();
-
-//				$minTime = new ilDateTime(time() + $serverConfig->getScheduleLeadTime() * 60 * 60, IL_CAL_UNIX);
-
-		/*		if(ilDateTime::_before($newStartDate, $minTime))
-				{
-					ilUtil::sendFailure(sprintf($this->pluginObj->txt('xavc_lead_time_mismatch'), ilDatePresentation::formatDate($minTime)), true);
-					$time_mismatch = true;
-				}
-		*/
-			}
-
 			$this->object->setTitle($this->form->getInput("title"));
 			$this->object->setDescription($this->form->getInput("desc"));
 			$this->object->setInstructions($this->form->getInput('instructions'));
@@ -547,7 +527,18 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 			if(!$time_mismatch || ($this->form->getInput('time_type_selection') == 'permanent_room' && ilAdobeConnectServer::getSetting('enable_perm_room', '1') ))
 			{
-				$this->object->setStartDate($this->form->getItemByPostVar("start_date")->getDate());
+				$start_date_gui = $this->form->getItemByPostVar("start_date");
+				
+				if($start_date_gui->getDate() == NULL) 
+				{
+					$start_date_obj = new ilDateTime(time(), IL_CAL_UNIX);
+				}
+				else
+				{
+					$start_date_obj = $start_date_gui->getDate();
+				}
+				
+				$this->object->setStartDate($start_date_obj);
 				$duration = $this->form->getInput("duration");
 				$this->object->setDuration(array("hours"=> $duration["hh"], "minutes"=> $duration["mm"]));
 			}

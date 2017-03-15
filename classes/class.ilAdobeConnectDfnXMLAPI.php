@@ -114,8 +114,14 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			return false;
 		}
 	}
-
-	public function externalLogin($user, $pass, $session)
+	
+	/**
+	 * @param null $user
+	 * @param null $pass
+	 * @param null $session
+	 * @return bool|string
+	 */
+	public function externalLogin($user = null, $pass = null, $session = null )
 	{
 		/**
 		 * @var $ilLog ilLog

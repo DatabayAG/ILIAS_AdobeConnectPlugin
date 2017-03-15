@@ -104,7 +104,7 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
 	/**
 	 * @param array $row
 	 */
-	final protected function fillRow(array $row)
+	final protected function fillRow($row)
 	{
 		$this->prepareRow($row);
 

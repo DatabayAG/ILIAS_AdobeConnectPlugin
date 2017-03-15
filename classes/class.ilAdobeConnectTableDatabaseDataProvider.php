@@ -17,7 +17,7 @@ abstract class ilAdobeConnectTableDatabaseDataProvider implements ilAdobeConnect
 	/**
 	 * @param ilDB      $db
 	 */
-	public function __construct(ilDB $db, $parent_obj)
+	public function __construct($db, $parent_obj)
 	{
 		$this->db = $db;
 		$this->parent_obj = $parent_obj;
