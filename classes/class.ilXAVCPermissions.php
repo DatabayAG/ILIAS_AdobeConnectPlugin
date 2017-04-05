@@ -6,10 +6,9 @@ class ilXAVCPermissions
 	
 	public function __construct()
 	{
-		$this->getPermissionsArray();
 	}
 
-	public function getPermissionsArray()
+	public static function getPermissionsArray()
 	{
 		global $ilDB;
 		
