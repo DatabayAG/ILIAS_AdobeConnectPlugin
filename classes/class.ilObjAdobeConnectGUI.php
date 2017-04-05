@@ -456,7 +456,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$values['time_type_selection'] = 'date_selection';
 		}
         $duration = $this->object->getDuration();
-
+		$values["start_date"] = $this->object->getStartDate();
         $values["duration"] = array("hh"=>$duration["hours"],"mm"=>$duration["minutes"]);
 		$values['instructions'] = $this->object->getInstructions();
 
@@ -507,6 +507,19 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		if($formValid && $durationValid)
 		{
+			$new_start_date_input = $this->form->getItemByPostVar('start_date');
+			if(
+				$new_start_date_input instanceof ilDateTimeInputGUI &&
+				$new_start_date_input->getDate() instanceof ilDateTime
+			)
+			{
+				$newStartDate = $new_start_date_input->getDate();
+			}
+			else
+			{
+				$newStartDate = new ilDateTime(time(), IL_CAL_UNIX);
+			}
+
 			$this->object->setTitle($this->form->getInput("title"));
 			$this->object->setDescription($this->form->getInput("desc"));
 			$this->object->setInstructions($this->form->getInput('instructions'));
@@ -527,18 +540,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 			if(!$time_mismatch || ($this->form->getInput('time_type_selection') == 'permanent_room' && ilAdobeConnectServer::getSetting('enable_perm_room', '1') ))
 			{
-				$start_date_gui = $this->form->getItemByPostVar("start_date");
-				
-				if($start_date_gui->getDate() == NULL) 
-				{
-					$start_date_obj = new ilDateTime(time(), IL_CAL_UNIX);
-				}
-				else
-				{
-					$start_date_obj = $start_date_gui->getDate();
-				}
-				
-				$this->object->setStartDate($start_date_obj);
+				$this->object->setStartDate($newStartDate);
 				$duration = $this->form->getInput("duration");
 				$this->object->setDuration(array("hours"=> $duration["hh"], "minutes"=> $duration["mm"]));
 			}
@@ -3324,12 +3326,14 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 						|| $has_write_permission
 					)
 					{
-						$has_access = true;
-						$tpl_sub_button = new ilTemplate("Services/InfoScreen/templates/default/tpl.submitbuttons.html", true, true);
-						$tpl_sub_button->setVariable('BTN_NAME', $this->txt("add_new_content"));
-						$tpl_sub_button->setVariable('BTN_COMMAND', 'showAddContent');
+						require_once 'Services/UIComponent/Button/classes/class.ilSubmitButton.php';
+						$submitBtn = ilSubmitButton::getInstance();
+						$submitBtn->setCaption($this->txt("add_new_content"), false);
+						$submitBtn->setCommand('showAddContent');
 
-						$info->addProperty('', $tpl_sub_button->get());
+						$has_access = true;
+
+						$info->addProperty('', $submitBtn->render());
 					}
 					$info->addProperty('', $this->viewContents($has_access));
 				}

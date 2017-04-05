@@ -394,10 +394,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
 		try
 		{
-			if(isset($_POST['start_date']) && $template_settings['start_date']['hide'] == '0')
+			if(isset($_POST['start_date']) && strlen($_POST['start_date']) && $template_settings['start_date']['hide'] == '0')
 			{
-				//start_date
-				$this->start_date = new ilDateTime($_POST['start_date']['date'] . ' ' . $_POST['start_date']['time'], IL_CAL_DATETIME);
+				$this->start_date = new ilDateTime($_POST['start_date'], IL_CAL_DATETIME);
 			}
 			else
 			{
