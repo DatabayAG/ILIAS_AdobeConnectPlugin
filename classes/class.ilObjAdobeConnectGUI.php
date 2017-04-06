@@ -1625,69 +1625,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->object->updateParticipant(ilXAVCMembers::_lookupXAVCLogin($a_user_id),ilXAVCMembers::_lookupStatus($a_user_id, $this->object->getRefId()));
 			ilUtil::sendInfo($this->pluginObj->txt('is_already_participant'));
 		}
-    }
-
-//
-///
-//	/**
-//     *
-//     * Shows contents in edit mode
-//     *
-//     * @access public
-//     *
-//     */
-//    public function editContents()
-//    {
-//		/**
-//		 * @var $ilToolbar ilToolbarGUI
-//		 */
-//		global $ilToolbar;
-//
-//    	$this->pluginObj->includeClass('class.ilAdobeConnectContentTableGUI.php');
-//
-//    	$ilToolbar->addButton($this->txt('add_new_content'), $this->ctrl->getLinkTarget($this, 'showAddContent'));
-//
-//		$server = ilAdobeConnectServer::getPresentationUrl();
-//
-//		$this->tabs->activateTab('contents');
-//        $this->__setSubTabs('contents');
-//        $this->tabs->activateSubTab('editContents');
-//
-//        $my_tpl = new ilTemplate($this->pluginObj->getDirectory().'/templates/tpl.edit_content.html', true, true);
-//
-//        $this->object->readContents();
-//        $contents = $this->object->searchContent(array('type' => 'content'));
-//        if(!count($contents))
-//		{
-//			ilUtil::sendInfo($this->txt('no_contents_created'));
-//            $this->tpl->setContent($my_tpl->get());
-//			return true;
-//		}
-//
-//		$table = new ilAdobeConnectContentTableGUI($this, 'editContents');
-//		$table->setViewMode(ilAdobeConnectContentTableGUI::MODE_EDIT);
-//		$table->init();
-//		$data = array();
-//		$i = 0;
-//		foreach($contents as $content)
-//		{
-//			$data[$i]['chb'] = ilUtil::formCheckbox(0, 'content_id[]', $content->getAttributes()->getAttribute('sco-id'));
-//			$data[$i]['title'] = $content->getAttributes()->getAttribute('name');
-//			$data[$i]['link'] = $server.$content->getAttributes()->getAttribute('url');
-//			$data[$i]['date_created'] = $content->getAttributes()->getAttribute('date-created')->getUnixTime();
-//			$data[$i]['description'] = $content->getAttributes()->getAttribute('description');
-//			$data[$i]['edit_alt'] = $this->txt('edit');
-//			$this->ctrl->setParameter($this, 'content_id', $content->getAttributes()->getAttribute('sco-id'));
-//			$data[$i]['edit_link'] = $this->ctrl->getLinkTarget($this, 'editItem');
-//
-//			++$i;
-//		}
-//		$table->setData($data);
-//
-//		$my_tpl->setVariable('CONTENT_TABLE', $table->getHTML());
-//
-//        $this->tpl->setContent($my_tpl->get());
-//    }
+	}
 
     /**
      *
@@ -1773,6 +1711,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
 				curl_setopt($curl, CURLOPT_POSTFIELDS, array('file' => '@' . $target.'/'.$fdata['name']));
 				$postResult = curl_exec($curl);
+
+				$GLOBALS['ilLog']->write("AdobeConnect: addContent result ...");
+				$GLOBALS['ilLog']->write($postResult);
+
 				curl_close($curl);
 
 				@unlink($target.'/'.$fdata['name']);
@@ -2122,6 +2064,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					curl_setopt($curl, CURLOPT_POSTFIELDS, array('file' => '@' . $target. '/'. $fdata['name']));
 					$postResult = curl_exec($curl);
 					curl_close($curl);
+
+					$GLOBALS['ilLog']->write("AdobeConnect: updateContent result ...");
+					$GLOBALS['ilLog']->write($postResult);
 
 					@unlink($target.'/'.$fdata['name']);
 				}
