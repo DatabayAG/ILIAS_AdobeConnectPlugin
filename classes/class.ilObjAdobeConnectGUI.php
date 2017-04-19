@@ -409,8 +409,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$opt_date = new ilRadioOption( $this->pluginObj->txt('start_date'), 'date_selection');
 		// start date
         $sd = new ilDateTimeInputGUI($this->txt("start_date"), "start_date");
-		
-		$sd->setDate(new ilDateTime($this->object->getStartDate()->getUnixTime(), IL_CAL_UNIX));
 		$sd->setShowTime(true);
         $sd->setInfo($this->txt("info_start_date"));
         $sd->setRequired(true);
@@ -456,7 +454,17 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$values['time_type_selection'] = 'date_selection';
 		}
         $duration = $this->object->getDuration();
-		$values["start_date"] = $this->object->getStartDate();
+		if(version_compare(ILIAS_VERSION_NUMERIC, '5.2.0', '>='))
+		{
+			$values["start_date"] = $this->object->getStartDate();
+		}
+		else
+		{
+			$values["start_date"] = array(
+				'date' => date('Y-m-d', $this->object->getStartDate()->get(IL_CAL_UNIX)),
+				'time' => date('H:i:s', $this->object->getStartDate()->get(IL_CAL_UNIX))
+			);
+		}
         $values["duration"] = array("hh"=>$duration["hours"],"mm"=>$duration["minutes"]);
 		$values['instructions'] = $this->object->getInstructions();
 
@@ -3105,7 +3113,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		if(($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink())
 			&& $this->object->isParticipant($xavc_login))
 		{
-
 			if(!$quota->mayStartScheduledMeeting($this->object->getScoId()))
 			{
 				$href = $this->txt("meeting_not_available_no_slots");
