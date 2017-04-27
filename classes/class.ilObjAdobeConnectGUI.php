@@ -26,7 +26,7 @@ require_once './Services/User/classes/class.ilUsersGalleryGUI.php';
 *   screens) and ilInfoScreenGUI (handles the info screen).
 *
 * @ilCtrl_isCalledBy ilObjAdobeConnectGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
-* @ilCtrl_Calls ilObjAdobeConnectGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI
+* @ilCtrl_Calls ilObjAdobeConnectGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI, ilUsersGalleryGUI
 *
 */
 class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPermissions
