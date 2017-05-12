@@ -1715,6 +1715,12 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			$curlFile = '@' . realpath($filePath);
 		}
 
+		$postData = array('file' => $curlFile);
+		if(strlen($title) > 0)
+		{
+			$postData['name'] = $title;
+		}
+
 		$curl = curl_init();
 		curl_setopt($curl, CURLOPT_VERBOSE, true);
 		curl_setopt($curl, CURLOPT_POST, true);
@@ -1722,7 +1728,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
 		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, array('file' => $curlFile));
+		curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
 		$postResult = curl_exec($curl);
 		curl_close($curl);
 
