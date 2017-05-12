@@ -1906,8 +1906,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->pluginObj->includeClass('class.ilAdobeConnectContentUploadException.php');
 
 			$fdata = $this->cform->getInput('file');
-			$target = dirname(ilUtil::ilTempnam());
-			ilUtil::moveUploadedFile($fdata['tmp_name'], $fdata['name'], $target.'/'.$fdata['name']);
+
+			$targetDir      = dirname(ilUtil::ilTempnam());
+			$targetFilePath = $targetDir . '/' . $fdata['name'];
+
+			ilUtil::moveUploadedFile($fdata['tmp_name'], $fdata['name'], $targetFilePath);
 			try
 			{
 				$filemame = strlen($this->cform->getInput('tit')) ? $this->cform->getInput('tit') : $fdata['name'];
@@ -1917,23 +1920,32 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					throw new ilAdobeConnectContentUploadException('add_cnt_err');
 				}
 
-				$curl = curl_init($url);
+				if(function_exists('curl_file_create'))
+				{ 
+					$curlFile = curl_file_create($targetFilePath);
+				}
+				else
+				{
+					$curlFile = '@' . realpath($targetFilePath);
+				}
+
+				$curl = curl_init();
 				curl_setopt($curl, CURLOPT_VERBOSE, true);
 				curl_setopt($curl, CURLOPT_POST, true);
 				curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-				# curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
 				curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
 				curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-				curl_setopt($curl, CURLOPT_POSTFIELDS, array('file' => '@' . $target.'/'.$fdata['name']));
+				curl_setopt($curl, CURLOPT_URL, $url);
+				curl_setopt($curl, CURLOPT_POSTFIELDS, array('file' => $curlFile));
 				$postResult = curl_exec($curl);
 				curl_close($curl);
 
-				@unlink($target.'/'.$fdata['name']);
+				@unlink($targetFilePath);
 				ilUtil::sendSuccess($this->txt('virtualClassroom_content_added'));
 			}
 			catch(ilAdobeConnectException $e)
 			{
-				@unlink($target.'/'.$fdata['name']);
+				@unlink($targetFilePath);
 				ilUtil::sendFailure($this->txt($e->getMessage()));
 				$this->cform->setValuesByPost();
 				return $this->showAddContent();
