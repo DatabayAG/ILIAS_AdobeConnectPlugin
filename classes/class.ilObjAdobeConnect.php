@@ -1710,4 +1710,35 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		}
 		return $icons;
 	}
+
+	/**
+	 * @param string $url
+	 * @param string $filePath
+	 * @param string $title
+	 */
+	public function uploadFile($url, $filePath, $title = '')
+	{
+		if(function_exists('curl_file_create'))
+		{
+			$curlFile = curl_file_create($filePath);
+		}
+		else
+		{
+			$curlFile = '@' . realpath($filePath);
+		}
+
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_VERBOSE, true);
+		curl_setopt($curl, CURLOPT_POST, true);
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		curl_setopt($curl, CURLOPT_URL, $url);
+		curl_setopt($curl, CURLOPT_POSTFIELDS, array('file' => $curlFile));
+		$postResult = curl_exec($curl);
+		curl_close($curl);
+
+		$GLOBALS['ilLog']->write("AdobeConnect: addContent result ...");
+		$GLOBALS['ilLog']->write($postResult);
+	}
 }

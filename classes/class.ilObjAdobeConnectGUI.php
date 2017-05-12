@@ -1713,29 +1713,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					throw new ilAdobeConnectContentUploadException('add_cnt_err');
 				}
 
-				if(function_exists('curl_file_create'))
-				{ 
-					$curlFile = curl_file_create($targetFilePath);
-				}
-				else
-				{
-					$curlFile = '@' . realpath($targetFilePath);
-				}
-
-				$curl = curl_init();
-				curl_setopt($curl, CURLOPT_VERBOSE, true);
-				curl_setopt($curl, CURLOPT_POST, true);
-				curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-				curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-				curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-				curl_setopt($curl, CURLOPT_URL, $url);
-				curl_setopt($curl, CURLOPT_POSTFIELDS, array('file' => $curlFile));
-				$postResult = curl_exec($curl);
-
-				$GLOBALS['ilLog']->write("AdobeConnect: addContent result ...");
-				$GLOBALS['ilLog']->write($postResult);
-
-				curl_close($curl);
+				$this->object->uploadFile($url, $targetFilePath);
 
 				@unlink($targetFilePath);
 				ilUtil::sendSuccess($this->txt('virtualClassroom_content_added'));
@@ -1989,26 +1967,15 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->pluginObj->includeClass('class.ilAdobeConnectDuplicateContentException.php');
 		try
 		{
-		    $curl = curl_init($this->object->addContent($object_title, ''));
-		    curl_setopt($curl, CURLOPT_VERBOSE, true);
-		    curl_setopt($curl, CURLOPT_POST, true);
-		    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		    #curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-		    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-		    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-		    curl_setopt($curl, CURL_UPLOAD, true);
-		    curl_setopt($curl, CURLOPT_POSTFIELDS, array('name'=> $object_title, 'file'=>'@'.$file));
-		    $postResult = curl_exec($curl);
-
-		    curl_close($curl);
-		    unset($_SESSION['contents']['search_result']);
+			$this->object->uploadFile($this->object->addContent($object_title, ''), $file, $object_title);
+			unset($_SESSION['contents']['search_result']);
 			ilUtil::sendSuccess($this->txt('virtualClassroom_content_added'));
-		    return $this->showContent();
+			return $this->showContent();
 		}
 		catch(ilAdobeConnectDuplicateContentException $e)
 		{
-		    ilUtil::sendFailure($this->txt($e->getMessage()));
-		    return $this->showFileSearchResult($_SESSION['contents']['search_result']);
+			ilUtil::sendFailure($this->txt($e->getMessage()));
+			return $this->showFileSearchResult($_SESSION['contents']['search_result']);
 		}
     }
 
@@ -2070,24 +2037,14 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				$target = dirname(ilUtil::ilTempnam());
 				ilUtil::moveUploadedFile($fdata['tmp_name'], $fdata['name'], $target.'/'.$fdata['name']);
 			}
+
 			try
 			{
 				$title = strlen($this->cform->getInput('tit')) ? $this->cform->getInput('tit') : $fdata['name'];
 				$this->object->updateContent((int)$_GET['content_id'], $title, $this->cform->getInput('des'));
 				if($fdata['name'] != '')
 				{
-					$curl = curl_init($this->object->uploadContent((int)$_GET['content_id']));
-					curl_setopt($curl, CURLOPT_VERBOSE, true);
-					curl_setopt($curl, CURLOPT_POST, true);
-					curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-					# curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
-					curl_setopt($curl, CURLOPT_POSTFIELDS, array('file' => '@' . $target. '/'. $fdata['name']));
-					$postResult = curl_exec($curl);
-					curl_close($curl);
-
-					$GLOBALS['ilLog']->write("AdobeConnect: updateContent result ...");
-					$GLOBALS['ilLog']->write($postResult);
-
+					$this->object->uploadFile($this->object->uploadContent((int)$_GET['content_id']), $target. '/'. $fdata['name']);
 					@unlink($target.'/'.$fdata['name']);
 				}
 				ilUtil::sendSuccess($this->txt('virtualClassroom_content_updated'), true);
