@@ -3131,7 +3131,15 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			}
 			else
 			{
-				$href = '<a href="' . $this->ctrl->getLinkTarget($this, 'performSso') . '" target="_blank" >' . $presentation_url . $this->object->getURL() . '</a>';
+				$href = '<a href="' . $presentation_url . $this->object->getURL() . '" target="_blank" >' . $presentation_url . $this->object->getURL() . '</a>';
+				$button_txt = $this->pluginObj->txt('enter_vc');
+				$button_target = ILIAS_HTTP_PATH."/". $this->ctrl->getLinkTarget($this, 'performSso', '', false, false);
+				$button_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.bigbutton.html", true, true);
+				$button_tpl->setVariable('BUTTON_TARGET', $button_target);
+				$button_tpl->setVariable('BUTTON_TEXT', $button_txt);
+				
+				$big_button = $button_tpl->get();
+				$info->addProperty('',$big_button."<br />");	
 			}
 		}
 		else
@@ -3141,7 +3149,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$info->addProperty($this->pluginObj->txt('duration'), $duration_text);
 		$info->addProperty($this->pluginObj->txt('meeting_url'), $href);
-
+		
 		$tpl->setContent($info->getHTML().$this->getPerformTriggerHtml());
 	}
 

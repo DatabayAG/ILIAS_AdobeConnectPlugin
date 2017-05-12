@@ -77,5 +77,13 @@
     <iframe style="display:none" src="{LOGOUT_URL}"></iframe><meta http-equiv="refresh" content="5; url={URL}" />
 </noscript>
 <p style="font-family:Verdana, Arial, Helvetica, sans-serif; font-size: .6em;">{INFO_TXT}</p>
+<!-- BEGIN on_load_code -->
+<script type="text/javascript">
+    il.Util.addOnLoad(function() {
+        <!-- BEGIN on_load_code_inner -->{OLCODE}
+        <!-- END on_load_code_inner -->
+    });
+</script>
+<!-- END on_load_code -->
 </body>
 </html>        
