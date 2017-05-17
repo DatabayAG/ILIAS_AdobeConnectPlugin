@@ -1818,6 +1818,7 @@ class ilAdobeConnectXMLAPI
 		$session = $this->getBreezeSession(false);
 		if($this->login($user, $pwd, $session))
 		{
+			$ilLog->write("Adobe Connect ".__METHOD__.": Successfully authenticated session (Id: ".$ilUser->getId()." | ".$ilUser->getLogin().").");
 			return $session;
 		}
 		else
@@ -1830,6 +1831,7 @@ class ilAdobeConnectXMLAPI
 
 				if($this->login($user, $pwd, $session))
 				{
+					$ilLog->write("Adobe Connect ".__METHOD__.": Successfully authenticated session (Id: ".$ilUser->getId()." | ".$ilUser->getLogin().").");
 					return $session;
 				}
 				else
