@@ -61,10 +61,9 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	}
 
 	/**
-	 * Requests a session id
-	 * @return  String  Session id or NULL if something is wrong
+	 * @inheritdoc
 	 */
-	public function getBreezeSession()
+	public function getBreezeSession($useCache = true)
 	{
 		//The BreezeSession is in the SWITCH-Case the Session of the user
 		return $this->externalLogin();
