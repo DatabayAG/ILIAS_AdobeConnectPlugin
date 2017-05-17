@@ -198,7 +198,7 @@ class ilAdobeConnectXMLAPI
 		}
         else // default: auth_mode_password
 		{ 
-			$auth_result = $this->usePasswordAuthentification($user);
+			$auth_result = $this->usePasswordAuthentication($user);
 			return $auth_result;
 		}
     }
@@ -243,49 +243,55 @@ class ilAdobeConnectXMLAPI
 		}
     }
 
-    /**
-     * Requests a session id
-     *
-     * @return  String        Session id or NULL if something is wrong
-     */
-    public function getBreezeSession()
-    {
-    	if(null !== self::$breeze_session)
-    	{
-    		return self::$breeze_session;
-        }
-    	
+	/**
+	 * @param bool $useCache
+	 * @return null|string
+	 */
+	public function getBreezeSession($useCache = true)
+	{
+		if(null !== self::$breeze_session && $useCache)
+		{
+			return self::$breeze_session;
+		}
+
 		global $ilLog;
 
 		$url = $this->getApiUrl(array('action' => 'common-info'));
-                
+
 		$ctx = stream_context_create(array(
-			'http' => array(
-			'timeout' => 4
+			'http'  => array(
+				'timeout' => 4
 			),
 			'https' => array(
-			'timeout' => 4
+				'timeout' => 4
 			)
 		));
 
 		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
+		$xml        = simplexml_load_string($xml_string);
 
-        if($xml && $xml->common->cookie!="")
-        {
-            self::$breeze_session = (string)$xml->common->cookie;            
-            return self::$breeze_session;
-        }
-        else
+		if($xml && $xml->common->cookie != "")
 		{
-			$ilLog->write('AdobeConnect getBreezeSession Request: '.$url);			
+			$session = (string)$xml->common->cookie;
+			if(!$useCache)
+			{
+				return $session;
+			}
+
+			self::$breeze_session = $session;
+			return self::$breeze_session;
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect getBreezeSession Request: ' . $url);
 			if($xml)
 			{
-				$ilLog->write('AdobeConnect getBreezeSession Response: '.$xml->asXML());
+				$ilLog->write('AdobeConnect getBreezeSession Response: ' . $xml->asXML());
 			}
-            return NULL;
+
+			return null;
 		}
-    }
+	}
 
 	/**
 	 *  Returns the id associated with the object type parameter
@@ -1792,7 +1798,7 @@ class ilAdobeConnectXMLAPI
 		return false;
 	}
 
-	private function usePasswordAuthentification($user)
+	private function usePasswordAuthentication($user)
 	{
 		/**
 		 * @var $ilUser ilObjUser
@@ -1800,10 +1806,11 @@ class ilAdobeConnectXMLAPI
 		 */
 		global $ilUser, $ilLog;
 
-		// Try ro read the adobe connect password
+		$ilLog->write("Adobe Connect ".__METHOD__.": Entered frontend user authentication.");
+
 		if(!($pwd = $ilUser->getPref('xavc_pwd')))
 		{
-			if ($this->changeUserPassword($user, $pwd = md5(  uniqid( microtime(), true ))))
+			if($this->changeUserPassword($user, $pwd = md5(uniqid(microtime(), true))))
 			{
 				$ilUser->setPref('xavc_pwd', $pwd);
 				$ilUser->writePrefs();
@@ -1815,21 +1822,20 @@ class ilAdobeConnectXMLAPI
 			}
 		}
 
-		self::$breeze_session = null;
-		$session = $this->getBreezeSession();
-
-		if ($this->login($user, $pwd, $session))
+		$session = $this->getBreezeSession(false);
+		if($this->login($user, $pwd, $session))
 		{
 			return $session;
 		}
 		else
 		{
-			if ($this->changeUserPassword($user, $pwd = md5(  uniqid( microtime(), true ))))
+			$ilLog->write("Adobe Connect ".__METHOD__.": First login attempt not permitted (Id: ".$ilUser->getId()." | ".$ilUser->getLogin()."). Will change random password for user '{$user}' on Adobe Connect server.");
+			if($this->changeUserPassword($user, $pwd = md5(uniqid(microtime(), true))))
 			{
 				$ilUser->setPref('xavc_pwd', $pwd);
 				$ilUser->writePrefs();
 
-				if ($this->login($user, $pwd, $session))
+				if($this->login($user, $pwd, $session))
 				{
 					return $session;
 				}

@@ -321,17 +321,17 @@ class ilAdobeConnectUserUtil
         }
     }
 
-    /**
-     *  Log in user on the Adobe Connect server
-     *
-     * @return String     Returns NULL if user doesn't exist on the server
-     */
-    public function loginUser()
-    {
-        $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
+	/**
+	 *  Log in user on the Adobe Connect server
+	 * @return String     Returns NULL if user doesn't exist on the server
+	 */
+	public function loginUser()
+	{
+		$xmlAPI  = ilXMLApiFactory::getApiByAuthMode();
 		$session = $xmlAPI->getBreezeSession();
-        return $xmlAPI->externalLogin($this->getXAVCLogin(), null, $session);
-    }
+
+		return $xmlAPI->externalLogin($this->getXAVCLogin(), null, $session);
+	}
 
     /**
      *  Log out user on the Adobe Connect server
