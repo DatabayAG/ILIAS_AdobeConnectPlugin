@@ -1,12 +1,11 @@
 <?php
 
 include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectServer.php");
-//include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectLoginSwitchAai.php");
 
 /**
 * Connect to Adobe Connect API
 *
-* @author Nadia Ahmad <nahmad@databay.de>
+* @author Nadia Matuschek <nmatuschek@databay.de>
 *
 */
 class ilAdobeConnectXMLAPI
@@ -355,21 +354,29 @@ class ilAdobeConnectXMLAPI
      * @param String $folder_id       Sco-id of the user's meetings folder
      * @param String $session         Session id
      * @return array                  Meeting sco-id AND Meeting url-path; NULL if something is wrong
+     * @throws ilException
      */
-    public function addMeeting($name, $description, $start_date, $start_time, $end_date, $end_time, $folder_id, $session)
+    public function addMeeting($name, $description, $start_date, $start_time, $end_date, $end_time, $folder_id, $session, $source_sco_id = 0)
     {
-		global $lng, $ilLog;
+		global $ilLog;
+	
+	    $api_parameter = array(
+		    'action' 		=> 'sco-update',
+		    'type' 			=> 'meeting',
+		    'name'			=> $name,
+		    'folder-id' 	=> $folder_id,
+		    'description' 	=> $description,
+		    'date-begin' 	=> $start_date."T".$start_time,
+		    'date-end' 		=> $end_date."T".$end_time,
+		    'session' 		=> $session
+	    );
+	    
+	    if($source_sco_id > 0)
+	    {
+	    	$api_parameter['source-sco-id'] = (string)$source_sco_id; 
+	    }
 
-		$url = $this->getApiUrl(array(
-			'action' 		=> 'sco-update',
-			'type' 			=> 'meeting',
-			'name'			=> $name,
-			'folder-id' 	=> $folder_id,
-			'description' 	=> $description,
-			'date-begin' 	=> $start_date."T".$start_time,
-			'date-end' 		=> $end_date."T".$end_time,
-			'session' 		=> $session
-		));
+		$url = $this->getApiUrl($api_parameter);
         $xml = simplexml_load_file($url);
 
         if ($xml->status['code']=="ok")
@@ -2044,5 +2051,48 @@ class ilAdobeConnectXMLAPI
 			}
 		}
 		return $icon;
+	}
+	
+	/**
+	 * @param $pluginObj
+	 * @return array
+	 */
+	public function getTemplates($pluginObj)
+	{
+		$txt_shared_meeting_templates = $pluginObj->txt('shared_meeting_templates');
+		$txt_my_meeting_templates = $pluginObj->txt('my_meeting_templates');
+		
+		$session = $this->getAdminSession();
+		$url_1 = $this->getApiUrl(array(
+			'action' => 'sco-shortcuts',
+			'session' => $session
+		));
+	
+		$xml = simplexml_load_file($url_1);
+		$templates = array();
+		
+		foreach($xml->shortcuts->sco as $folder)
+		{
+			if(($folder['type'] == 'shared-meeting-templates') || $folder['type'] == 'my-meeting-templates')
+			{
+				$sco_id = (string)$folder['sco-id'];
+				$txt_folder_name = $folder['type'] == 'shared-meeting-templates' ? $txt_shared_meeting_templates : $txt_my_meeting_templates;
+				$url_2 = $this->getApiUrl(array(
+					'action' => 'sco-contents',
+					'sco-id' => $sco_id,
+					'session' => $session
+				
+				));
+				$xml_2 = simplexml_load_file($url_2);
+				
+				foreach($xml_2->scos->sco as $sco)
+				{
+					$template_sco_id                              = (string)$sco['sco-id'];
+					$templates[$template_sco_id] = (string)$sco->{'name'} .' ('.$txt_folder_name.')';
+				}
+			}
+		}
+		asort($templates);
+		return $templates;	
 	}
 }

@@ -2535,6 +2535,12 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$tpl_id->setValue($item['id']);
 		$form->addItem($tpl_id);
 
+		if(ilAdobeConnectServer::getSetting('use_meeting_template'))
+		{
+			$use_meeting_template = new ilCheckboxInputGUI($this->pluginObj->txt('use_meeting_template'), 'use_meeting_template');
+			$form->addItem($use_meeting_template);
+		}
+		
 		$form->addCommandButton("save", $this->pluginObj->txt($this->getType()."_add"));
 		$form->addCommandButton("cancelCreation", $this->lng->txt("cancel"));
 
@@ -2682,6 +2688,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					$newObj->setType($new_type);
 					$newObj->setTitle(ilUtil::stripSlashes($title));
 					$newObj->setDescription(ilUtil::stripSlashes($description));
+					$newObj->setUseMeetingTemplate($form->getInput('use_meeting_template'));
 					$newObj->create();
 					$newObj->createReference();
 					$newObj->putInTree($_GET["ref_id"]);

@@ -301,3 +301,7 @@ obj_title_suffix_info#:#Wenn dies aktiviert ist, wird bei dem Erstellen eines Ra
 enable_perm_room#:#Permanent offene Räume erlauben
 enable_perm_room_info#:#Wenn dies aktiviert ist, können Räume als permanent offen gekennzeichnet werden 
 members_gallery#:#Mitgliedergalerie
+use_meeting_template#:#Veranstaltungsvorlage verwenden
+use_meeting_template_info#:#Wenn dies aktiviert ist, kann eine existierende Veranstaltungsvorlage ausgewählt werden, die bei der Erstellung verwendet werden kann.
+shared_meeting_templates#:#Gemeinsame Vorlagen
+my_meeting_templates#:#Meine Vorlagen

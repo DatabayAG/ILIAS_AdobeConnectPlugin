@@ -295,3 +295,7 @@ obj_title_suffix_info#:If activated, a suffix will be added to the meeting room 
 enable_perm_room#:#Allow permanent open rooms
 enable_perm_room_info#:#If enabled, rooms can be signed as permanent open.
 members_gallery#:#Members Gallery
+use_meeting_templates#:#Use meeting templates
+use_meeting_templates_info#:#If aktivated, an existing meeting template can be selected for meeting room creation.
+shared_meeting_templates#:#Shared Templates
+my_meeting_templates#:#My Templates

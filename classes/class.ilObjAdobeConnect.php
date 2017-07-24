@@ -138,6 +138,11 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	public $participants = null;
 	
 	/**
+	 * @var bool
+	 */
+	public $use_meeting_template = false;
+	
+	/**
 	 * Constructor
 	 * @access    public
 	 */
@@ -432,7 +437,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			{
 				throw new ilException('xavc_reached_number_of_connections');
 			}
-
+			
+			$this->setUseMeetingTemplate($_POST['use_meeting_template'] == '1' ? true : false );
 			$this->publishCreationAC($this->getId(),
 				$this->getTitle(),
 				$this->getDescription(),
@@ -582,7 +588,13 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		if($obj_title_suffix_enabled)
 		{
 			$title = $title.'_'.CLIENT_ID.'_'.$obj_id;
-		}	
+		}
+		
+		$source_sco_id = 0;
+		if($this->isUseMeetingTemplate())
+		{
+			$source_sco_id = ilAdobeConnectServer::getSetting('template_sco_id');
+		}
 		
 		// create meeting room
 		$arr_meeting = $this->xmlApi->addMeeting
@@ -594,7 +606,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				date('Y-m-d', $end_date->getUnixTime()),
 				date('H:i', $end_date->getUnixTime()),
 				$folder_id,
-				$session
+				$session,
+				$source_sco_id
 			);
 
 		$meeting_id = $arr_meeting['meeting_id'];
@@ -1746,5 +1759,21 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
 		$GLOBALS['ilLog']->write("AdobeConnect: addContent result ...");
 		$GLOBALS['ilLog']->write($postResult);
+	}
+	
+	/**
+	 * @return bool
+	 */
+	public function isUseMeetingTemplate()
+	{
+		return $this->use_meeting_template;
+	}
+	
+	/**
+	 * @param bool $use_meeting_template
+	 */
+	public function setUseMeetingTemplate($use_meeting_template)
+	{
+		$this->use_meeting_template = $use_meeting_template;
 	}
 }
