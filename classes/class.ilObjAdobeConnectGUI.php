@@ -2538,6 +2538,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		if(ilAdobeConnectServer::getSetting('use_meeting_template'))
 		{
 			$use_meeting_template = new ilCheckboxInputGUI($this->pluginObj->txt('use_meeting_template'), 'use_meeting_template');
+			$use_meeting_template->setChecked(true);
 			$form->addItem($use_meeting_template);
 		}
 		
