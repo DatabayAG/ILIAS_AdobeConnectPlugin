@@ -118,20 +118,23 @@ class ilAdobeConnectUserUtil
 		$expected_login_name = self::generateXavcLoginName($this->getId());
 		
         //check if is valid xavc_login
-		if(!$this->xavc_login ) //|| $this->xavc_login != $expected_login_name)
+		if(!$this->xavc_login && $expected_login_name) //|| $this->xavc_login != $expected_login_name)
 		{
-			
 			$this->xavc_login = $expected_login_name;
 			// replace possible existing login_name
 //			$ilDB->manipulateF('DELETE FROM rep_robj_xavc_users WHERE user_id = %s', 
 //				array('integer'), array($this->getId()));
 			
 			// insert generated login-name into xavc_users
-			$ilDB->insert('rep_robj_xavc_users',
+			$ilDB->replace(
+				'rep_robj_xavc_users',
 				array(
-					'user_id'    => array('integer', $this->getId()),
+					'user_id'    => array('integer', $this->getId())
+				),
+				array(
 					'xavc_login' => array('text', $this->xavc_login)
-				));
+				)
+			);
 		}
 	}
 
