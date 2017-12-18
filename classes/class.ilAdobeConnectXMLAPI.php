@@ -1495,7 +1495,6 @@ class ilAdobeConnectXMLAPI
 		));
 
     		$ctx = $this->proxy(array());
-		$xml_string = file_get_contents($url, false, $ctx);
 		$result = file_get_contents($url, false, $ctx);
 		$xml = simplexml_load_string($result);
         if($xml->status['code'] == 'ok')
