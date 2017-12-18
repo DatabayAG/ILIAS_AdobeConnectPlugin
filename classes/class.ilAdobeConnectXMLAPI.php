@@ -2100,6 +2100,10 @@ class ilAdobeConnectXMLAPI
 	}
 
 
+	/**
+	 * @param $ctx
+	 * @return stream context || null
+	 */
 	protected function proxy($ctx = null)
 	{
 	
