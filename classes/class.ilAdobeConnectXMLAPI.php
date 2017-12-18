@@ -2145,6 +2145,8 @@ class ilAdobeConnectXMLAPI
 			}
 
 		}
+		
+		return null;
 
 	}
 
