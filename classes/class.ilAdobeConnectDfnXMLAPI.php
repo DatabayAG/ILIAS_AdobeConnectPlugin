@@ -98,7 +98,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		if($xml->status['code'] == 'ok')
 		{
 			$list = $xml->{'principal-list'};
-
+			
 			$id = (string)$list->principal['principal-id'];
 
 			return $id;
@@ -114,7 +114,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			return false;
 		}
 	}
-
+	
 	/**
 	 * @param null $user
 	 * @param null $pass
