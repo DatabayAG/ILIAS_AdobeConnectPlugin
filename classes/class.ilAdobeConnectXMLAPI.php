@@ -2144,6 +2144,8 @@ class ilAdobeConnectXMLAPI
 
 			}
 
+		} elseif( is_array($ctx) && count($ctx) ) {
+			return stream_context_create($ctx);
 		}
 		
 		return null;
