@@ -98,7 +98,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		if($xml->status['code'] == 'ok')
 		{
 			$list = $xml->{'principal-list'};
-			
+
 			$id = (string)$list->principal['principal-id'];
 
 			return $id;
@@ -114,7 +114,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @param null $user
 	 * @param null $pass
@@ -135,15 +135,16 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'session' 	=> $session
 		));
 
-		$ctx = stream_context_create(array(
+		$context = array(
 			'http' => array(
 				'timeout' => 4
 			),
 			'https' => array(
 				'timeout' => 4
 			)
-		));
+		);
 
+		$ctx = $this->proxy($context);
 		$xml_string = file_get_contents($url, false, $ctx);
 		$xml = simplexml_load_string($xml_string);
 
@@ -170,7 +171,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		 * @var $ilLog ilLog
 		 */
 		global $ilLog, $lng;
-		
+
 		if(isset(self::$loginsession_cache[$session]))
 		{
 			return true;
@@ -183,15 +184,16 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'session' 		=> $session
 		));
 
-		$ctx = stream_context_create(array(
+		$context = array(
 			'http' => array(
 				'timeout' => 4
 			),
 			'https' => array(
 				'timeout' => 4
 			)
-		));
+		);
 
+		$ctx = $this->proxy($context);
 		$xml_string = file_get_contents($url, false, $ctx);
 		$xml = simplexml_load_string($xml_string);
 
@@ -231,4 +233,4 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	{
 		return $this->searchUser($login, $session);
 	}
-} 
+}
