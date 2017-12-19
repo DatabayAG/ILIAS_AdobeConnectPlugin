@@ -47,6 +47,7 @@ class ilAdobeConnectXMLAPI
 		$this->port = $this->adcInfo->getPort();
 		$this->x_user_id = $this->adcInfo->getXUserId();
 		$this->auth_mode = $this->adcInfo->getAuthMode();
+    		$this->proxy();
     }
 
 	public function getXUserId()
@@ -109,15 +110,16 @@ class ilAdobeConnectXMLAPI
 				'session' 		=> $session
 			));
 
-			$ctx = stream_context_create(array(
-				'http' => array(
-					'timeout' => 4
-				),
-				'https' => array(
-					'timeout' => 4
-				)
+	      		$context = (array(
+	  			'http'  => array(
+	  				'timeout' => 4
+	  			),
+	  			'https' => array(
+	  				'timeout' => 4
+	  			)
 			));
 
+      			$ctx = $this->proxy($context);
 			$xml_string = file_get_contents($url, false, $ctx);
 			$xml = simplexml_load_string($xml_string);
 
@@ -254,15 +256,15 @@ class ilAdobeConnectXMLAPI
 
 		$url = $this->getApiUrl(array('action' => 'common-info'));
 
-		$ctx = stream_context_create(array(
+    		$context = array(
 			'http'  => array(
 				'timeout' => 4
 			),
 			'https' => array(
 				'timeout' => 4
 			)
-		));
-
+		);
+    		$ctx = $this->proxy($context);
 		$xml_string = file_get_contents($url, false, $ctx);
 		$xml        = simplexml_load_string($xml_string);
 
@@ -1492,7 +1494,8 @@ class ilAdobeConnectXMLAPI
 			'permission-id'=> $permission
 		));
 
-		$result = file_get_contents($url);
+    		$ctx = $this->proxy(array());
+		$result = file_get_contents($url, false, $ctx);
 		$xml = simplexml_load_string($result);
         if($xml->status['code'] == 'ok')
 		{
@@ -1756,27 +1759,27 @@ class ilAdobeConnectXMLAPI
 			)
 		);
 
+
+
 		$opts = array(
-			'http' =>
-			array(
+			'http' => array(
 				'method'  => 'GET',
 				'header'  => $headers
 			),
-			'https' =>
-			array(
+			'https' => array(
 				'method'  => 'GET',
 				'header'  => $headers
 			),
 		);
 
-		$context  = stream_context_create($opts);
 
 		$url = $this->getApiUrl(array(
 			'action' 		=> 'login',
 			'external-auth' => 'use'
 		));
 
-		$result = file_get_contents($url, false, $context);
+		$ctx = $this->proxy($opts);
+		$result = file_get_contents($url, false, $ctx);
 
 		$xml = simplexml_load_string($result);
 		if($xml instanceof SimpleXMLElement && $xml->status['code'] == 'ok')
@@ -2095,4 +2098,58 @@ class ilAdobeConnectXMLAPI
 		asort($templates);
 		return $templates;	
 	}
+
+
+	/**
+	 * @param $ctx
+	 * @return stream context || null
+	 */
+	protected function proxy($ctx = null)
+	{
+	
+		require_once('Services/Http/classes/class.ilProxySettings.php');
+
+		if( ilProxySettings::_getInstance()->isActive() )
+		{
+
+			$proxyHost = ilProxySettings::_getInstance()->getHost();
+			$proxyPort = ilProxySettings::_getInstance()->getPort();
+			$proxyURL = 'tcp://'. $proxyPort != '' ? $proxyHost.':'.$proxyPort : $proxyHost;
+
+			$proxySingleContext = array(
+				'proxy' => $proxyURL,
+				'request_fulluri' => true,
+			);
+
+			$proxyContext = array (
+				'http'  => $proxySingleContext,
+				'https' => $proxySingleContext
+			);
+
+			if( $ctx == null)
+			{
+
+				$proxyStreamContext = stream_context_get_default ($proxyContext);
+				libxml_set_streams_context($proxyStreamContext);
+
+			} elseif( is_array($ctx) ) 
+			{
+
+				$mergedProxyContext = array_merge_recursive(
+				$proxyContext,
+				$ctx
+				);
+
+				return stream_context_create($mergedProxyContext);
+
+			}
+
+		} elseif( is_array($ctx) && count($ctx) ) {
+			return stream_context_create($ctx);
+		}
+		
+		return null;
+
+	}
+
 }
