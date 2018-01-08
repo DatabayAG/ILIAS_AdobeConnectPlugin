@@ -49,6 +49,10 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 				return true;
 				break;
 
+			case 'delete':
+				return true;	
+					break;
+				
 			case 'write':
 			case 'edit_permission':
 			case 'read':
