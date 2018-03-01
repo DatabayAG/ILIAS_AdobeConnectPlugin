@@ -8,7 +8,7 @@ include_once dirname(__FILE__) . '/class.ilAdobeConnectXMLAPI.php';
  * Except add a user to a meeting in case of he access a meeting himself -> updateMeetingParticipantByTechnicalUser()
  *
  *
- * @author Nadia Ahmad <nahmad@databay.de>
+ * @author  Nadia Matuschek <nmatuschek@databay.de>
  * @author Martin Studer <ms@studer-raimann.ch>
  */
 class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
@@ -26,10 +26,8 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function externalLogin($user = null, $pass = null, $session = null )
 	{
-		/*
-		 * @var $ilUser ilObjUser
-		 */
-		global $ilUser;
+		global $DIC;
+		$ilUser = $DIC->user();
 
 		//ilObjAdobveConnect::DoRead calls getBreezeSession. Only login if the user has a AAI-Account!
 		if(!ilAdobeConnectServer::useSwitchaaiAuthMode($ilUser->getAuthMode(true)))
@@ -91,8 +89,6 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
      */
 	public function login()
 	{
-		global $lng, $ilLog;
-
 		if(null !== self::$technical_user_session)
 		{
 			return self::$technical_user_session;
@@ -136,7 +132,8 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function getURL($sco_id, $folder_id, $session, $type)
 	{
-		global $ilLog;
+		global $DIC; 
+		$ilLog = $DIC->logger();
 
 		switch($type) {
 			case 'meeting':
@@ -178,7 +175,8 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function getStartDate($sco_id, $folder_id, $session)
 	{
-		global $ilLog;
+		global $DIC;
+		$ilLog = $DIC->logger();
 
 		$url = $this->getApiUrl(array(
 			'action'  => 'report-my-meetings',
@@ -217,7 +215,8 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function getEndDate($sco_id, $folder_id, $session)
 	{
-		global $ilLog;
+		global $DIC;
+		$ilLog = $DIC->logger();
 
 		$url = $this->getApiUrl(array(
 			'action'  => 'report-my-meetings',
@@ -256,8 +255,6 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function updateMeetingParticipantByTechnicalUser($meeting_id, $login, $session, $permission)
 	{
-		global $ilLog;
-
 		$principal_id = $this->getPrincipalId($login, $session);
 
 		$technical_user_session = $this->login();

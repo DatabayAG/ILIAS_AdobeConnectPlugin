@@ -68,16 +68,16 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 	}
 	
 	/**
-	 * insert all commands into html code
-	 *
-	 * @access	public
-	 * @param	boolean		$a_use_asynch			use_asynch
-	 * @param	boolean		$a_get_asynch_commands	get_asynch_commands
-	 * @param	string		$a_asynch_url			async url
+	 * @param bool   $a_use_asynch
+	 * @param bool   $a_get_asynch_commands
+	 * @param string $a_asynch_url
+	 * @param bool   $a_header_actions
+	 * @return string|void
 	 */
 	public function insertCommands($a_use_asynch = false, $a_get_asynch_commands = false, $a_asynch_url = "", $a_header_actions = false)
 	{
-		global $ilUser;
+		global $DIC;
+		$ilUser = $DIC->user();
 
 		/**
 		 *@var  $this->plugin ilPlugin

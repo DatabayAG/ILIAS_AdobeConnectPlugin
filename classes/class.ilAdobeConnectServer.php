@@ -6,7 +6,7 @@
 
 /**
  * Adobe Connect server attributes
- * @author  Nadia Ahmad <nahmad@databay.de>
+ * @author  Nadia Matuschek <nmatuschek@databay.de>
  * @version $Id:$
  */
 
@@ -359,10 +359,8 @@ class ilAdobeConnectServer
 
 	public static function getSetting($a_keyword, $default_value = null)
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		if($ilDB->tableExists('rep_robj_xavc_settings'))
 		{
@@ -380,10 +378,8 @@ class ilAdobeConnectServer
 
 	public static function setSetting($a_keyword, $a_value)
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		if($ilDB->tableExists('rep_robj_xavc_settings'))
 		{
@@ -420,7 +416,8 @@ class ilAdobeConnectServer
 	
 	public static function getRoleMap()
 	{
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 		
 		$keywords = array('crs_owner', 'crs_admin', 'crs_tutor', 'crs_member', 'grp_owner', 'grp_admin', 'grp_member');
 		
@@ -447,10 +444,9 @@ class ilAdobeConnectServer
 	public static function useSwitchaaiAuthMode($auth_mode_key)
 	{
 		require_once './Services/Authentication/classes/class.ilAuthUtils.php';
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		if($auth_mode_key == AUTH_SHIBBOLETH) {
 			return true;

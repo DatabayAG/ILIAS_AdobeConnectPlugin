@@ -44,10 +44,8 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function addUser($login, $email, $pass, $first_name, $last_name, $session)
 	{
-		/**
-		 * @var $ilLog ilLog
-		 */
-		global $ilLog;
+		global  $DIC;
+		$ilLog = $DIC->logger();
 
 		$url = $this->getApiUrl(array(
 			'action' 		=> 'lms-user-create',
@@ -83,10 +81,8 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function searchUser($login, $session)
 	{
-		/**
-		 * @var $ilLog ilLog
-		 */
-		global $ilLog;
+		global  $DIC;
+		$ilLog = $DIC->logger();
 
 		$url = $this->getApiUrl(array(
 			'login'     => $login,
@@ -123,11 +119,9 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function externalLogin($user = null, $pass = null, $session = null )
 	{
-		/**
-		 * @var $ilLog ilLog
-		 * @var $lng   ilLanguage
-		 */
-		global $ilLog, $lng;
+		global  $DIC;
+		$ilLog = $DIC->logger(); 
+		$lng = $DIC->language();
 
 		$url = $this->getApiUrl(array(
 			'action' 	=> 'lms-user-login',
@@ -136,12 +130,8 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		));
 
 		$context = array(
-			'http' => array(
-				'timeout' => 4
-			),
-			'https' => array(
-				'timeout' => 4
-			)
+			'http' => array('timeout' => 4),
+			'https' => array('timeout' => 4)
 		);
 
 		$ctx = $this->proxy($context);
@@ -167,10 +157,9 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function login($user, $pass, $session)
 	{
-		/**
-		 * @var $ilLog ilLog
-		 */
-		global $ilLog, $lng;
+		global  $DIC;
+		$ilLog = $DIC->logger();
+		$lng = $DIC->language();
 
 		if(isset(self::$loginsession_cache[$session]))
 		{

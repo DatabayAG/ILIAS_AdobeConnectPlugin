@@ -4,14 +4,9 @@
 require_once 'Services/Table/classes/class.ilTable2GUI.php';
 
 /**
-* Class ilXAVCTableGUI
-*
-
-* @author Nadia Ahmad <nahmad@databay.de>
-* @version $Id:$
-* 
-*  
-*/
+ * Class ilXAVCTableGUI
+ * @author  Nadia Matuschek <nmatuschek@databay.de>
+ */
 class ilXAVCTableGUI extends ilTable2GUI
 {
 	/**
@@ -22,15 +17,10 @@ class ilXAVCTableGUI extends ilTable2GUI
 	 */
 	public function __construct($a_parent_obj, $a_parent_cmd = "")
 	{
-		/**
-		 * @var $lng 	$lng
-		 * @var $ilCtrl ilCtrl 
-		 */
+		global $DIC;
 
-	 	global $lng, $ilCtrl;
-
-	 	$this->lng = $lng;
-	 	$this->ctrl = $ilCtrl;
+	 	$this->lng = $DIC->language();
+	 	$this->ctrl = $DIC->ctrl();
 
 	 	parent::__construct($a_parent_obj, $a_parent_cmd);
 

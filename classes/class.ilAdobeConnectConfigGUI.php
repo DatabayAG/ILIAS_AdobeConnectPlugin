@@ -31,7 +31,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	 */
 	public function performCommand($cmd)
 	{
-		global $ilTabs;
+		global $DIC; 
+		$ilTabs = $DIC->tabs();
 		
 		$this->pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
@@ -76,11 +77,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	 */
 	private function initAdobeSettingsForm()
 	{
-		/** 
-		 * @var $ilCtrl ilCtrl
-		 * @var $lng 	$lng
-		 */
-		global $lng, $ilCtrl;
+		global $DIC;
+		$lng = $DIC->language();
+		$ilCtrl = $DIC->ctrl();
 		
 		include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
 		require_once './Services/Authentication/classes/class.ilAuthUtils.php';
@@ -230,10 +229,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	 */
 	public function editAdobeSettings()
 	{
-		/** 
-		 * @var $tpl $tpl 
-		 */
-		global $tpl;
+		global $DIC;
+		$tpl = $DIC->ui()->mainTemplate();
 
 		$this->tabs->activateTab('editAdobeSettings');
 		
@@ -250,12 +247,11 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	 */
 	public function saveAdobeSettings()
 	{
-		/**
-		 * @var $ilCtrl ilCtrl
-		 * @var $lng 	$lng
-		 * @var $tpl	$tpl
-		 */
-		global $lng, $ilCtrl, $tpl;
+		global $DIC; 
+		
+		$lng = $DIC->language(); 
+		$ilCtrl = $DIC->ctrl(); 
+		$tpl = $DIC->ui()->mainTemplate();
 
 		$this->initAdobeSettingsForm();
 		if($this->form->checkInput())
@@ -302,8 +298,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 					ilAdobeConnectServer::setSetting($key, trim($value));
 				}
 				ilAdobeConnectServer::setSetting('auth_mode_switchaai_account_type',serialize($this->form->getInput('auth_mode_switchaai_account_type')));
-
-
 				ilAdobeConnectServer::_getInstance()->commitSettings();
 				
 				try
@@ -388,10 +382,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	 */
 	private function initRoomAllocationForm()
 	{
-		/**
-		 * @var $ilCtrl ilCtrl
-		 */
-		global $lng, $ilCtrl;
+		global $DIC;
+		$lng = $DIC->language(); 
+		$ilCtrl = $DIC->ctrl();
 
 		include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
 
@@ -446,7 +439,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	 */
 	public function editRoomAllocation()
 	{
-		global $tpl;
+		global $DIC; 
+		$tpl = $DIC->ui()->mainTemplate();
+		
 		$this->tabs->setTabActive('editRoomAllocation');
 		$this->initRoomAllocationForm();
 		$this->getRoomAllocationValues();
@@ -461,11 +456,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	 */
 	public function saveRoomAllocation()
 	{
-		/**
-		 * @var $ilCtrl ilCtrl
-		 * @var $tpl $tpl
-		 */
-		global $ilCtrl, $tpl;
+		global $DIC;
+		$ilCtrl = $DIC->ctrl(); 
+		$tpl = $DIC->ui()->mainTemplate();
 
 		$this->initRoomAllocationForm();
 		if($this->form->checkInput())
@@ -500,10 +493,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	
 	public function getTabs()
 	{
-		/**
-		 * @var $ilCtrl ilCtrl
-		 */
-		global $ilCtrl;
+		global $DIC; 
+		$ilCtrl = $DIC->ctrl();
 
 		$this->tabs->addTab('editAdobeSettings', $this->pluginObj->txt('editAdobeSettings'), $ilCtrl->getLinkTarget($this, 'editAdobeSettings'));
 		$this->tabs->addTab('editRoomAllocation', $this->pluginObj->txt('editRoomAllocation'), $ilCtrl->getLinkTarget($this, 'editRoomAllocation'));
@@ -512,7 +503,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	
 	public function editIliasSettings()
 	{
-		global $tpl;
+		global $DIC; 
+		$tpl = $DIC->ui()->mainTemplate();
+		
 		$this->tabs->setTabActive('editIliasSettings');
 		$this->initIliasSettingsForm();
 		$this->getIliasSettingsValues();
@@ -522,10 +515,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	
 	public function initIliasSettingsForm()
 	{
-		/**
-		 * @var $ilCtrl ilCtrl
-		 */
-		global $lng, $ilCtrl;
+		global $DIC; 
+		$lng = $DIC->language(); 
+		$ilCtrl = $DIC->ctrl();
 
 		include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
 
@@ -644,7 +636,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 		$this->form->addItem($mapping_grp);
 		
 		$ac_permissions = ilXAVCPermissions::getPermissionsArray(); 
-		//@todo nahmad: in Template auslagern!
 		$tbl = "<table width='100%' >
 		<tr>
 		<td> </td> 
@@ -703,12 +694,10 @@ $tbl .= "</table>";
 	
 	public function saveIliasSettings()
 	{
-		/**
-		 * @var $ilCtrl ilCtrl
-		 * @var $lng 	$lng
-		 * @var $tpl	$tpl
-		 */
-		global $lng, $ilCtrl, $tpl;
+		global $DIC;
+		$lng = $DIC->language(); 
+		$ilCtrl = $DIC->ctrl(); 
+		$tpl = $DIC->ui()->mainTemplate();
 
 		if(is_array($_POST['permissions']) || $_POST['permissions'] == NULL)
 		{

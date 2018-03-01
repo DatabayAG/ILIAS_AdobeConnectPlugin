@@ -5,19 +5,20 @@ require_once 'Services/UIComponent/AdvancedSelectionList/classes/class.ilAdvance
 
 class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 {
+	
+	/**
+	 * @var ilCtrl
+	 */
+	public $ctrl;
+	
 	/**
 	 * @param        $a_parent_obj
 	 * @param string $a_parent_cmd
 	 */
 	public function __construct($a_parent_obj, $a_parent_cmd)
 	{
-		/**
-		 * @var $ilCtrl ilCtrl
-		 */
-		global $ilCtrl;
-
-		$this->ctrl = $ilCtrl;
-		
+		global $DIC;
+		$this->ctrl = $DIC->ctrl();
 
 		$this->setId('xavc_participants');
 
@@ -39,14 +40,17 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 		$this->setSelectAllCheckbox('usr_id[]');
 		$this->setShowRowsSelector(true);
 
-		$this->setFormAction($ilCtrl->getFormAction($a_parent_obj));
+		$this->setFormAction($this->ctrl->getFormAction($a_parent_obj));
 		$this->setRowTemplate($a_parent_obj->pluginObj->getDirectory() . '/templates/default/tpl.xavc_active_user_row.html');
 		
 	}
 
 	private function addMultiCommands()
 	{
-		global $ilUser, $lng;
+		global $DIC; 
+		$ilUser = $DIC->user();
+		$lng = $DIC->language();
+		
 		$this->parent_obj->pluginObj->includeClass('class.ilXAVCPermissions.php');
 		if(ilXAVCPermissions::hasAccess($ilUser->getId(), $this->parent_obj->ref_id, AdobeConnectPermissions::PERM_CHANGE_ROLE))
 		{
@@ -71,14 +75,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 	{
 		if((int)$row['user_id'])
 		{
-//			$action = new ilAdvancedSelectionListGUI();
-//			$action->setId('asl_' . $row['user_id']);
-//			$action->setListTitle($this->lng->txt('actions'));
-//			$this->ctrl->setParameter($this->parent_obj, 'user_id', $row['user_id']);
-		
-			
 			$this->ctrl->setParameter($this->parent_obj, 'usr_id', '');
-//			$row['actions']  = $action->getHtml();
 			if($row['user_id']== $this->parent_obj->object->getOwner())
 			{
 				$row['checkbox'] = ilUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], true);
@@ -90,7 +87,6 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 		}
 		else
 		{
-//			$row['actions'] = '';
 			$row['checkbox'] = '';
 		}
 
@@ -113,10 +109,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 				"view"		=> $this->parent_obj->pluginObj->txt("participant"),
 				"denied"	=> $this->parent_obj->pluginObj->txt("denied")
 			);
-
-				
 			
-//			$user_status = ilXAVCMembers::_lookupStatus($row['user_id'], $this->parent_obj->object->getRefId());
 			if($row['xavc_status'])
 			{
 				if($row['user_id'] == $this->parent_obj->object->getOwner())
@@ -181,12 +174,6 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 	 */
 	protected function formatCellValue($column, array $row)
 	{
-		/**
-		 * @var $ilCtrl ilCtrl
-		 * @var $lng    ilLanguage
-		 */
-		global $ilCtrl, $lng;
-	
 		return $row[$column];
 	}
 

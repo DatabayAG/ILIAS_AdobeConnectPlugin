@@ -8,7 +8,7 @@ include_once './Services/Repository/classes/class.ilObjectPluginAccess.php';
  * @author     Michael Jansen <mjansen@databay.de>
  * @author     Björn Heyser <bheyser@databay.de>
  * @author     Jan Posselt <jposselt@databay.de>
- * @author     Nadia Ahmad <nahmad@databay.de>
+ * @author     Nadia Matuschek <nmatuschek@databay.de>
  * @version    $Id$
  */
 class ilObjAdobeConnectAccess extends ilObjectPluginAccess
@@ -27,11 +27,9 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 	 */
 	public function _checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id = "")
 	{
-		/**
-		 * @var $ilUser         ilObjUser
-		 * @var $ilObjDataCache ilObjectDataCache
-		 */
-		global $ilUser, $ilObjDataCache;
+		global $DIC; 
+		$ilUser = $DIC->user(); 
+		$ilObjDataCache = $DIC['ilObjDataCache'];
 
 		if(!$a_user_id)
 		{
@@ -78,10 +76,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 	 */
 	public static function _hasMemberRole($a_user_id, $a_ref_id)
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 */
-		global $rbacreview;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
 
 		$roles  = $rbacreview->getRoleListByObject($a_ref_id);
 		$result = false;
@@ -106,10 +102,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 	 */
 	public static function _hasAdminRole($a_user_id, $a_ref_id)
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 */
-		global $rbacreview;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
 
 		$roles  = $rbacreview->getRoleListByObject($a_ref_id);
 		$result = false;
@@ -129,10 +123,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
 	public static function getLocalAdminRoleTemplateId()
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		// try reading permission template for local admin role
 		$res = $ilDB->queryf('SELECT obj_id FROM object_data WHERE type = %s AND title = %s',
@@ -156,10 +148,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
 	public static function getLocalMemberRoleTemplateId()
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		// try reading permission template for local admin role
 		$res = $ilDB->queryf('SELECT obj_id FROM object_data WHERE type = %s AND title = %s',
@@ -184,13 +174,10 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
 	private static function initLocalAdminRoleTemplate()
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-
 		$xavc_typ_id = self::checkObjectOperationPermissionsInitialized();
-
-		global $ilDB;
+		
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		$admin_rolt_id = 0;
 
@@ -205,10 +192,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
 		if((int)$admin_rolt_id >= 0)
 		{
-			/**
-			 * @var $rbacadmin ilRbacAdmin
-			 */
-			global $rbacadmin;
+			global $DIC;
+			$rbacadmin = $DIC->rbac()->admin();
 
 			// create local admin role template
 			$admin_rolt_id = $ilDB->nextId('object_data');
@@ -262,10 +247,9 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 		// checks for surely initialized extra permissions for xavc
 		// (and also returns obj_id of xavc type definition)
 		$xavc_typ_id = self::checkObjectOperationPermissionsInitialized();
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		$member_rolt_id = 0;
 
@@ -280,10 +264,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
 		if(!$member_rolt_id)
 		{
-			/**
-			 * @var $rbacadmin ilRbacAdmin
-			 * */
-			global $rbacadmin;
+			global $DIC;
+			$rbacadmin = $DIC->rbac()->admin();
 
 			// create local member role template
 			$member_rolt_id = $ilDB->nextId('object_data');
@@ -318,10 +300,9 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
 	private static function checkObjectOperationPermissionsInitialized()
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		// lookup obj_id of xavc type definition
 		$xavc_typ_id = 0;

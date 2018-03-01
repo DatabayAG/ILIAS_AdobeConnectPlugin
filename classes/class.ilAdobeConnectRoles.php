@@ -1,17 +1,11 @@
 <?php
 
 /**
-*
 * Class ilAdobeConnectRoles
-*
 * Local Roles : Administrator, Member
-*
-* @author Nadia Ahmad <nahmad@databay.de>
-*
-* @version $Id:$
-* 
+ * 
+* @author Nadia Matuschek <nmatuschek@databay.de>
 */
-
 class ilAdobeConnectRoles
 {
 	private $db = null;
@@ -19,9 +13,9 @@ class ilAdobeConnectRoles
 	
 	public function __construct($a_ref_id)
 	{
-		global $ilDB;
+		global $DIC;
 		
-		$this->db = $ilDB;
+		$this->db = $DIC->database();
 		$this->ref_id = $a_ref_id;
 	}
 
@@ -38,12 +32,11 @@ class ilAdobeConnectRoles
 	// Local Administrator Role
 	public function addAdministratorRole($a_usr_id)
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 * @var $rbacadmin 	ilRbacAdmin
-		 * @var $lng 		$lng
-		 */
-		global $rbacreview, $rbacadmin, $lng;
+		global $DIC;
+		
+		$rbacreview = $DIC->rbac()->review();
+		$rbacadmin = $DIC->rbac()->admin(); 
+		$lng= $DIC->language();
 		
 		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		if(!$role_list)
@@ -73,11 +66,9 @@ class ilAdobeConnectRoles
 	
 	public function detachAdministratorRole($a_usr_id)
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 * @var $rbacadmin ilRbacAdmin
-		 */		
-		global $rbacreview, $rbacadmin;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
+		$rbacadmin = $DIC->rbac()->admin();
 		
 		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		$a_rol_id = null;
@@ -101,11 +92,8 @@ class ilAdobeConnectRoles
 	
 	public function isAdministrator($a_user_id)
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 *
-		 */
-		global $rbacreview;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
 
 		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$assigned_users = null;
@@ -124,11 +112,8 @@ class ilAdobeConnectRoles
 	
 	public function getCurrentAdministrators()
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 */
-		
-		global $rbacreview;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
 
 		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$assigned_users = array();
@@ -152,11 +137,9 @@ class ilAdobeConnectRoles
 	// Local Member-Role
 	public function addMemberRole($a_usr_id)
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 * @var $rbacadmin ilRbacAdmin
-		 */
-		global $rbacreview, $rbacadmin;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
+		$rbacadmin = $DIC->rbac()->admin();
 
 		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		
@@ -181,11 +164,9 @@ class ilAdobeConnectRoles
 
 	public function detachMemberRole($a_usr_id)
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 * @var $rbacadmin ilRbacAdmin
-		 */
-		global $rbacreview, $rbacadmin;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
+		$rbacadmin = $DIC->rbac()->admin();
 
 		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		$a_rol_id = null;
@@ -209,10 +190,8 @@ class ilAdobeConnectRoles
 
 	public function getCurrentMembers()
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 */
-		global $rbacreview;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
 
 		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$assigned_users = array();
@@ -235,10 +214,8 @@ class ilAdobeConnectRoles
 
 	public function getUsers()
 	{
-		/**
-		 * @var $rbacreview ilRbacReview
-		 */
-		global $rbacreview;
+		global $DIC;
+		$rbacreview = $DIC->rbac()->review();
 
 		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$admins = array();

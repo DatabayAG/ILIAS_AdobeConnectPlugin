@@ -615,3 +615,14 @@ $ilDB->insert('rep_robj_xavc_gloperm',
 			  'role' => array('text', 'denied'),
 			  'has_access' =>array('integer', 0)));
 ?>
+<#36>
+<?php
+if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'language'))
+{
+	$ilDB->addTableColumn('rep_robj_xavc_data', 'language',
+			array('type' => 'text',
+			      'length' => 2,
+			      'notnull' => false,
+			      'default' => 'de'));
+}
+?>

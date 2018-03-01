@@ -7,7 +7,7 @@
 /**
  * A meeting content
  *
- * @author Nadia Ahmad <nahmad@databay.de>
+ * @author Nadia Matuschek <nmatuschek@databay.de>
  * @author Felix Paulano
  */
 class ilAdobeConnectContent

@@ -10,7 +10,8 @@ class ilXAVCPermissions
 
 	public static function getPermissionsArray()
 	{
-		global $ilDB;
+		global $DIC; 
+		$ilDB = $DIC->database();
 		
 		$res = $ilDB->query('SELECT * FROM rep_robj_xavc_gloperm ORDER BY id, permission');
 		
@@ -27,8 +28,8 @@ class ilXAVCPermissions
 
 	public function setPermissions($permissions)
 	{
-		
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		// reset all permissions
 		$ilDB->update('rep_robj_xavc_gloperm',
@@ -57,7 +58,8 @@ class ilXAVCPermissions
 	 */
 	public static function hasAccess($user_id, $ref_id, $permission)
 	{
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 		
 		//lookupRole
 		$res = $ilDB->queryF('
@@ -84,7 +86,8 @@ class ilXAVCPermissions
 	 */
 	public static function lookupPermission($permission, $role)
 	{
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 		
 		$res = $ilDB->queryF('
 			SELECT has_access FROM rep_robj_xavc_gloperm 

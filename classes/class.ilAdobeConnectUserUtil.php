@@ -1,8 +1,8 @@
 <?php
 /**
- * @author Nadia Ahmad <nahmad@databay.de>
- * 
-*/
+ * Class ilAdobeConnectUserUtil
+ * @author  Nadia Matuschek <nmatuschek@databay.de>
+ */
 class ilAdobeConnectUserUtil
 {
     /**
@@ -49,11 +49,9 @@ class ilAdobeConnectUserUtil
 	 */
 	private $xavc_login;
 
-
     /**
      *  Constructor
      *
-     * @global ilDB $ilDB
      * @param String $user_id
      */
     public function __construct($user_id)
@@ -79,10 +77,8 @@ class ilAdobeConnectUserUtil
 	
 	private function readAdobeConnectUserData()
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		$result = $ilDB->queryF("SELECT email,login,passwd,firstname,lastname FROM usr_data WHERE usr_id= %s",
 			array('integer'), array($this->getId()));
@@ -109,10 +105,8 @@ class ilAdobeConnectUserUtil
 	
 	private function ensureLocalAccountExistance()
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 		
 		// generate valid xavc_login_name with assignment_mode-setting
 		$expected_login_name = self::generateXavcLoginName($this->getId());
@@ -261,10 +255,7 @@ class ilAdobeConnectUserUtil
 	}
     /**
      *  Adds user to the Adobe Connect server
-     *
-     * @param String $subject
-     * @param String $message
-     */
+	 */
     public function addUser()
     {
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
@@ -281,19 +272,6 @@ class ilAdobeConnectUserUtil
 			$xmlAPI->addUser($this->getXAVCLogin(), $this->email, $user_pass, $this->first_name, $this->last_name, $session);
 			$xmlAPI->logout($session);
         }
-		// kkoch: 13.03.2012: die Meldung über das Login eines neuen Nutzers bitte komplett unterdrücken
-		/*
-		 * 
-		 *	include_once("./Services/Mail/classes/class.ilMail.php");
-		 * $subject = $this->txt('new_ac_user_subject');
-		 * $message = $this->txt('new_ac_user_mail');
-		 * 
-		 * $mail = new ilMail(ANONYMOUS_USER_ID);
-		 * $message = $message.' '.$user_pass;
-		 * 
-		 * $mail->sendMail($this->email, '', '', $subject, $message, NULL, array('normal'));
-		 * 
-		 * */
     }
 
 	/**Search user on the Adobe Connect server

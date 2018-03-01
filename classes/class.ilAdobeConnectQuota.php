@@ -37,10 +37,8 @@ class ilAdobeConnectQuota
 
 	private function buildCurrentMeetings(array $data)
 	{
-		/** 
-		 * @var $ilDB ilDB 
-		 */
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
  		
 		$ids = array();
 		$currentMeetings = array();
@@ -108,10 +106,8 @@ class ilAdobeConnectQuota
 
 	public function checkConcurrentMeetingDates(ilDateTime $endDate, ilDateTime $startDate = null, $ignoreId = null)
 	{
-		/**
-		 * @var $ilDB ilDB
-		 */
-		global $ilDB;
+		global $DIC;
+		$ilDB = $DIC->database();
 
 		if($startDate == null)
 		{
