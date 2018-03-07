@@ -1,6 +1,7 @@
 <?php
 
 include_once('./Services/Membership/classes/class.ilParticipants.php');
+require_once 'Services/User/Gallery/classes/class.ilAbstractUsersGalleryCollectionProvider.php';
 
 /**
  * Class ilAdobeConnectContainerParticipants
@@ -15,6 +16,7 @@ class ilAdobeConnectContainerParticipants extends ilParticipants
 	public static function getInstanceByObjId($a_obj_id)
 	{
 		$type = ilObject::_lookupType($a_obj_id);
+		
 		switch($type)
 		{
 			case 'crs':

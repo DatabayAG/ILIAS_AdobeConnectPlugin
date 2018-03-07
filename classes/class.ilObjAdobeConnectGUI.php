@@ -1202,13 +1202,12 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		global $DIC;
 		$tpl = $DIC->ui()->mainTemplate();
 		
-		include_once './Services/User/classes/class.ilUsersGalleryGUI.php';
-		$this->pluginObj->includeClass('class.ilAdobeConnectGalleryUsers.php');
+		$this->pluginObj->includeClass('class.ilAdobeConnectUsersGalleryCollectionProvider.php');
 		$this->tabs->activateTab('participants');
 		$this->__setSubTabs('participants');
 		$this->tabs->activateSubTab("showMembersGallery");
 
-		$provider    = new ilAdobeConnectGalleryUsers();
+		$provider    = new ilAdobeConnectUsersGalleryCollectionProvider(ilAdobeConnectContainerParticipants::getInstanceByObjId($this->object->getId()));
 		$gallery_gui = new ilUsersGalleryGUI($provider);
 		$this->ctrl->setCmd('view');
 		$gallery_gui->executeCommand();
