@@ -108,7 +108,7 @@ class ilAdobeConnectXMLAPI
 	{
 		global $DIC;
 		$lng   = $DIC->language();
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		if(isset(self::$loginsession_cache[$session]) && self::$loginsession_cache[$session])
 		{
@@ -216,7 +216,7 @@ class ilAdobeConnectXMLAPI
 	public function logout($session)
 	{
 		global $DIC; 
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'  => 'logout',
@@ -255,7 +255,7 @@ class ilAdobeConnectXMLAPI
 	public function getBreezeSession($useCache = true)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		if(null !== self::$breeze_session && $useCache)
 		{
@@ -362,7 +362,7 @@ class ilAdobeConnectXMLAPI
 	public function addMeeting($name, $description, $start_date, $start_time, $end_date, $end_time, $folder_id, $session, $source_sco_id = 0, $ac_language = 'de')
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$api_parameter = array(
 			'action'      => 'sco-update',
@@ -424,7 +424,7 @@ class ilAdobeConnectXMLAPI
 	{
 		global $DIC;
 		$lng = $DIC->language();
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'      => 'sco-update',
@@ -463,7 +463,7 @@ class ilAdobeConnectXMLAPI
 	public function deleteMeeting($sco_id, $session)
 	{
 		global $DIC; 
-		$ilLog = $DIC->logger(); 
+		$ilLog = $DIC->logger()->root(); 
 		$lng = $DIC->language();
 		
 		$url = $this->getApiUrl(array(
@@ -500,7 +500,7 @@ class ilAdobeConnectXMLAPI
 	public function setMeetingPrivate($a_meeting_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'permissions-update',
@@ -536,7 +536,7 @@ class ilAdobeConnectXMLAPI
 	public function setMeetingPublic($a_meeting_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'permissions-update',
@@ -572,7 +572,7 @@ class ilAdobeConnectXMLAPI
 	public function setMeetingProtected($a_meeting_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'permissions-update',
@@ -603,7 +603,7 @@ class ilAdobeConnectXMLAPI
 	public function updatePermission($a_meeting_id, $session, $a_permission_id)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'permissions-update',
@@ -641,7 +641,7 @@ class ilAdobeConnectXMLAPI
 	public function getURL($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -673,7 +673,7 @@ class ilAdobeConnectXMLAPI
 	public function getStartDate($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -797,7 +797,7 @@ class ilAdobeConnectXMLAPI
 	public function getEndDate($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -832,7 +832,7 @@ class ilAdobeConnectXMLAPI
 	public function getName($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -868,7 +868,7 @@ class ilAdobeConnectXMLAPI
 	public function getDescription($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -904,7 +904,7 @@ class ilAdobeConnectXMLAPI
 	public function getDateCreated($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -940,7 +940,7 @@ class ilAdobeConnectXMLAPI
 	public function getDateModified($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -976,7 +976,7 @@ class ilAdobeConnectXMLAPI
 	public function getDuration($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -1011,7 +1011,7 @@ class ilAdobeConnectXMLAPI
 	public function getContentIds($meeting_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'  => 'sco-contents',
@@ -1102,7 +1102,7 @@ class ilAdobeConnectXMLAPI
 	public function addContent($folder_id, $title, $description, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'      => 'sco-update',
@@ -1153,7 +1153,7 @@ class ilAdobeConnectXMLAPI
 	public function updateContent($sco_id, $title, $description, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'      => 'sco-update',
@@ -1196,7 +1196,7 @@ class ilAdobeConnectXMLAPI
 	public function deleteContent($sco_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'  => 'sco-delete',
@@ -1245,7 +1245,7 @@ class ilAdobeConnectXMLAPI
 	public function searchUser($login, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'       => 'report-bulk-users',
@@ -1283,7 +1283,7 @@ class ilAdobeConnectXMLAPI
 	public function addUser($login, $email, $pass, $first_name, $last_name, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'       => 'principal-update',
@@ -1578,7 +1578,7 @@ class ilAdobeConnectXMLAPI
 	public function getPrincipalId($login, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'       => 'principal-list',
@@ -1668,7 +1668,7 @@ class ilAdobeConnectXMLAPI
 	public function getActiveUsers($a_sco_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'report-bulk-consolidated-transactions',
@@ -1818,7 +1818,7 @@ class ilAdobeConnectXMLAPI
 	{
 		global $DIC;
 		$ilUser = $DIC->user();
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$ilLog->write("Adobe Connect " . __METHOD__ . ": Entered frontend user authentication.");
 		
@@ -1878,7 +1878,7 @@ class ilAdobeConnectXMLAPI
 	public function getDateEnd($sco_id, $folder_id, $session)
 	{
 		global $DIC; 
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',
@@ -1949,7 +1949,7 @@ class ilAdobeConnectXMLAPI
 	public function createUserFolder($login, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$umf_id = $this->getShortcuts('user-meetings', $session);
 		
@@ -2021,7 +2021,7 @@ class ilAdobeConnectXMLAPI
 	public function getScoData($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		
 		$url = $this->getApiUrl(array(
 			'action'        => 'sco-contents',

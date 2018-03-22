@@ -133,7 +133,7 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	public function getURL($sco_id, $folder_id, $session, $type)
 	{
 		global $DIC; 
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 
 		switch($type) {
 			case 'meeting':
@@ -176,7 +176,7 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	public function getStartDate($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 
 		$url = $this->getApiUrl(array(
 			'action'  => 'report-my-meetings',
@@ -216,7 +216,7 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	public function getEndDate($sco_id, $folder_id, $session)
 	{
 		global $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 
 		$url = $this->getApiUrl(array(
 			'action'  => 'report-my-meetings',

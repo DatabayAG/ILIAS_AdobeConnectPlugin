@@ -45,7 +45,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	public function addUser($login, $email, $pass, $first_name, $last_name, $session)
 	{
 		global  $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 
 		$url = $this->getApiUrl(array(
 			'action' 		=> 'lms-user-create',
@@ -82,7 +82,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	public function searchUser($login, $session)
 	{
 		global  $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 
 		$url = $this->getApiUrl(array(
 			'login'     => $login,
@@ -120,7 +120,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	public function externalLogin($user = null, $pass = null, $session = null )
 	{
 		global  $DIC;
-		$ilLog = $DIC->logger(); 
+		$ilLog = $DIC->logger()->root(); 
 		$lng = $DIC->language();
 
 		$url = $this->getApiUrl(array(
@@ -158,7 +158,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	public function login($user, $pass, $session)
 	{
 		global  $DIC;
-		$ilLog = $DIC->logger();
+		$ilLog = $DIC->logger()->root();
 		$lng = $DIC->language();
 
 		if(isset(self::$loginsession_cache[$session]))
