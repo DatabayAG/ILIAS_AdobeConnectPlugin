@@ -342,7 +342,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
 			$this->setInstructions($post_instructions);
 			$this->setContactInfo($post_contact);
-			$this->setAcLanguage($_POST['ac_language']);
+			$this->setAcLanguage(ilUtil::stripSlashes($_POST['ac_language']));
 
 			if(isset($_POST['time_type_selection']) && $_POST['time_type_selection'] == 'permanent_room')
 			{
