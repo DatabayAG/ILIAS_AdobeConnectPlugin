@@ -3,11 +3,14 @@ ILIAS Plugin for Adobe Connect Virtual Classrooms
 * For ILIAS versions: 5.3.0 - 5.3.999
 
 ## Installation Instructions
-1. Clone this repository to <ILIAS_DIRECTORY>/Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect
-2. Login to ILIAS with an administrator account (e.g. root)
-3. Select **Plugins** from the **Administration** main menu drop down.
-4. Search the **AdobeConnect** plugin in the list of plugin and choose **Activate** from the **Actions** drop down.
-5. Choose **Configure** from the **Actions** drop down and enter the required data.
+1. Clone this repository 
+   `$ git clone https://github.com/DatabayAG/ILIAS_AdobeConnectPlugin`
+2. Move the project to the ILIAS-plugin-directory
+   `$ mv ILIAS_AdobeConnectPlugin <ILIAS_DIRECTORY>/Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect`
+3. Login to ILIAS with an administrator account (e.g. root)
+4. Select **Plugins** from the **Administration** main menu drop down.
+5. Search the **AdobeConnect** plugin in the list of plugin and choose **Activate** from the **Actions** drop down.
+6. Choose **Configure** from the **Actions** drop down and enter the required data.
 
 ## Known Issues
 
