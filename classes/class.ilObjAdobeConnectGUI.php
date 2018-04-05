@@ -750,7 +750,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                     $sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
 					$sso_tpl->setVariable('SPINNER_SRC', $this->pluginObj->getDirectory().'/templates/js/spin.js');
                     $sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
-                    $sso_tpl->setVariable('LOGOUT_URL', $logout_url);
+	                $sso_tpl->setVariable('LOGOUT_URL', str_replace(['http://', 'https://'], '//', $logout_url));
                     $sso_tpl->setVariable('URL', $url);
                     $sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
                     $sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
@@ -1350,7 +1350,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
 		$sso_tpl->setVariable('SPINNER_SRC', $this->pluginObj->getDirectory().'/templates/js/spin.js');
 		$sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
-		$sso_tpl->setVariable('LOGOUT_URL', $logout_url);
+		$sso_tpl->setVariable('LOGOUT_URL', str_replace(['http://', 'https://'], '//', $logout_url));
 		$sso_tpl->setVariable('URL', $url);
 		$sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
 		$sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
