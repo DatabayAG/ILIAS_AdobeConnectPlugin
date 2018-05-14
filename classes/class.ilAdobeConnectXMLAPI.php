@@ -1239,28 +1239,33 @@ class ilAdobeConnectXMLAPI
 	public function searchUser($login, $session)
     {
     	global $ilLog;
-    	
-    	$url = $this->getApiUrl(array(
-			'action' 		=> 'report-bulk-users',
-			'filter-login'	=> $login,
-			'session' 		=> $session
-		));
-        $xml = simplexml_load_file($url);
 
-        if ($xml->{'report-bulk-users'}->row['principal-id'] !='')
+		$url = $this->getApiUrl(array(
+			'action'       => 'principal-list',
+			'filter-login' => $login,
+			'session'      => $session
+		));
+		$xml = simplexml_load_file($url);
+
+		if($xml instanceof \SimpleXMLElement  && $xml->status['code'] == 'ok')
 		{
-			return (string)$xml->{'report-bulk-users'}->row['principal-id'];
-		}
-		else
-		{
-			// user doesn't exist at adobe connect server
-			$ilLog->write('AdobeConnect searchUser Request: '.$url);
-			if($xml)
+			if(
+				$xml->{'principal-list'} &&
+				$xml->{'principal-list'}->{'principal'} &&
+				(string)$xml->{'principal-list'}->{'principal'}->attributes()->{'principal-id'} != ""
+			)
 			{
-				$ilLog->write('AdobeConnect searchUser Response: ' . $xml->asXML());
+				return (string)$xml->{'principal-list'}->{'principal'}->attributes()->{'principal-id'};
 			}
-			return false;
 		}
+
+		$ilLog->write('AdobeConnect addUser Request:  '.$url);
+		if($xml)
+		{
+			$ilLog->write('AdobeConnect addUser Response: ' . $xml->asXML());
+		}
+
+		return false;
     }
 
 	    /**
