@@ -1259,10 +1259,10 @@ class ilAdobeConnectXMLAPI
 			}
 		}
 
-		$ilLog->write('AdobeConnect addUser Request:  '.$url);
+		$ilLog->write('AdobeConnect searchUser Request:  '.$url);
 		if($xml)
 		{
-			$ilLog->write('AdobeConnect addUser Response: ' . $xml->asXML());
+			$ilLog->write('AdobeConnect searchUser Response: ' . $xml->asXML());
 		}
 
 		return false;
