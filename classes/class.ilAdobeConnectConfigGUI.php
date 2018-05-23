@@ -546,20 +546,24 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 		$obj_title_suffix->setInfo($this->pluginObj->txt('obj_title_suffix_info'));
 		$this->form->addItem($obj_title_suffix);
 		
-		if(count(self::$template_cache) == 0 || true)
-		{
+		
+		try {
 			$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-			self::$template_cache = $xmlAPI->getTemplates($this->pluginObj);
+			$templateOptions = $xmlAPI->getTemplates($this->pluginObj);
+
+			$use_meeting_template = new ilCheckboxInputGUI(
+				$this->pluginObj->txt('use_meeting_template'),
+				'use_meeting_template'
+			);
+			$use_meeting_template->setInfo($this->pluginObj->txt('use_meeting_template_info'));
+			$template_source = new ilSelectInputGUI('', 'template_sco_id');
+			$template_source->setOptions($templateOptions);
+
+			$use_meeting_template->addSubItem($template_source);
+			$this->form->addItem($use_meeting_template);
+		} catch (\Exception $e) {
 		}
-		
-		$use_meeting_template = new ilCheckboxInputGUI($this->pluginObj->txt('use_meeting_template'), 'use_meeting_template');
-		$use_meeting_template->setInfo($this->pluginObj->txt('use_meeting_template_info'));
-		$template_source = new ilSelectInputGUI('', 'template_sco_id');
-		$template_source->setOptions(self::$template_cache);
-		
-		$use_meeting_template->addSubItem($template_source);
-		$this->form->addItem($use_meeting_template);
-		
+
 		$crs_grp_trigger = new ilCheckboxInputGUI($this->pluginObj->txt('allow_crs_grp_trigger'), 'allow_crs_grp_trigger');
 		$crs_grp_trigger->setInfo($this->pluginObj->txt('allow_crs_grp_trigger_info'));
 		$this->form->addItem($crs_grp_trigger);
@@ -717,8 +721,10 @@ $tbl .= "</table>";
 		$this->initIliasSettingsForm();
 		if($this->form->checkInput())
 		{
-			ilAdobeConnectServer::setSetting('use_meeting_template', (int)$this->form->getInput('use_meeting_template'));
-			ilAdobeConnectServer::setSetting('template_sco_id', (int)$this->form->getInput('template_sco_id'));
+			if ($this->form->getItemByPostVar('use_meeting_template')) {
+				ilAdobeConnectServer::setSetting('use_meeting_template', (int)$this->form->getInput('use_meeting_template'));
+				ilAdobeConnectServer::setSetting('template_sco_id', (int)$this->form->getInput('template_sco_id'));
+			}
 			ilAdobeConnectServer::setSetting('obj_creation_settings', serialize($this->form->getInput('obj_creation_settings')));
 
 			ilAdobeConnectServer::setSetting('allow_crs_grp_trigger', (int)$this->form->getInput('allow_crs_grp_trigger'));
