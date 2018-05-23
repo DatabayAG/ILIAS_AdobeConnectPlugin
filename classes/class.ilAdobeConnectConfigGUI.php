@@ -334,18 +334,23 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 					ilUtil::sendSuccess($lng->txt('settings_saved'), true);
 					$ilCtrl->redirect($this, 'editAdobeSettings');
 				}
-				catch(ilException $e)
+				catch(Exception $e)
 				{
 					// rollback
-					foreach($params as $key => $val)
-					{						
+					foreach($params as $key => $val) {
 						ilAdobeConnectServer::setSetting($key, trim($val));
 					}
-					
+
 					ilAdobeConnectServer::_getInstance()->commitSettings();
-					
-					$this->form->getItemByPostVar('server')
-						   	   ->setAlert($this->getPluginObject()->txt($e->getMessage()));
+
+					$untranslatedError = '-' . $this->getPluginObject()->getPrefix() . '_' . $e->getMessage() . '-';
+					if ($this->getPluginObject()->txt($e->getMessage()) != $untranslatedError) {
+						$this->form->getItemByPostVar('server')
+							->setAlert($this->getPluginObject()->txt($e->getMessage()));
+					} else {
+						$this->form->getItemByPostVar('server')
+							->setAlert($e->getMessage());
+					}
 				}
 			}
 			else
