@@ -2078,25 +2078,31 @@ class ilAdobeConnectXMLAPI
 	
 		$xml = simplexml_load_file($url_1);
 		$templates = array();
-		
-		foreach($xml->shortcuts->sco as $folder)
+
+		if(is_array($xml->shortcuts->sco))
 		{
-			if(($folder['type'] == 'shared-meeting-templates') || $folder['type'] == 'my-meeting-templates')
+			foreach($xml->shortcuts->sco as $folder)
 			{
-				$sco_id = (string)$folder['sco-id'];
-				$txt_folder_name = $folder['type'] == 'shared-meeting-templates' ? $txt_shared_meeting_templates : $txt_my_meeting_templates;
-				$url_2 = $this->getApiUrl(array(
-					'action' => 'sco-contents',
-					'sco-id' => $sco_id,
-					'session' => $session
-				
-				));
-				$xml_2 = simplexml_load_file($url_2);
-				
-				foreach($xml_2->scos->sco as $sco)
+				if(($folder['type'] == 'shared-meeting-templates') || $folder['type'] == 'my-meeting-templates')
 				{
-					$template_sco_id                              = (string)$sco['sco-id'];
-					$templates[$template_sco_id] = (string)$sco->{'name'} .' ('.$txt_folder_name.')';
+					$sco_id	= (string)$folder['sco-id'];
+					$txt_folder_name = $folder['type'] == 'shared-meeting-templates' ? $txt_shared_meeting_templates : $txt_my_meeting_templates;
+					$url_2 = $this->getApiUrl(array(
+						'action'  => 'sco-contents',
+						'sco-id'  => $sco_id,
+						'session' => $session
+
+					));
+					$xml_2  = simplexml_load_file($url_2);
+
+					if(is_array($xml_2->scos->sco))
+					{
+						foreach($xml_2->scos->sco as $sco)
+						{
+							$template_sco_id  = (string)$sco['sco-id'];
+							$templates[$template_sco_id] = (string)$sco->{'name'} . ' (' . $txt_folder_name . ')';
+						}
+					}
 				}
 			}
 		}
