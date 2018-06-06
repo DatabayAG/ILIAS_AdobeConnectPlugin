@@ -1683,6 +1683,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 * @param string $url
 	 * @param string $filePath
 	 * @param string $title
+	 * @throws \ilAdobeConnectContentUploadException
 	 */
 	public function uploadFile($url, $filePath, $title = '')
 	{
@@ -1711,9 +1712,26 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
 		$postResult = curl_exec($curl);
 		curl_close($curl);
-		
-		$GLOBALS['ilLog']->write("AdobeConnect: addContent result ...");
-		$GLOBALS['ilLog']->write($postResult);
+
+		$this->pluginObj->includeClass('class.ilAdobeConnectContentUploadException.php');
+		try {
+			$GLOBALS['ilLog']->write("AdobeConnect: addContent result ...");
+			$GLOBALS['ilLog']->write($postResult);
+
+			$xml = simplexml_load_string($postResult);
+
+			if (!($xml instanceof \SimpleXMLElement)) {
+				throw new \ilAdobeConnectContentUploadException('add_cnt_err');
+			}
+
+			if (strtolower($xml->status['code']) !== 'ok') {
+				throw new \ilAdobeConnectContentUploadException('add_cnt_err');
+			}
+		} catch (\Exception $e) {
+			$GLOBALS['ilLog']->write($e->getMessage());
+
+			throw new \ilAdobeConnectContentUploadException('add_cnt_err');
+		}
 	}
 	
 	/**
