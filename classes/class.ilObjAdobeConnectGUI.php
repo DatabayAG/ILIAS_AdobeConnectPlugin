@@ -2786,6 +2786,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 						$serverConfig = ilAdobeConnectServer::_getInstance();
 						$minTime       = new ilDateTime(time() + $serverConfig->getScheduleLeadTime() * 60 * 60, IL_CAL_UNIX);
 
+						if ($form->getInput('time_type_selection') == 'permanent_room') {
+							$form->getItemByPostVar("start_date")->checkInput();
+						}
+
 						$newStartDate  = $form->getItemByPostVar("start_date")->getDate();
 
 						$time_mismatch = false;
