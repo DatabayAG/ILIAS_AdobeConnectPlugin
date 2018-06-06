@@ -138,6 +138,7 @@ knock_at_vc#:#Knock
 redirect_failed#:#Redirect failed!!
 already_member#:#You already have been added as member
 xavc_lead_time_mismatch#:#The start date or expected duration can only be changed if it is scheduled after %s. Other modifications (e.g. title or description) has been applied.
+xavc_lead_time_mismatch_create#:#The start date has to be after %s.
 user_status#:#Status at Adobe Connect
 no_active_pool#:#There is no private meeting active 
 no_active_vcpool#:#There is no Adobe Meeting active 
