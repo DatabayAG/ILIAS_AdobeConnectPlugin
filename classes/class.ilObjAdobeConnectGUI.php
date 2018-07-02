@@ -98,6 +98,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$next_class = $this->ctrl->getNextClass($this);
 		switch($next_class) {
 			case strtolower('ilUsersGalleryGUI'):
+				$this->prepareOutput();
+
 				$this->pluginObj->includeClass("class.ilXAVCPermissions.php");
 				$this->pluginObj->includeClass("class.ilObjAdobeConnectAccess.php");
 
@@ -113,6 +115,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				$gallery = new ilUsersGalleryGUI($provider);
 				$gallery->setHideFilters(true);
 				$this->ctrl->forwardCommand($gallery);
+				$this->tpl->show();
 				return;
 				break;
 		}
