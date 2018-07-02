@@ -27,6 +27,7 @@ require_once './Services/User/Gallery/classes/class.ilUsersGalleryGUI.php';
 *
 * @ilCtrl_isCalledBy ilObjAdobeConnectGUI: ilRepositoryGUI, ilAdministrationGUI, ilObjPluginDispatchGUI
 * @ilCtrl_Calls ilObjAdobeConnectGUI: ilPermissionGUI, ilInfoScreenGUI, ilObjectCopyGUI, ilRepositorySearchGUI, ilPublicUserProfileGUI, ilCommonActionDispatcherGUI
+* @ilCtrl_Calls ilObjAdobeConnectGUI: ilUsersGalleryGUI
 *
 */
 class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPermissions
@@ -90,6 +91,33 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	public final function getType()
 	{
 		return "xavc";
+	}
+
+	public function executeCommand()
+	{
+		$next_class = $this->ctrl->getNextClass($this);
+		switch($next_class) {
+			case strtolower('ilUsersGalleryGUI'):
+				$this->pluginObj->includeClass("class.ilXAVCPermissions.php");
+				$this->pluginObj->includeClass("class.ilObjAdobeConnectAccess.php");
+
+				$this->checkPermission("read");
+
+				$this->pluginObj->includeClass('class.ilAdobeConnectUsersGalleryCollectionProvider.php');
+				$this->tabs->activateTab('participants');
+				$this->__setSubTabs('participants');
+				$this->tabs->activateSubTab("showMembersGallery");
+
+				$provider    = new ilAdobeConnectUsersGalleryCollectionProvider(ilAdobeConnectContainerParticipants::getInstanceByObjId($this->object->getId()));
+
+				$gallery = new ilUsersGalleryGUI($provider);
+				$gallery->setHideFilters(true);
+				$this->ctrl->forwardCommand($gallery);
+				return;
+				break;
+		}
+		
+		parent::executeCommand();
 	}
 
     /**
@@ -177,7 +205,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					case 'requestAdobeConnectContent':
 					case "viewContents":
 		            case "viewRecords":
-					case "showMembersGallery":
 					case "performCrsGrpTrigger":
 						$this->checkPermission("read");
 						$this->$cmd();
@@ -278,7 +305,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		else
 		if ($this->access->checkAccess("read", "", $this->object->getRefId()))
 		{
-			$this->tabs->addTab("participants", $this->txt("participants"), $this->ctrl->getLinkTarget($this, "showMembersGallery"));
+			$this->tabs->addTab("participants", $this->txt("participants"), $this->ctrl->getLinkTargetByClass('ilUsersGalleryGUI', ''));
 		}
 
 //		// tab for the "show records" command
@@ -323,7 +350,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 						$this->tabs->addSubTab("addCrsGrpMembers",$this->txt("add_crs_grp_members"),$this->ctrl->getLinkTarget($this,'addCrsGrpMembers'));
 					}
 				}
-				$this->tabs->addSubTab("showMembersGallery",$this->pluginObj->txt('members_gallery'),$this->ctrl->getLinkTarget($this,'showMembersGallery'));
+				$this->tabs->addSubTab("showMembersGallery",$this->pluginObj->txt('members_gallery'),$this->ctrl->getLinkTargetByClass('ilUsersGalleryGUI', ''));
 			break;
 		}
     }
@@ -1197,26 +1224,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		return $this->editParticipants();
 	}
 
-	public function showMembersGallery()
-	{
-		global $DIC;
-		$tpl = $DIC->ui()->mainTemplate();
-		
-		$this->pluginObj->includeClass('class.ilAdobeConnectUsersGalleryCollectionProvider.php');
-		$this->tabs->activateTab('participants');
-		$this->__setSubTabs('participants');
-		$this->tabs->activateSubTab("showMembersGallery");
-
-		$provider    = new ilAdobeConnectUsersGalleryCollectionProvider(ilAdobeConnectContainerParticipants::getInstanceByObjId($this->object->getId()));
-		$gallery_gui = new ilUsersGalleryGUI($provider);
-		$this->ctrl->setCmd('view');
-		$gallery_gui->executeCommand();
-		
-		$tpl->getStandardTemplate();
-		
-		return;
-	}
-	
 	public function requestAdobeConnectContent()
 	{
 		global $DIC;
