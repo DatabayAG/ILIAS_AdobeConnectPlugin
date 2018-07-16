@@ -2,7 +2,7 @@
 include_once dirname(__FILE__) . "/class.ilAdobeConnectServer.php";
 /**
  * Class ilXMLApiFactory
- * @author Nadia Ahmad <nahmad@databay.de>
+ * @author Nadia Matuschek <nmatuschek@databay.de>
  */
 class ilXMLApiFactory
 {

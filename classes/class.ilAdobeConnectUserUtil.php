@@ -1,8 +1,10 @@
 <?php
+
+require_once  'Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectSessionHandler.php';
 /**
- * @author Nadia Ahmad <nahmad@databay.de>
- * 
-*/
+ * Class ilAdobeConnectUserUtil
+ *  @author Nadia Matuschek <nmatuschek@databay.de>
+ */
 class ilAdobeConnectUserUtil
 {
     /**
@@ -153,12 +155,9 @@ class ilAdobeConnectUserUtil
 	public function ensureUserFolderExistance($a_xavc_login = "")
 	{
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-		$session = $xmlAPI->getBreezeSession();
+		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
+		$admin_session = $session_instance::getAdminInstanceSession();
 
-		$instance = ilAdobeConnectServer::_getInstance();
-		$login = $instance->getLogin();
-		$pass = $instance->getPasswd();
-		
 		if(ilAdobeConnectServer::getSetting('use_user_folders') == 1)
 		{
 			if($a_xavc_login)
@@ -170,13 +169,13 @@ class ilAdobeConnectUserUtil
 				$xavc_login = $this->getXAVCLogin();
 			}
 
-			if ($session != NULL && $xmlAPI->login($login, $pass, $session))
+			if ($admin_session != NULL )
 			{
-				$folder_id = $xmlAPI->lookupUserFolderId($xavc_login, $session);
+				$folder_id = $xmlAPI->lookupUserFolderId($xavc_login, $admin_session);
 				
 				if($folder_id == NULL)
 				{
-					$folder_id = $xmlAPI->createUserFolder($xavc_login, $session);
+					$folder_id = $xmlAPI->createUserFolder($xavc_login, $admin_session);
 				}
 				
 				return $folder_id;
@@ -184,9 +183,9 @@ class ilAdobeConnectUserUtil
 		}
 		else
 		{
-			if ($session != NULL && $xmlAPI->login($login, $pass, $session))
+			if ($admin_session != NULL )
 			{
-				$folder_id = $xmlAPI->getShortcuts('my-meetings', $session);
+				$folder_id = $xmlAPI->getShortcuts('my-meetings', $admin_session);
 				return $folder_id;
 			}
 			else
@@ -268,15 +267,12 @@ class ilAdobeConnectUserUtil
     public function addUser()
     {
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-		$session = $xmlAPI->getBreezeSession();
-
-        $instance = ilAdobeConnectServer::_getInstance();
-        $login = $instance->getLogin();
-        $pass = $instance->getPasswd();
+		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
+		$session = $session_instance::getAdminInstanceSession();
 
         $user_pass = $this->generatePass();
         
-        if ($session != NULL && $xmlAPI->login($login, $pass, $session))
+        if ($session != NULL)
         {
 			$xmlAPI->addUser($this->getXAVCLogin(), $this->email, $user_pass, $this->first_name, $this->last_name, $session);
 			$xmlAPI->logout($session);
@@ -312,13 +308,10 @@ class ilAdobeConnectUserUtil
     		$xavc_login = $this->getXAVCLogin();
     	}
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-        $session = $xmlAPI->getBreezeSession();
+		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
+		$session = $session_instance::getAdminInstanceSession();
 
-        $instance = ilAdobeConnectServer::_getInstance();
-        $login = $instance->getLogin();
-        $pass = $instance->getPasswd();
-
-        if ($session != NULL && $xmlAPI->login($login, $pass, $session))
+        if ($session != NULL)
         {
 			$search = $xmlAPI->searchUser($xavc_login, $session);
             $xmlAPI->logout($session);
@@ -333,7 +326,8 @@ class ilAdobeConnectUserUtil
 	public function loginUser()
 	{
 		$xmlAPI  = ilXMLApiFactory::getApiByAuthMode();
-		$session = $xmlAPI->getBreezeSession();
+		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
+		$session = $session_instance::getAdminInstanceSession();
 
 		return $xmlAPI->externalLogin($this->getXAVCLogin(), null, $session);
 	}
@@ -346,7 +340,7 @@ class ilAdobeConnectUserUtil
     public function logoutUser($session)
     {
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-        $xmlAPI->logout($session);
+//        $xmlAPI->logout($session);
     }
 
     /**

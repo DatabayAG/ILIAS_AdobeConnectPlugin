@@ -1,6 +1,7 @@
 <?php
 include_once("./Services/Component/classes/class.ilPluginConfigGUI.php");
 require_once dirname(__FILE__) . '/../interfaces/interface.AdobeConnectPermissions.php';
+include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectSessionHandler.php");
 
 /**
  * @author	Nadia Matuschek <nmatuschek@databay.de>
@@ -313,7 +314,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                     if(ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH)
                     {
 					    $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-                        $session = $xmlAPI->getBreezeSession();
+						$session_instance = ilAdobeConnectSessionHandler::_getInstance();
+						$session = $session_instance::getAdminInstanceSession();
 
                         if(!$session)
                         {

@@ -1,6 +1,7 @@
 <?php
 
 include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectServer.php");
+include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectSessionHandler.php");
 
 /**
 * Connect to Adobe Connect API
@@ -47,7 +48,7 @@ class ilAdobeConnectXMLAPI
 		$this->port = $this->adcInfo->getPort();
 		$this->x_user_id = $this->adcInfo->getXUserId();
 		$this->auth_mode = $this->adcInfo->getAuthMode();
-    		$this->proxy();
+    	$this->proxy();
     }
 
 	public function getXUserId()
@@ -57,29 +58,10 @@ class ilAdobeConnectXMLAPI
 	
     public function getAdminSession()
     {
-        $session = $this->getBreezeSession();
+		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
+		$session = $session_instance::getAdminInstanceSession();
 
-		if (!$session) 
-		{
-		/**
-		 * @todo introduce exception
-		 */
-		return null;
-		}
-
-		$success = $this->login($this->adcInfo->getLogin(), $this->adcInfo->getPasswd(), $session);
-      
-        if ($success)
-		{
-			return $session;
-		}
-        else 
-		{
-            /**
-             * @todo introduce exception
-             */
-            return null;
-        }
+		return $session;
     }
 
 
@@ -96,10 +78,10 @@ class ilAdobeConnectXMLAPI
     {
         global $lng, $ilLog;
 
-		if(isset(self::$loginsession_cache[$session]) && self::$loginsession_cache[$session])
-		{
-			return self::$loginsession_cache[$session];
-		}
+//		if(isset(self::$loginsession_cache[$session]) && self::$loginsession_cache[$session])
+//		{
+//			return self::$loginsession_cache[$session];
+//		}
 
 		if(isset($user, $pass, $session))
 		{
@@ -125,7 +107,7 @@ class ilAdobeConnectXMLAPI
 
 			if($xml->status['code'] == 'ok')
 			{
-				self::$loginsession_cache[$session] = true;
+//				self::$loginsession_cache[$session] = true;
 				return true;
 			}
 			else
@@ -247,10 +229,10 @@ class ilAdobeConnectXMLAPI
 	 */
 	public function getBreezeSession($useCache = true)
 	{
-		if(null !== self::$breeze_session && $useCache)
-		{
-			return self::$breeze_session;
-		}
+//		if(null !== self::$breeze_session && $useCache)
+//		{
+//			return self::$breeze_session;
+//		}
 
 		global $ilLog;
 
@@ -264,7 +246,8 @@ class ilAdobeConnectXMLAPI
 				'timeout' => 4
 			)
 		);
-    		$ctx = $this->proxy($context);
+
+    	$ctx = $this->proxy($context);
 		$xml_string = file_get_contents($url, false, $ctx);
 		$xml        = simplexml_load_string($xml_string);
 
@@ -276,8 +259,8 @@ class ilAdobeConnectXMLAPI
 				return $session;
 			}
 
-			self::$breeze_session = $session;
-			return self::$breeze_session;
+//			self::$breeze_session = $session;
+//			return self::$breeze_session;
 		}
 		else
 		{
@@ -666,6 +649,9 @@ class ilAdobeConnectXMLAPI
      */
     public function getStartDate($sco_id, $folder_id, $session)
     {
+    	return NULL;
+
+
 		global $ilLog;
 
 		$url = $this->getApiUrl(array(
@@ -675,7 +661,8 @@ class ilAdobeConnectXMLAPI
 			'session' => $session
 		));
 
-        $xml = $this->getCachedSessionCall($url);
+//        $xml = $this->getCachedSessionCall($url);
+		$xml = simplexml_load_file($url);
         
         if ($xml->status['code']=="ok")
 		{
@@ -789,6 +776,8 @@ class ilAdobeConnectXMLAPI
      */
     public function getEndDate($sco_id, $folder_id, $session)
     {
+
+		return NULL;
 		global $ilLog;
 
 		$url = $this->getApiUrl(array(
@@ -1385,28 +1374,43 @@ class ilAdobeConnectXMLAPI
 			));
 		}
 
+		$result = array();
+
         $xml_host = simplexml_load_file($host);
-        foreach ($xml_host->permissions->principal as $user)
-        {
-            $result[(string)$user->login] = array("name"=>(string)$user->name, "login"=>(string)$user->login, 'status'=>'host');      
-        }
+
+		if(is_array($xml_host->permissions->principal))
+		{
+			foreach($xml_host->permissions->principal as $user)
+			{
+				$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'host');
+			}
+		}
 		
 		$xml_mini_host = simplexml_load_file($mini_host);
-        foreach ($xml_mini_host->permissions->principal as $user)
-        {
-            $result[(string)$user->login] = array("name"=>(string)$user->name, "login"=>(string)$user->login, 'status'=>'mini-host');
-        }
+		if(is_array($xml_mini_host->permissions->principal))
+		{
+			foreach($xml_mini_host->permissions->principal as $user)
+			{
+				$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'mini-host');
+			}
+		}
 
 		$xml_view = simplexml_load_file($view);
-        foreach ($xml_view->permissions->principal as $user)
-        {
-            $result[(string)$user->login] = array("name"=>(string)$user->name, "login"=>(string)$user->login, 'status'=>'view');
-        }
+		if(is_array($xml_view->permissions->principal))
+		{
+			foreach($xml_view->permissions->principal as $user)
+			{
+				$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'view');
+			}
+		}
 
 		$xml_denied = simplexml_load_file($denied);
-		foreach ($xml_denied->permissions->principal as $user)
+		if(is_array($xml_denied->permissions->principal))
 		{
-			$result[(string)$user->login] = array("name"=>(string)$user->name, "login"=>(string)$user->login, 'status'=>'denied');
+			foreach($xml_denied->permissions->principal as $user)
+			{
+				$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'denied');
+			}
 		}
 		
 		return is_array($result)?$result:array();
@@ -1737,7 +1741,7 @@ class ilAdobeConnectXMLAPI
 		$hash = $url;
 		if(isset(self::$scocontent_cache[$hash]))
 		{
-			return self::$scocontent_cache[$hash];
+//			return self::$scocontent_cache[$hash];
 		}
 
 		$xml = simplexml_load_file($url);
@@ -1830,7 +1834,8 @@ class ilAdobeConnectXMLAPI
 			}
 		}
 
-		$session = $this->getBreezeSession(false);
+		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
+		$session = $session_instance::getAdminInstanceSession();
 		if($this->login($user, $pwd, $session))
 		{
 			$ilLog->write("Adobe Connect ".__METHOD__.": Successfully authenticated session (Id: ".$ilUser->getId()." | ".$ilUser->getLogin().").");
