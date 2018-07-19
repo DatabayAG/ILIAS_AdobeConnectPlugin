@@ -156,7 +156,7 @@ class ilAdobeConnectUserUtil
 	{
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
 		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$admin_session = $session_instance::getAdminInstanceSession();
+		$admin_session = ilAdobeConnectSessionHandler::getAdminInstanceSession();
 
 		if(ilAdobeConnectServer::getSetting('use_user_folders') == 1)
 		{
@@ -268,7 +268,7 @@ class ilAdobeConnectUserUtil
     {
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
 		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
+		$session = ilAdobeConnectSessionHandler::getAdminInstanceSession();
 
         $user_pass = $this->generatePass();
         
@@ -326,8 +326,8 @@ class ilAdobeConnectUserUtil
 	public function loginUser()
 	{
 		$xmlAPI  = ilXMLApiFactory::getApiByAuthMode();
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
+		ilAdobeConnectSessionHandler::_getInstance();
+		$session = ilAdobeConnectSessionHandler::getAdminInstanceSession();
 
 		return $xmlAPI->externalLogin($this->getXAVCLogin(), null, $session);
 	}

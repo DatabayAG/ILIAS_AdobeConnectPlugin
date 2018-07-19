@@ -15,9 +15,11 @@ class ilAdobeConnectSessionHandler
 	protected static $instances = array();
 	protected static $instance;
 
+	const XAVC_COOKIE_PATH = CLIENT_DATA_DIR.'/temp/xavc/';
 
 	private function __construct()
 	{
+		ilUtil::makeDirParents(self::XAVC_COOKIE_PATH);
 	}
 
 	public static function _getInstance()
@@ -39,10 +41,16 @@ class ilAdobeConnectSessionHandler
 				$xmlAPI->login($login, $pass, $tmp_session);
 
 				self::$instances['admin_session'] = $xmlAPI->getBreezeSession(false);
+
+				if(!file_exists(XAVC_COOKIE_PATH.'/'.self::$instances['admin_session']))
+				{
+					$file_handler = fopen(self::$instances['admin_session'].'.txt', 'w', false);
+					fwrite($file_handler, self::$instances['admin_session']);
+					fclose($file_handler);
+				}
 			}
 		}
 		return self::$instance ;
-
 	}
 
 	public static function getAdminInstanceSession()

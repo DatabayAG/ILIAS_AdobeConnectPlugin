@@ -918,8 +918,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			#$this->ilias->raiseError($this->lng->txt("err_no_valid_sco_id_given"),$this->ilias->error_obj->MESSAGE);
 		}
 
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
+		ilAdobeConnectSessionHandler::_getInstance();
+		$session = ilAdobeConnectSessionHandler::getAdminInstanceSession();
 		
 		if($session != NULL)
 		{
@@ -1463,8 +1463,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function getParticipants()
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
+		$session = true;
 
 		if($session != NULL)
 		{
