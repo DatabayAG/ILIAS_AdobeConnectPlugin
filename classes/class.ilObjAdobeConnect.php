@@ -159,8 +159,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		$this->ref_id    = $a_ref_id;
 		$this->pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
 
-		$this->pluginObj->includeClass('class.ilAdobeConnectSessionHandler.php');
-
 		if(!$ilCtrl->isAsynch())
 		{
 			$this->pluginObj->includeClass('class.ilAdobeConnectContents.php');
@@ -473,20 +471,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		 * */
 		global $ilUser, $ilDB;
 
-		// receive breeze session
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if(!$session)
-		{
-			throw new ilException('xavc_connection_error');
-		}
-
-		// access check
-//		if(!$this->xmlApi->login($this->adminLogin, $this->adminPass, $session))
-//		{
-//			throw new ilException('xavc_authentication_error');
-//		}
-
 		// receive folder id
 		$this->externalLogin = $this->checkExternalUser();
 		$folder_id = $this->getFolderIdByLogin($this->externalLogin);
@@ -501,7 +485,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			throw new ilException('xavc_meeting_creation_error');
 		}
 
-		if(!$this->xmlApi->getName($sco_id, $folder_id, $session))
+		if(!$this->xmlApi->getName($sco_id, $folder_id))
 		{
 			throw new ilException('xavc_meeting_not_available');
 		}
@@ -518,12 +502,12 @@ class ilObjAdobeConnect extends ilObjectPlugin
 					$ilUser->getEmail(),
 					$ilUser->getPasswd(),
 					$ilUser->getFirstName(),
-					$ilUser->getLastName(),
-					$session
+					$ilUser->getLastName()
+
 				);
 		}
 
-		$this->xmlApi->updateMeetingParticipant($sco_id, $this->externalLogin, $session, 'host');
+		$this->xmlApi->updateMeetingParticipant($sco_id, $this->externalLogin, null, 'host');
 
 		$start_date = time();
 		$end_date = strtotime('+2 hours');			
@@ -564,21 +548,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		global $ilDB;
 
 		$owner_id = ilObject::_lookupOwner($obj_id);
-		$ownerObj = new ilObjUser($owner_id); 
-		
-		// receive breeze session
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if(!$session)
-		{
-			throw new ilException('xavc_connection_error');
-		}
-
-		// access check
-//		if(!$this->xmlApi->login($this->adminLogin, $this->adminPass, $session))
-//		{
-//			throw new ilException('xavc_authentication_error');
-//		}
+		$ownerObj = new ilObjUser($owner_id);
 
 		// receive folder id
 		$this->externalLogin = $this->checkExternalUser($ownerObj->getId());
@@ -612,7 +582,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				date('Y-m-d', $end_date->getUnixTime()),
 				date('H:i', $end_date->getUnixTime()),
 				$folder_id,
-				$session,
+				null,
 				$source_sco_id
 			);
 
@@ -640,22 +610,22 @@ class ilObjAdobeConnect extends ilObjectPlugin
 						$ownerObj->getEmail(),
 						$ownerObj->getPasswd(),
 						$ownerObj->getFirstName(),
-						$ownerObj->getLastName(),
-						$session);
+						$ownerObj->getLastName()
+						);
 			}
-			$this->xmlApi->updateMeetingParticipant($meeting_id, $this->externalLogin, $session, 'host');
+			$this->xmlApi->updateMeetingParticipant($meeting_id, $this->externalLogin, null, 'host');
 		}
 		else
 		{
 			//In the SWITCH aai case, every user already exists thanks to "cave"
 	
 			//Add ILIAS-user himself
-			$this->xmlApi->addMeetingHost($meeting_id, $ownerObj->getEmail(), $session);
+			$this->xmlApi->addMeetingHost($meeting_id, $ownerObj->getEmail(), null);
 			//Add technical user
-			$this->xmlApi->updateMeetingParticipant($meeting_id, ilAdobeConnectServer::getSetting('login'), $session, 'host');
+			$this->xmlApi->updateMeetingParticipant($meeting_id, ilAdobeConnectServer::getSetting('login'), null, 'host');
 		}
 		
-		$this->xmlApi->updatePermission($meeting_id, $session, $access_level);
+		$this->xmlApi->updatePermission($meeting_id, null, $access_level);
 		
 		$ilDB->insert('rep_robj_xavc_data',
 			array(
@@ -730,12 +700,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
 		// receive breeze session
 
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 
-		if($session != NULL)
-		{
 			foreach($admins as $user_id)
 			{
 				if($user_id == $this->getOwner())
@@ -763,7 +729,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 					$xavcMemberObj->insertXAVCMember();
 				}
 
-				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
+				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
 			}
 
 			foreach($tutors as $user_id)
@@ -793,7 +759,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 					$xavcMemberObj->insertXAVCMember();
 				}
 
-				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
+				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
 			}
 
 			foreach($members as $user_id)
@@ -822,7 +788,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 					$xavcMemberObj->insertXAVCMember();
 				}
 
-				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session, $status);
+				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
 			}
 
 			$owner_id = ilObject::_lookupOwner($oParticipants->getObjId());
@@ -847,8 +813,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				$xavcMemberObj->insertXAVCMember();
 			}
 
-			$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($owner_id), $session, $status);
-		}
+			$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($owner_id), null, $status);
 	}
 
 	public function deleteCrsGrpMembers($sco_id, $delete_user_ids)
@@ -867,13 +832,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				ilXAVCMembers::deleteXAVCMember($usr_id, $this->getRefId());
 				$xavc_login = ilXAVCMembers::_lookupXAVCLogin($usr_id);
 
-				$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-				$session = $session_instance::getAdminInstanceSession();
 
-				if($session != NULL)
-				{
-					$this->xmlApi->deleteMeetingParticipant($sco_id, $xavc_login, $session);
-				}
+					$this->xmlApi->deleteMeetingParticipant($sco_id, $xavc_login, null);
 
 				//remove from pd
 				ilObjUser::_dropDesktopItem($usr_id, $this->getRefId(), 'xavc');
@@ -918,21 +878,16 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			#$this->ilias->raiseError($this->lng->txt("err_no_valid_sco_id_given"),$this->ilias->error_obj->MESSAGE);
 		}
 
-		ilAdobeConnectSessionHandler::_getInstance();
-		$session = ilAdobeConnectSessionHandler::getAdminInstanceSession();
-		
-		if($session != NULL)
-		{
 			//only read url via api, if url in database is empty
 			if(!$this->url)
 			{
 				//the parameter meeting is used for the switchaai-case
-				$this->url = substr($this->xmlApi->getURL($this->sco_id, $this->folder_id, $session, 'meeting'), 0, -1);
+				$this->url = substr($this->xmlApi->getURL($this->sco_id, $this->folder_id, null, 'meeting'), 0, -1);
 			}
 
-			$date_begin = $this->xmlApi->getStartDate($this->sco_id, $this->folder_id, $session);
+			$date_begin = $this->xmlApi->getStartDate($this->sco_id, $this->folder_id, null);
 			$this->start_date = new ilDateTime(strtotime($date_begin), IL_CAL_UNIX);
-			$date_end_string = $this->xmlApi->getEndDate($this->sco_id, $this->folder_id, $session);
+			$date_end_string = $this->xmlApi->getEndDate($this->sco_id, $this->folder_id, null);
 			$end_date = new ilDateTime(strtotime($date_end_string), IL_CAL_UNIX);
 			$this->end_date = $end_date;
 			$unix_duration  = $end_date->getUnixTime() - $this->start_date->getUnixTime();
@@ -944,8 +899,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			$this->pluginObj->includeClass('class.ilAdobeConnectContents.php');
 			$this->contents = new ilAdobeConnectContents();
 			
-			$this->access_level = $this->xmlApi->getPermissionId($this->sco_id, $session);
-		}
+			$this->access_level = $this->xmlApi->getPermissionId($this->sco_id, null);
+
 		$this->initParticipantsObject();
 	}
 
@@ -959,19 +914,14 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		 */
 		global $ilDB;
 
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL)
-		{
 			$end_date = new ilDateTime($this->start_date->getUnixTime() + $this->duration["hours"] * 3600 + $this->duration["minutes"] * 60, IL_CAL_UNIX);
 			$this->xmlApi->updateMeeting($this->sco_id, $this->getTitle(), $this->getDescription(),
 				date('Y-m-d', $this->start_date->getUnixTime()), date('H:i', $this->start_date->getUnixTime()),
-				date('Y-m-d', $end_date->getUnixTime()), date('H:i', $end_date->getUnixTime()),
-				$session);
+				date('Y-m-d', $end_date->getUnixTime()), date('H:i', $end_date->getUnixTime())
+				);
 
-			$this->xmlApi->updatePermission($this->sco_id, $session,  $this->permission);
-		}
-		
+			$this->xmlApi->updatePermission($this->sco_id, null,  $this->permission);
+
 		$ilDB->update('rep_robj_xavc_data',
 			array(
 				'start_date'     => array('integer', $this->getStartdate()->getUnixTime()),
@@ -995,12 +945,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		 * @var $ilDB ilDB
 		 */
 		global $ilDB;
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL)
-		{
-			$this->xmlApi->deleteMeeting($this->sco_id, $session);
-		}
+
+		$this->xmlApi->deleteMeeting($this->sco_id);
 
 		$ilDB->manipulateF('DELETE FROM rep_robj_xavc_data WHERE id = %s',
 			array('integer'), array($this->getId()));
@@ -1292,19 +1238,15 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	public function readContents($by_type = NULL)
 	{
 
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
 		$ids = array();
 
-		if($session != NULL )
-		{
-			$ids = ($this->xmlApi->getContentIds($this->sco_id, $session) ? $this->xmlApi->getContentIds($this->sco_id, $session) : array());
+			$ids = ($this->xmlApi->getContentIds($this->sco_id, null) ? $this->xmlApi->getContentIds($this->sco_id, null) : array());
 
 			foreach($ids as $id)
 			{
-				$date_created = $this->xmlApi->getDateCreated($id, $this->sco_id, $session);
+				$date_created = $this->xmlApi->getDateCreated($id, $this->sco_id, null);
 
-				$date_end = $this->xmlApi->getDateEnd($id, $this->sco_id, $session);
+				$date_end = $this->xmlApi->getDateEnd($id, $this->sco_id, null);
 				if($date_end == '')
 				{
 					$type = 'content';
@@ -1318,22 +1260,17 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				{
 					$attributes   = array(
 						"sco-id"       => $id,
-						"name"         => $this->xmlApi->getName($id, $this->sco_id, $session),
-						"url"          => $this->xmlApi->getURL($id, $this->sco_id, $session),
+						"name"         => $this->xmlApi->getName($id, $this->sco_id, null),
+						"url"          => $this->xmlApi->getURL($id, $this->sco_id, null),
 						"date-created" => new ilDateTime(substr($date_created, 0, 10) . " " . substr($date_created, 11, 8), IL_CAL_DATETIME),
 						"date-end"	=> $date_end,
-						"description"  => $this->xmlApi->getDescription($id, $this->sco_id, $session),
+						"description"  => $this->xmlApi->getDescription($id, $this->sco_id, null),
 						"type"         => $type
 					);
 					$this->contents->addContent($attributes);
 				}
 			}
 			return true;
-		}
-		else
-		{
-			return false;
-		}
 	}
 
 	/**
@@ -1342,31 +1279,23 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function readRecords()
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL )
-		{
-			$ids = $this->xmlApi->getRecordIds($this->sco_id, $session);
+			$ids = $this->xmlApi->getRecordIds($this->sco_id, null);
 			foreach($ids as $id)
 			{
-				$date_created       = $this->xmlApi->getDateCreated($id, $this->sco_id, $session);
+				$date_created       = $this->xmlApi->getDateCreated($id, $this->sco_id, null);
 				$attributes_records = array(
 					"sco-id"       => $id,
-					"name"         => $this->xmlApi->getName($id, $this->getScoId(), $session),
-					"url"          => $this->xmlApi->getURL($id, $this->sco_id, $session),
+					"name"         => $this->xmlApi->getName($id, $this->getScoId(), null),
+					"url"          => $this->xmlApi->getURL($id, $this->sco_id, null),
 					"date-created" => new ilDateTime(substr($date_created, 0, 10) . " " . substr($date_created, 11, 8), IL_CAL_DATETIME),
-					"duration"     => $this->xmlApi->getDuration($id, $this->sco_id, $session),
-					"description"  => $this->xmlApi->getDescription($id, $this->sco_id, $session),
+					"duration"     => $this->xmlApi->getDuration($id, $this->sco_id, null),
+					"description"  => $this->xmlApi->getDescription($id, $this->sco_id, null),
 					"type"         => "record"
 				);
 				$this->contents->addContent($attributes_records);
 			}
 			return true;
-		}
-		else
-		{
-			return false;
-		}
+
 	}
 
 	/**
@@ -1400,13 +1329,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function addContent($title = "untitled", $description = "")
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
 
-		if($session != NULL )
-		{
-			return $this->xmlApi->addContent($this->sco_id, $title, $description, $session);
-		}
+			return $this->xmlApi->addContent($this->sco_id, $title, $description, null);
 	}
 
 	/**
@@ -1418,12 +1342,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function updateContent($sco_id, $title, $description)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL )
-		{
-			$this->xmlApi->updateContent($sco_id, $title, $description, $session);
-		}
+			$this->xmlApi->updateContent($sco_id, $title, $description, null);
 	}
 
 	/**
@@ -1432,12 +1351,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function deleteContent($sco_id)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL )
-		{
-			$this->xmlApi->deleteContent($sco_id, $session);
-		}
+			$this->xmlApi->deleteContent($sco_id, null);
 	}
 
 	/**
@@ -1447,10 +1361,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function uploadContent($sco_id)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL)
-			return $this->xmlApi->uploadContent($sco_id, $session);
+			return $this->xmlApi->uploadContent($sco_id, null);
 	}
 
 	/*
@@ -1463,16 +1374,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function getParticipants()
 	{
-		$session = true;
 
-		if($session != NULL)
-		{
-			return $this->xmlApi->getMeetingsParticipants($this->sco_id, $session);
-		}
-		else
-		{
-			return NULL;
-		}
+			return $this->xmlApi->getMeetingsParticipants($this->sco_id, null);
 	}
 
 	/**
@@ -1482,14 +1385,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function addParticipant($login)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
 		//check if adobe connect account exists
-		if($session != NULL )
-		{
-			$participant = $this->xmlApi->addMeetingParticipant($this->sco_id, $login, $session);
+			$participant = $this->xmlApi->addMeetingParticipant($this->sco_id, $login, null);
 			return $participant;
-		}
 	}
 
 
@@ -1502,20 +1400,13 @@ class ilObjAdobeConnect extends ilObjectPlugin
      */
     public function addSwitchParticipant($login,$status)
     {
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-        $participant = $this->xmlApi->updateMeetingParticipantByTechnicalUser($this->getScoId(), $login, $session, $status);
+        $participant = $this->xmlApi->updateMeetingParticipantByTechnicalUser($this->getScoId(), $login, null, $status);
         return $participant;
     }
 
 	public function updateParticipant($login, $permission)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL )
-		{
-			return $this->xmlApi->updateMeetingParticipant($this->sco_id, $login, $session, $permission);
-		}
+			return $this->xmlApi->updateMeetingParticipant($this->sco_id, $login, null, $permission);
 	}
 
 	/**
@@ -1525,11 +1416,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function deleteParticipant($login)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
 
-		if($session != NULL )
-			return $this->xmlApi->deleteMeetingParticipant($this->sco_id, $login, $session);
+			return $this->xmlApi->deleteMeetingParticipant($this->sco_id, $login, null);
 	}
 
 	/**
@@ -1539,20 +1427,12 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function isParticipant($login)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL )
-			return $this->xmlApi->isParticipant($login, $this->sco_id, $session);
+			return $this->xmlApi->isParticipant($login, $this->sco_id, null);
 	}
 
 	public function getPermissionId()
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL)
-		{
-			$permission = $this->xmlApi->getPermissionId($this->sco_id, $session);
-		}
+			$permission = $this->xmlApi->getPermissionId($this->sco_id, null);
 		return $permission;
 	}
 
@@ -1694,32 +1574,25 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
 		$xmlApi = ilXMLApiFactory::getApiByAuthMode();
 	
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($session != NULL )
-		{
-			$scos = $xmlApi->getScosByFolderId($folder_id, $session);
-		}
+			$scos = $xmlApi->getScosByFolderId($folder_id, null);
 		return $scos;
 	}
 	
 	public function getFolderIdByLogin($externalLogin)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
 
 		if(ilAdobeConnectServer::getSetting('use_user_folders') == 1)
 		{
-			$folder_id = $this->xmlApi->lookupUserFolderId($externalLogin, $session);
+			$folder_id = $this->xmlApi->lookupUserFolderId($externalLogin, null);
 			
 			if(!$folder_id)
 			{
-				$folder_id = $this->xmlApi->createUserFolder($externalLogin, $session);
+				$folder_id = $this->xmlApi->createUserFolder($externalLogin, null);
 			}
 		}
 		else
 		{
-			$folder_id = $this->xmlApi->getShortcuts("my-meetings", $session);
+			$folder_id = $this->xmlApi->getShortcuts("my-meetings", null);
 		}
 		return $folder_id;
 	}
@@ -1730,14 +1603,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function getContentIconAttribute($sco_id)
 	{
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
 
 		$icons = array();
-		if($session != NULL )
-		{
-			$icons[] = $this->xmlApi->getContentIconAttribute($sco_id, $this->sco_id, $session);
-		}
+			$icons[] = $this->xmlApi->getContentIconAttribute($sco_id, $this->sco_id, null);
 		return $icons;
 	}
 

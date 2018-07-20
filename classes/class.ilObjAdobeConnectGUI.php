@@ -722,7 +722,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                     $session = $ilAdobeConnectUser->loginUser();
                     $_SESSION['xavc_last_sso_sessid'] = $session;
                     $url = $presentation_url.$this->object->getURL().'?session='.$session;
-                    
+					$xmlAPI->enterMeetingRoom($url);
+
                     $GLOBALS['ilLog']->write(sprintf("Generated URL %s for user '%s'", $url, $xavc_login));
 
                     $presentation_url = ilAdobeConnectServer::getPresentationUrl(true);
@@ -736,6 +737,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                     {
                         $title_prefix = 'ILIAS';
                     }
+
+
+
+
                     $sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
 					$sso_tpl->setVariable('SPINNER_SRC', $this->pluginObj->getDirectory().'/templates/js/spin.js');
                     $sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);

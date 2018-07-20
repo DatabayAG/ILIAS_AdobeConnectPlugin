@@ -42,7 +42,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	 * @param string $session
 	 * @return bool
 	 */
-	public function addUser($login, $email, $pass, $first_name, $last_name, $session)
+	public function addUser($login, $email, $pass, $first_name, $last_name, $session = NULL)
 	{
 		/**
 		 * @var $ilLog ilLog
@@ -81,7 +81,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	 * @param string $session
 	 * @return bool|string
 	 */
-	public function searchUser($login, $session)
+	public function searchUser($login, $session = NULL)
 	{
 		/**
 		 * @var $ilLog ilLog

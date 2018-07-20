@@ -1,7 +1,6 @@
 <?php
 
 include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectServer.php");
-include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectSessionHandler.php");
 
 /**
 * Connect to Adobe Connect API
@@ -11,6 +10,11 @@ include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/
 */
 class ilAdobeConnectXMLAPI
 {
+	/**
+	 *
+	 */
+	const XAVC_COOKIE_PATH = CLIENT_DATA_DIR.'/temp/xavc/';
+
     /**
      *  Adobe Connect server
      *
@@ -49,22 +53,24 @@ class ilAdobeConnectXMLAPI
 		$this->x_user_id = $this->adcInfo->getXUserId();
 		$this->auth_mode = $this->adcInfo->getAuthMode();
     	$this->proxy();
+
+		ilUtil::makeDirParents(self::XAVC_COOKIE_PATH);
+		$this->generateAdminSessionCookie();
     }
+
+    public function generateAdminSessionCookie()
+	{
+		$this->getBreezeSession(false);
+		$this->login($this->adcInfo->getLogin(), $this->adcInfo->getPasswd());
+		$this->getBreezeSession(false);
+	}
+
 
 	public function getXUserId()
 	{
 		return $this->x_user_id;
 	}
 	
-    public function getAdminSession()
-    {
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-
-		return $session;
-    }
-
-
     /**
      *  Logs in user on the Adobe Connect server. The session id is caches until the
      *  logout function is called with the session id.
@@ -74,16 +80,11 @@ class ilAdobeConnectXMLAPI
      * @param String $session     Session id
      * @return boolean          return true if everything is ok
      */
-    public function login($user, $pass, $session)
+    public function login($user, $pass, $session = NULL)
     {
         global $lng, $ilLog;
 
-//		if(isset(self::$loginsession_cache[$session]) && self::$loginsession_cache[$session])
-//		{
-//			return self::$loginsession_cache[$session];
-//		}
-
-		if(isset($user, $pass, $session))
+		if(isset($user, $pass))
 		{
 			$url = $this->getApiUrl(array(
 				'action' 		=> 'login',
@@ -91,27 +92,14 @@ class ilAdobeConnectXMLAPI
 				'password'		=> $pass
 			));
 
-	      		$context = (array(
-	  			'http'  => array(
-	  				'timeout' => 4
-	  			),
-	  			'https' => array(
-	  				'timeout' => 4
-	  			)
-			));
-
-      		$ctx = $this->proxy($context);
-
 			$xml = $this->sendRequest($url);
 
 			if($xml->status['code'] == 'ok')
 			{
-//				self::$loginsession_cache[$session] = true;
 				return true;
 			}
 			else
 			{
-				unset(self::$loginsession_cache[$session]);
 				$ilLog->write('AdobeConnect login Request: '.$url);
 				if($xml)
 				{
@@ -124,7 +112,6 @@ class ilAdobeConnectXMLAPI
 		}
 		else
 		{
-			unset(self::$loginsession_cache[$session]);
 			$ilLog->write('AdobeConnect login failed due to missing login credentials ...');
 			ilUtil::sendFailure($lng->txt('err_wrong_login'));
 			return false;
@@ -141,7 +128,7 @@ class ilAdobeConnectXMLAPI
      */
     public function changeUserPassword($username, $newPassword)
     {
-		$user_id = $this->searchUser($username, $this->getAdminSession());
+		$user_id = $this->searchUser($username,null);
 		
 		if($user_id)
 		{
@@ -188,7 +175,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session     Session id
      * @return boolean          return true if everything is ok
      */
-    public function logout($session)
+    public function logout($session = NULL)
     {
 		global $ilLog;
 
@@ -198,13 +185,6 @@ class ilAdobeConnectXMLAPI
 
 		$xml = $this->sendRequest($url);
 
-        if($session == self::$breeze_session)
-        {
-        	self::$breeze_session = null;
-        }        
-
-        unset(self::$loginsession_cache[$session]);
-        
 		if($xml->status['code']=="ok")
 		{
 			return true;
@@ -221,45 +201,23 @@ class ilAdobeConnectXMLAPI
 		}
     }
 
+
+
 	/**
 	 * @param bool $useCache
 	 * @return null|string
 	 */
 	public function getBreezeSession($useCache = true)
 	{
-//		if(null !== self::$breeze_session && $useCache)
-//		{
-//			return self::$breeze_session;
-//		}
-
 		global $ilLog;
 
 		$url = $this->getApiUrl(array('action' => 'common-info'));
-
-    		$context = array(
-			'http'  => array(
-				'timeout' => 4
-			),
-			'https' => array(
-				'timeout' => 4
-			)
-		);
-
-    	$ctx = $this->proxy($context);
-
-
 		$xml = $this->sendRequest($url);
 
 		if($xml && $xml->common->cookie != "")
 		{
 			$session = (string)$xml->common->cookie;
-			if(!$useCache)
-			{
-				return $session;
-			}
-
-//			self::$breeze_session = $session;
-//			return self::$breeze_session;
+			return $session;
 		}
 		else
 		{
@@ -279,7 +237,7 @@ class ilAdobeConnectXMLAPI
 	 * @param String $session Session id
 	 * @return String             Object id
 	 */
-	public function getShortcuts($type, $session)
+	public function getShortcuts($type, $session = NULL)
 	{
 		$url = $this->getApiUrl(array(
 									 'action'  => 'sco-shortcuts'
@@ -309,7 +267,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session     Session id
      * @return String             Object id
      */
-    public function getFolderId($scoId, $session)
+    public function getFolderId($scoId, $session = NULL)
     {
         $url = $this->getApiUrl(array(
             'action' => 'sco-info',
@@ -338,7 +296,7 @@ class ilAdobeConnectXMLAPI
      * @return array                  Meeting sco-id AND Meeting url-path; NULL if something is wrong
      * @throws ilException
      */
-    public function addMeeting($name, $description, $start_date, $start_time, $end_date, $end_time, $folder_id, $session, $source_sco_id = 0)
+    public function addMeeting($name, $description, $start_date, $start_time, $end_date, $end_time, $folder_id, $session= NULL, $source_sco_id = 0)
     {
 		global $ilLog;
 	
@@ -398,7 +356,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean              Returns true if everything is ok
      */
-    public function updateMeeting($meeting_id, $name, $description, $start_date, $start_time, $end_date, $end_time, $session)
+    public function updateMeeting($meeting_id, $name, $description, $start_date, $start_time, $end_date, $end_time, $session= NULL)
     {
 		global $lng, $ilLog;
 
@@ -436,7 +394,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean          Returns true if everything is ok
      */
-    public function deleteMeeting($sco_id, $session)
+    public function deleteMeeting($sco_id, $session= NULL)
     {
 		global $ilLog, $lng;
 
@@ -471,7 +429,7 @@ class ilAdobeConnectXMLAPI
      * @param  integer	 $a_meeting_id      Meeting id
      * @return boolean          Returns true if everything is ok
      */
-    public function setMeetingPrivate($a_meeting_id, $session)
+    public function setMeetingPrivate($a_meeting_id, $session= NULL)
     {
 		global $ilLog;
 
@@ -506,7 +464,7 @@ class ilAdobeConnectXMLAPI
 	 * @param $a_meeting_id $meeting_id
 	 * @return boolean
 	 */
-	public function setMeetingPublic($a_meeting_id, $session)
+	public function setMeetingPublic($a_meeting_id, $session= NULL)
 	{
 		global $ilLog;
 
@@ -541,7 +499,7 @@ class ilAdobeConnectXMLAPI
 	 * @param integer $a_meeting_id 
 	 * @return boolean 
 	 */
-	public function setMeetingProtected($a_meeting_id, $session)
+	public function setMeetingProtected($a_meeting_id, $session= NULL)
 	{
 		global $ilLog;
 
@@ -570,7 +528,7 @@ class ilAdobeConnectXMLAPI
 		}
 	}
 
-	public function updatePermission($a_meeting_id, $session, $a_permission_id)
+	public function updatePermission($a_meeting_id, $session= NULL, $a_permission_id)
 	{
 		global $ilLog;
 
@@ -607,7 +565,7 @@ class ilAdobeConnectXMLAPI
 	 * @param String $type            Used for SWITCHaai meeting|content|...
 	 * @return String                 Meeting or content URL, or NULL if something is wrong
      */
-    public function getURL($sco_id, $folder_id, $session)
+    public function getURL($sco_id, $folder_id, $session= NULL)
     {	
 		global $ilLog;
 
@@ -640,7 +598,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String                 Meeting start date, or NULL if something is wrong
      */
-    public function getStartDate($sco_id, $folder_id, $session)
+    public function getStartDate($sco_id, $folder_id, $session= NULL)
     {
 		global $ilLog;
 
@@ -665,13 +623,12 @@ class ilAdobeConnectXMLAPI
 		}
 	}
 
-	public function isActiveSco($session, $sco_id)
+	public function isActiveSco($session= NULL, $sco_id)
 	{
 		$url = $this->getApiUrl(array(
 			'action' => 'report-active-meetings',
 			'filter-sco-id' => $sco_id
 		));
-
 
 		$xml = $this->sendRequest($url);
 		$counter = 0;
@@ -692,12 +649,11 @@ class ilAdobeConnectXMLAPI
 		return 0;
 	}
 	
-	public function getActiveScos($session)
+	public function getActiveScos($session= NULL)
 	{
 		$url = $this->getApiUrl(array(
 			'action' => 'report-active-meetings'
 		));
-
 
 		$xml = $this->sendRequest($url);
 		$counter = 0;
@@ -724,13 +680,12 @@ class ilAdobeConnectXMLAPI
 		}
 		return 0;
 	}
-	public function getAllScos($session)
+	public function getAllScos($session= NULL)
 	{
 		$url = $this->getApiUrl(array(
 			'action' => 'report-bulk-objects',
 			'filter-type' => 'meeting'
 		));
-
 
 		$xml = $this->sendRequest($url);
 		$result = array();
@@ -762,7 +717,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String                  Meeting start date, or NULL if something is wrong
      */
-    public function getEndDate($sco_id, $folder_id, $session)
+    public function getEndDate($sco_id, $folder_id, $session= NULL)
     {
 		global $ilLog;
 
@@ -795,7 +750,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String                 Meeting or content name, or NULL if something is wrong
      */
-    public function getName($sco_id, $folder_id, $session)
+    public function getName($sco_id, $folder_id, $session= NULL)
     {
 		global $ilLog;
 
@@ -830,7 +785,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String                 Meeting or content description, or NULL if something is wrong
      */
-    public function getDescription($sco_id, $folder_id, $session)
+    public function getDescription($sco_id, $folder_id, $session= NULL)
     {
 		global $ilLog;
 
@@ -865,7 +820,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String                 Meeting or content creation date, or NULL if something is wrong
      */
-    public function getDateCreated($sco_id, $folder_id, $session)
+    public function getDateCreated($sco_id, $folder_id, $session= NULL)
     {
 		global $ilLog;
 
@@ -900,7 +855,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String                 Meeting or content modification date, or NULL if something is wrong
      */
-    public function getDateModified($sco_id, $folder_id, $session)
+    public function getDateModified($sco_id, $folder_id, $session= NULL)
     {
 		global $ilLog;
 
@@ -935,7 +890,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String                 Content duration, or NULL if something is wrong
      */
-    public function getDuration($sco_id, $folder_id, $session)
+    public function getDuration($sco_id, $folder_id, $session= NULL)
     {
         global $ilLog;
 
@@ -969,7 +924,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return array
      */
-    public function getContentIds($meeting_id, $session)
+    public function getContentIds($meeting_id, $session= NULL)
     {       
 		global $ilLog;
 
@@ -1024,7 +979,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return array
      */
-    public function getRecordIds($meeting_id, $session)
+    public function getRecordIds($meeting_id, $session= NULL)
     {
 		$url = $this->getApiUrl(array(
 			'action' => 'sco-contents',
@@ -1060,7 +1015,7 @@ class ilAdobeConnectXMLAPI
      * @return String
      * @throws ilAdobeConnectDuplicateContentException
      */
-    public function addContent($folder_id, $title, $description, $session)
+    public function addContent($folder_id, $title, $description, $session= NULL)
     {
         global $ilLog;
     
@@ -1079,7 +1034,7 @@ class ilAdobeConnectXMLAPI
 			{
 				$server = substr($server, 0, -1);
 			}
-            return $server . "/api/xml?action=sco-upload&sco-id=".(string)$xml->sco['sco-id']."&session=".$session;
+            return $server . "/api/xml?action=sco-upload&sco-id=".(string)$xml->sco['sco-id'];
         }
 		else
 		{
@@ -1110,7 +1065,7 @@ class ilAdobeConnectXMLAPI
      * @return boolean              Returns true if everything is ok
      * @throws ilAdobeConnectDuplicateContentException
      */
-    public function updateContent($sco_id, $title, $description, $session)
+    public function updateContent($sco_id, $title, $description, $session= NULL)
     {
         global $ilLog;
 		
@@ -1153,7 +1108,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean              Returns true if everything is ok
      */
-    public function deleteContent($sco_id, $session)
+    public function deleteContent($sco_id, $session= NULL)
     {
         global $ilLog;
 		$url = $this->getApiUrl(array(
@@ -1185,7 +1140,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String
      */
-    public function uploadContent($sco_id, $session)
+    public function uploadContent($sco_id, $session= NULL)
     {
 		$url = $this->getApiUrl(array(
 			'action' => 'sco-upload',
@@ -1200,7 +1155,7 @@ class ilAdobeConnectXMLAPI
 	 * @param string $session
 	 * @return bool|string
 	 */
-	public function searchUser($login, $session)
+	public function searchUser($login, $session= NULL)
     {
     	global $ilLog;
 
@@ -1243,7 +1198,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean          Returns true if everything is ok
      */
-    public function addUser($login, $email, $pass, $first_name, $last_name, $session)
+    public function addUser($login, $email, $pass, $first_name, $last_name, $session= NULL)
     {
 		global $ilLog;
 
@@ -1284,7 +1239,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return array
      */
-    public function getMeetingsParticipants($meeting_id, $session)
+    public function getMeetingsParticipants($meeting_id, $session= NULL)
     {
 		$result = array();
 
@@ -1390,7 +1345,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean                  Returns true if everything is ok
      */
-    public function addMeetingParticipant($meeting_id, $login, $session)
+    public function addMeetingParticipant($meeting_id, $login, $session= NULL)
     {
         $principal_id = $this->getPrincipalId($login, $session);
 
@@ -1414,7 +1369,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean                  Returns true if everything is ok
      */
-    public function addMeetingHost($meeting_id, $login, $session)
+    public function addMeetingHost($meeting_id, $login, $session= NULL)
     {
         $principal_id = $this->getPrincipalId($login, $session);
 
@@ -1438,7 +1393,7 @@ class ilAdobeConnectXMLAPI
 	 * @param String $session
 	 * @return boolean                  Returns true if everything is ok
 	 */
-	public function addMeetingModerator($meeting_id, $login, $session)
+	public function addMeetingModerator($meeting_id, $login, $session= NULL)
 	{
 		$principal_id = $this->getPrincipalId($login, $session);
 
@@ -1454,7 +1409,7 @@ class ilAdobeConnectXMLAPI
 		return ($xml->status['code'] == "ok" ? true : false);
 	}
 
-	public function updateMeetingParticipant($meeting_id, $login, $session, $permission)
+	public function updateMeetingParticipant($meeting_id, $login, $session= NULL, $permission)
 	{
 		global $ilLog;
 		
@@ -1492,7 +1447,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean                  Returns true if everything is ok
      */
-    public function deleteMeetingParticipant($meeting_id, $login, $session)
+    public function deleteMeetingParticipant($meeting_id, $login, $session= NULL)
     {
          $principal_id = $this->getPrincipalId($login, $session);
 
@@ -1513,7 +1468,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return array
      */
-    public function getMeetingsId($session)
+    public function getMeetingsId($session= NULL)
     {
 		$url = $this->getApiUrl(array(
 			'action' 		=> 'report-bulk-objects',
@@ -1539,7 +1494,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return String
      */
-    public function getPrincipalId($login, $session)
+    public function getPrincipalId($login, $session= NULL)
     {
     	global $ilLog;
 
@@ -1574,7 +1529,7 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean
      */
-    public function isParticipant($login, $meeting, $session)
+    public function isParticipant($login, $meeting, $session= NULL)
     {
         $p_id = $this->getPrincipalId($login, $session);
 
@@ -1595,7 +1550,7 @@ class ilAdobeConnectXMLAPI
 		}
     }
 
-	public function getPermissionId($meeting, $session)
+	public function getPermissionId($meeting, $session= NULL)
 	{
 		$url = $this->getApiUrl(array(
     		'action' 		=> 'permissions-info',
@@ -1616,7 +1571,7 @@ class ilAdobeConnectXMLAPI
 		}
 	}
 
-	public function getActiveUsers($a_sco_id, $session)
+	public function getActiveUsers($a_sco_id, $session= NULL)
 	{
 		global $ilLog;
 
@@ -1782,12 +1737,11 @@ class ilAdobeConnectXMLAPI
 			}
 		}
 
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
-		if($this->login($user, $pwd, $session))
+		$session = $this->getFrontendSession();
+		if($this->login($user, $pwd, null))
 		{
 			$ilLog->write("Adobe Connect ".__METHOD__.": Successfully authenticated session (Id: ".$ilUser->getId()." | ".$ilUser->getLogin().").");
-			return $session;
+			return true;
 		}
 		else
 		{
@@ -1797,10 +1751,10 @@ class ilAdobeConnectXMLAPI
 				$ilUser->setPref('xavc_pwd', $pwd);
 				$ilUser->writePrefs();
 
-				if($this->login($user, $pwd, $session))
+				if($this->login($user, $pwd, null))
 				{
 					$ilLog->write("Adobe Connect ".__METHOD__.": Successfully authenticated session (Id: ".$ilUser->getId()." | ".$ilUser->getLogin().").");
-					return $session;
+					return true;
 				}
 				else
 				{
@@ -1825,7 +1779,7 @@ class ilAdobeConnectXMLAPI
 	 * @param String $session
 	 * @return String                 Meeting or content modification date, or NULL if something is wrong
 	 */
-	public function getDateEnd($sco_id, $folder_id, $session)
+	public function getDateEnd($sco_id, $folder_id, $session = null)
 	{
 		global $ilLog;
 
@@ -1853,7 +1807,7 @@ class ilAdobeConnectXMLAPI
 		}
 	}
 
-	public function lookupUserFolderId($login, $session)
+	public function lookupUserFolderId($login, $session = null)
 	{
 
 		$umf_id = $this->getShortcuts('user-meetings', $session);
@@ -1885,7 +1839,7 @@ class ilAdobeConnectXMLAPI
 	}
 	
 	
-	public function createUserFolder($login, $session)
+	public function createUserFolder($login, $session = null)
 	{
 		global $ilLog;
 		$umf_id = $this->getShortcuts('user-meetings', $session);
@@ -1916,7 +1870,7 @@ class ilAdobeConnectXMLAPI
 	}
 
 
-	public function getScosByFolderId($folder_id , $session)
+	public function getScosByFolderId($folder_id , $session = null)
 	{
 		$url = $this->getApiUrl(array(
 			'action' => 'sco-contents',
@@ -1948,7 +1902,7 @@ class ilAdobeConnectXMLAPI
 		return $result;
 	}
 
-	public function getScoData($sco_id, $folder_id, $session)
+	public function getScoData($sco_id, $folder_id, $session = null)
 	{
 		global $ilLog;
 
@@ -1985,7 +1939,7 @@ class ilAdobeConnectXMLAPI
 	 * lookup content-attribute 'icon' 
 	 * if icon == 'archive' the content is a record
 	 */
-	public function getContentIconAttribute($sco_id, $folder_id, $session)
+	public function getContentIconAttribute($sco_id, $folder_id, $session = null)
 	{
 		global $ilLog;
 
@@ -2017,7 +1971,6 @@ class ilAdobeConnectXMLAPI
 		$txt_shared_meeting_templates = $pluginObj->txt('shared_meeting_templates');
 		$txt_my_meeting_templates = $pluginObj->txt('my_meeting_templates');
 		
-		$session = $this->getAdminSession();
 		$url_1 = $this->getApiUrl(array(
 			'action' => 'sco-shortcuts'
 		));
@@ -2066,7 +2019,6 @@ class ilAdobeConnectXMLAPI
 
 		if( ilProxySettings::_getInstance()->isActive() )
 		{
-
 			$proxyHost = ilProxySettings::_getInstance()->getHost();
 			$proxyPort = ilProxySettings::_getInstance()->getPort();
 			$proxyURL = 'tcp://'. $proxyPort != '' ? $proxyHost.':'.$proxyPort : $proxyHost;
@@ -2113,13 +2065,18 @@ class ilAdobeConnectXMLAPI
 	 */
 	public function sendRequest($url)
 	{
-		//, 'application/xml'
-		$request = \Httpful\Request::get($url)
-									->expectsType('xml')
+		global $DIC;
 
-									->addOnCurlOption(CURLOPT_COOKIEJAR, ilAdobeConnectSessionHandler::XAVC_COOKIE_PATH.'/'.ilAdobeConnectSessionHandler::getAdminInstanceSession().'.txt')
-									->addOnCurlOption(CURLOPT_COOKIEFILE, ilAdobeConnectSessionHandler::XAVC_COOKIE_PATH.'/'.ilAdobeConnectSessionHandler::getAdminInstanceSession().'.txt')
-									->withoutStrictSsl();
+		$session = 'ac_sess_' . $DIC->user()->getId() ;
+
+		$apiCookiePath = self::XAVC_COOKIE_PATH. $session . '.txt';
+
+		//, 'application/xml'
+		$request = \Httpful\Request::get($url,  null, 'text/xml')
+			->expectsType('xml')
+			->addOnCurlOption(CURLOPT_COOKIEJAR, $apiCookiePath)
+			->addOnCurlOption(CURLOPT_COOKIEFILE, $apiCookiePath)
+			->withoutStrictSsl();
 
 		require_once('Services/Http/classes/class.ilProxySettings.php');
 		if (ilProxySettings::_getInstance()->isActive()) {
@@ -2132,6 +2089,60 @@ class ilAdobeConnectXMLAPI
 		$response = $request->send();
 
 		return $response->body;
+	}
+
+
+	public function enterMeetingRoom($url)
+	{
+		// @todo
+	}
+
+	public function getFrontendSession()
+	{
+		//todo
+//		global $ilLog;
+//
+//		$url = $this->getApiUrl(array('action' => 'common-info'));
+//		$xml = $this->sendFrontendRequest($url);
+//
+//		if($xml && $xml->common->cookie != "")
+//		{
+//			$session = (string)$xml->common->cookie;
+//			return $session;
+//		}
+//		else
+//		{
+//			$ilLog->write('AdobeConnect getBreezeSession Request: ' . $url);
+//			if($xml)
+//			{
+//				$ilLog->write('AdobeConnect getBreezeSession Response: ' . $xml->asXML());
+//			}
+//
+//			return null;
+//		}
+	}
+	public function sendFrontendRequest($url)
+	{
+		//todo
+//		global $DIC;
+//
+//		$session = 'ac_ext_sess_' . $DIC->user()->getId() ;
+//
+//		$apiCookiePath = self::XAVC_COOKIE_PATH. $session . '.txt';
+//
+//		$request = \Httpful\Request::get($url)
+//								   ->withoutStrictSsl();
+//
+//		require_once('Services/Http/classes/class.ilProxySettings.php');
+//		if (ilProxySettings::_getInstance()->isActive()) {
+//			$proxyHost = ilProxySettings::_getInstance()->getHost();
+//			$proxyPort = ilProxySettings::_getInstance()->getPort();
+//
+//			$request = $request->useProxy($proxyHost, $proxyPort);
+//		}
+//
+//		$response = $request->send();
+//		return $response->body;
 	}
 
 }

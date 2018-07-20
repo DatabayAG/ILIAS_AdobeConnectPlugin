@@ -1,6 +1,5 @@
 <?php
 
-require_once  'Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectSessionHandler.php';
 /**
  * Class ilAdobeConnectUserUtil
  *  @author Nadia Matuschek <nmatuschek@databay.de>
@@ -155,8 +154,6 @@ class ilAdobeConnectUserUtil
 	public function ensureUserFolderExistance($a_xavc_login = "")
 	{
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$admin_session = ilAdobeConnectSessionHandler::getAdminInstanceSession();
 
 		if(ilAdobeConnectServer::getSetting('use_user_folders') == 1)
 		{
@@ -169,29 +166,20 @@ class ilAdobeConnectUserUtil
 				$xavc_login = $this->getXAVCLogin();
 			}
 
-			if ($admin_session != NULL )
-			{
-				$folder_id = $xmlAPI->lookupUserFolderId($xavc_login, $admin_session);
+				$folder_id = $xmlAPI->lookupUserFolderId($xavc_login);
 				
 				if($folder_id == NULL)
 				{
-					$folder_id = $xmlAPI->createUserFolder($xavc_login, $admin_session);
+					$folder_id = $xmlAPI->createUserFolder($xavc_login);
 				}
 				
 				return $folder_id;
-			}
 		}
 		else
 		{
-			if ($admin_session != NULL )
-			{
-				$folder_id = $xmlAPI->getShortcuts('my-meetings', $admin_session);
+				$folder_id = $xmlAPI->getShortcuts('my-meetings');
 				return $folder_id;
-			}
-			else
-			{
-				return NULL;
-			}
+
 		}
 	}
 	
@@ -267,29 +255,11 @@ class ilAdobeConnectUserUtil
     public function addUser()
     {
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = ilAdobeConnectSessionHandler::getAdminInstanceSession();
 
         $user_pass = $this->generatePass();
         
-        if ($session != NULL)
-        {
-			$xmlAPI->addUser($this->getXAVCLogin(), $this->email, $user_pass, $this->first_name, $this->last_name, $session);
-			$xmlAPI->logout($session);
-        }
-		// kkoch: 13.03.2012: die Meldung über das Login eines neuen Nutzers bitte komplett unterdrücken
-		/*
-		 * 
-		 *	include_once("./Services/Mail/classes/class.ilMail.php");
-		 * $subject = $this->txt('new_ac_user_subject');
-		 * $message = $this->txt('new_ac_user_mail');
-		 * 
-		 * $mail = new ilMail(ANONYMOUS_USER_ID);
-		 * $message = $message.' '.$user_pass;
-		 * 
-		 * $mail->sendMail($this->email, '', '', $subject, $message, NULL, array('normal'));
-		 * 
-		 * */
+			$xmlAPI->addUser($this->getXAVCLogin(), $this->email, $user_pass, $this->first_name, $this->last_name, null);
+			$xmlAPI->logout(null);
     }
 
 	/**Search user on the Adobe Connect server
@@ -308,15 +278,10 @@ class ilAdobeConnectUserUtil
     		$xavc_login = $this->getXAVCLogin();
     	}
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-		$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-		$session = $session_instance::getAdminInstanceSession();
 
-        if ($session != NULL)
-        {
-			$search = $xmlAPI->searchUser($xavc_login, $session);
-            $xmlAPI->logout($session);
+			$search = $xmlAPI->searchUser($xavc_login, null);
+//            $xmlAPI->logout(null);
             return $search;
-        }
     }
 
 	/**
@@ -326,10 +291,8 @@ class ilAdobeConnectUserUtil
 	public function loginUser()
 	{
 		$xmlAPI  = ilXMLApiFactory::getApiByAuthMode();
-		ilAdobeConnectSessionHandler::_getInstance();
-		$session = ilAdobeConnectSessionHandler::getAdminInstanceSession();
 
-		return $xmlAPI->externalLogin($this->getXAVCLogin(), null, $session);
+		return $xmlAPI->externalLogin($this->getXAVCLogin());
 	}
 
     /**
@@ -340,7 +303,7 @@ class ilAdobeConnectUserUtil
     public function logoutUser($session)
     {
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-//        $xmlAPI->logout($session);
+        $xmlAPI->logout($session);
     }
 
     /**

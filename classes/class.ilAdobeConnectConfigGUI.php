@@ -1,7 +1,6 @@
 <?php
 include_once("./Services/Component/classes/class.ilPluginConfigGUI.php");
 require_once dirname(__FILE__) . '/../interfaces/interface.AdobeConnectPermissions.php';
-include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectSessionHandler.php");
 
 /**
  * @author	Nadia Matuschek <nmatuschek@databay.de>
@@ -314,15 +313,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                     if(ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH)
                     {
 					    $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-						$session_instance = ilAdobeConnectSessionHandler::_getInstance();
-						$session = $session_instance::getAdminInstanceSession();
 
-                        if(!$session)
-                        {
-                            throw new ilException('err_invalid_server');
-                        }
-
-                        if(!$xmlAPI->login(trim($this->form->getInput('login')), trim($this->form->getInput('password')), $session))
+                        if(!$xmlAPI->login(trim($this->form->getInput('login')), trim($this->form->getInput('password')), null))
                         {
                             throw new ilException('err_authentication_failed');
                         }
@@ -339,22 +331,27 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 				catch(Exception $e)
 				{
 					// rollback
-					foreach($params as $key => $val) {
+					foreach($params as $key => $val)
+					{
 						ilAdobeConnectServer::setSetting($key, trim($val));
 					}
 
 					ilAdobeConnectServer::_getInstance()->commitSettings();
 
 					$untranslatedError = '-' . $this->getPluginObject()->getPrefix() . '_' . $e->getMessage() . '-';
-					if ($this->getPluginObject()->txt($e->getMessage()) != $untranslatedError) {
+					if ($this->getPluginObject()->txt($e->getMessage()) != $untranslatedError)
+					{
 						$this->form->getItemByPostVar('server')
 							->setAlert($this->getPluginObject()->txt($e->getMessage()));
-					} else {
+					}
+					else
+					{
 						$this->form->getItemByPostVar('server')
 							->setAlert($e->getMessage());
 					}
 				}
 			}
+
 			else
 			{
 				if(!ilUtil::isIPv4($url['host']) && !ilUtil::isDN($url['host']))

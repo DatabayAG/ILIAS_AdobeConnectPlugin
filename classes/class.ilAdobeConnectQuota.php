@@ -31,8 +31,7 @@ class ilAdobeConnectQuota
 	private function fetchCurrentMeetings()
 	{
 		$api     = ilXMLApiFactory::getApiByAuthMode();
-		$session = $api->getAdminSession();
-		return $api->getActiveScos($session);
+		return $api->getActiveScos();
 	}
 
 	private function buildCurrentMeetings(array $data)
