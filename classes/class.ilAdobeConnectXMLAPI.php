@@ -65,6 +65,10 @@ class ilAdobeConnectXMLAPI
 		$this->getBreezeSession(false);
 	}
 
+	/**
+	 * @param $login
+	 * @return null|string
+	 */
 	public function generateUserSessionCookie($login)
 	{
 		$this->getBreezeSession(false);
@@ -232,7 +236,6 @@ class ilAdobeConnectXMLAPI
 			{
 				$ilLog->write('AdobeConnect getBreezeSession Response: ' . $xml->asXML());
 			}
-
 			return null;
 		}
 	}
@@ -245,9 +248,7 @@ class ilAdobeConnectXMLAPI
 	 */
 	public function getShortcuts($type, $session = NULL)
 	{
-		$url = $this->getApiUrl(array(
-									 'action'  => 'sco-shortcuts'
-								));
+		$url = $this->getApiUrl(array( 'action'  => 'sco-shortcuts'								));
 
 		$xml = $this->sendRequest($url);
 		if(
@@ -285,8 +286,6 @@ class ilAdobeConnectXMLAPI
 
         return ($id == "" ? NULL : $id);
     }
-
-
 
     /**
      *  Adds a new meeting on the Adobe Connect server
@@ -581,7 +580,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id
 		));
 
-
 		$xml = $this->sendRequest($url);
 		if ($xml->status['code']=="ok")
 		{
@@ -616,13 +614,19 @@ class ilAdobeConnectXMLAPI
 
 		$xml = $this->sendRequest($url);
 
-		if ($xml instanceof \SimpleXMLElement) {
-			if ($xml->status['code'] == "ok") {
+		if ($xml instanceof \SimpleXMLElement)
+		{
+			if ($xml->status['code'] == "ok")
+			{
 				return (string)$xml->scos->sco->{'date-begin'};
-			} else {
+			}
+			else
+			{
 				$ilLog->write('AdobeConnect getStartDate Response: '.$xml->asXML());
 			}
-		} else {
+		}
+		else
+		{
 			$ilLog->write('AdobeConnect getStartDate Request: '.$url);
 			$ilLog->write('The API does not respond with a valid XML body');
 
@@ -671,10 +675,7 @@ class ilAdobeConnectXMLAPI
 			{
 				foreach($sco->attributes() as $name => $attr)
 				{
-					//if($sco['active-participants'] >= 1)
-					//{
-						$result[$counter][(string)$name] = (string)$attr;
-					//}
+					$result[$counter][(string)$name] = (string)$attr;
 				}
 
 				$result[$counter]['name'] = (string)$sco->name;
@@ -734,18 +735,25 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id
 		));
 		$xml = $this->sendRequest($url);
-        if ($xml->status['code']=="ok")
+		if ($xml instanceof \SimpleXMLElement)
 		{
-			return (string)$xml->scos->sco->{'date-end'};
-		}
-        else
-		{
-			$ilLog->write('AdobeConnect getStartDate Request: '.$url);
-			if($xml)
+			if($xml->status['code'] == "ok")
 			{
-				$ilLog->write('AdobeConnect getStartDate Response: ' . $xml->asXML());
+				return (string)$xml->scos->sco->{'date-end'};
 			}
-            return NULL;
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getEndDate Response: ' . $xml->asXML());
+				}
+			}
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect getEndDate Request: '.$url);
+			$ilLog->write('The API does not respond with a valid XML body');
+			return NULL;
 		}
     }
 
@@ -768,19 +776,25 @@ class ilAdobeConnectXMLAPI
 		));
 
         $xml = $this->sendRequest($url);
-
-        if ($xml->status['code']=="ok")
+		if ($xml instanceof \SimpleXMLElement)
 		{
-			return (string)$xml->scos->sco->{'name'};
+			if($xml->status['code'] == "ok")
+			{
+				return (string)$xml->scos->sco->{'name'};
+			}
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getName Response: ' . $xml->asXML());
+				}
+			}
 		}
 		else
 		{
-			$ilLog->write('AdobeConnect getName Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect getName Response: ' . $xml->asXML());
-			}
-            return NULL;
+			$ilLog->write('AdobeConnect getName Request: ' . $url);
+			$ilLog->write('The API does not respond with a valid XML body');
+			return NULL;
 		}
     }
 
@@ -803,19 +817,24 @@ class ilAdobeConnectXMLAPI
 		));
 
         $xml = $this->sendRequest($url);
-
-        if ($xml->status['code']=="ok")
+		if ($xml instanceof \SimpleXMLElement)
 		{
-			return (string)$xml->scos->sco->{'description'};
+			if($xml->status['code'] == "ok")
+			{
+				return (string)$xml->scos->sco->{'description'};
+			}
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getDescription Response: ' . $xml->asXML());
+				}
+			}
 		}
 		else
 		{
-			$ilLog->write('AdobeConnect getDescription Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect getDescription Response: ' . $xml->asXML());
-			}
-            return NULL;
+			$ilLog->write('AdobeConnect getDescription Request: ' . $url);
+			return NULL;
 		}
     }
 
@@ -838,19 +857,24 @@ class ilAdobeConnectXMLAPI
 		));
 
         $xml = $this->sendRequest($url);
-
-        if ($xml->status['code']=="ok")
+		if ($xml instanceof \SimpleXMLElement)
 		{
-			return (string)$xml->scos->sco->{'date-created'};
-		}
- 		else
-		{
-			$ilLog->write('AdobeConnect getDateCreated Request: '.$url);
-			if($xml)
+			if($xml->status['code'] == "ok")
 			{
-				$ilLog->write('AdobeConnect getDateCreated Response: ' . $xml->asXML());
+				return (string)$xml->scos->sco->{'date-created'};
 			}
-            return NULL;
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getDateCreated Response: ' . $xml->asXML());
+				}
+			}
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect getDateCreated Request: ' . $url);
+			return NULL;
 		}
 	}
 
@@ -873,19 +897,24 @@ class ilAdobeConnectXMLAPI
 		));
 
         $xml = $this->sendRequest($url);
-
-        if ($xml->status['code']=="ok")
+		if ($xml instanceof \SimpleXMLElement)
 		{
-			return (string)$xml->scos->sco->{'date-modified'};
-		}
-  		else
-		{
-			$ilLog->write('AdobeConnect getDateModified Request: '.$url);
-			if($xml)
+			if($xml->status['code'] == "ok")
 			{
-				$ilLog->write('AdobeConnect getDateModified Response: ' . $xml->asXML());
+				return (string)$xml->scos->sco->{'date-modified'};
 			}
-            return NULL;
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getDateModified Response: ' . $xml->asXML());
+				}
+			}
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect getDateModified Request: ' . $url);
+			return NULL;
 		}
 	}
 
@@ -908,19 +937,24 @@ class ilAdobeConnectXMLAPI
 		));
 
         $xml = $this->sendRequest($url);
-
-        if ($xml->status['code']=="ok")
+		if ($xml instanceof \SimpleXMLElement)
 		{
-			return (string)$xml->scos->sco->duration;
-		}
-       	else
-		{
-			$ilLog->write('AdobeConnect getDuration Request: '.$url);
-			if($xml)
+			if($xml->status['code'] == "ok")
 			{
-				$ilLog->write('AdobeConnect getDuration Response: ' . $xml->asXML());
+				return (string)$xml->scos->sco->duration;
 			}
-            return NULL;
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getDuration Response: ' . $xml->asXML());
+				}
+			}
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect getDuration Request: ' . $url);
+			return NULL;
 		}
     }
 
@@ -941,42 +975,47 @@ class ilAdobeConnectXMLAPI
 		));
 
         $xml = $this->sendRequest($url);
-
-        if ($xml->status['code']=="ok")
-        {
-            $ids = array();
-            $i=0;
-			$contents = array();
-			$records = array();
-
-			foreach($xml->scos->sco as $sco)
+		if ($xml instanceof \SimpleXMLElement)
+		{
+			if($xml->status['code'] == "ok")
 			{
-				if($sco['source-sco-id'] == ""
-					&& $sco['duration'] == ""
-				)
+				$ids      = array();
+				$i        = 0;
+				$contents = array();
+				$records  = array();
+
+				foreach($xml->scos->sco as $sco)
 				{
-					$contents[$i] = (string)$sco['sco-id'];
-					$i++;
+					if($sco['source-sco-id'] == ""
+						&& $sco['duration'] == ""
+					)
+					{
+						$contents[$i] = (string)$sco['sco-id'];
+						$i++;
+					}
+					else if($sco['source-sco-id'] == ""
+						&& $sco['duration'] != ""
+					)
+					{
+						$records[$i] = (string)$sco['sco-id'];
+						$i++;
+					}
 				}
-				else if($sco['source-sco-id'] == ""
-					&& $sco['duration'] != ""
-				)
+				return array_merge($contents, $records);
+			}
+			else
+			{
+				if($xml)
 				{
-					$records[$i] = (string)$sco['sco-id'];
-					$i++;
+					$ilLog->write('AdobeConnect getDuration Response: ' . $xml->asXML());
 				}
 			}
-            return array_merge($contents,$records);
-        }
-        else
-        {
-			$ilLog->write('AdobeConnect getDuration Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect getDuration Response: ' . $xml->asXML());
-			}
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect getDuration Request: ' . $url);
 			return NULL;
-        }
+		}
     }
 
     /**
@@ -994,21 +1033,23 @@ class ilAdobeConnectXMLAPI
 		));
 
         $xml = $this->sendRequest($url);
-        
-        if ($xml->status['code']=="ok")
-        {
-            $ids = array();
-            $i=0;
-            foreach($xml->scos->sco as $sco)
-            {
-                if ($sco['source-sco-id']=="" && $sco['duration'] !="")
-                {
-                    $ids[$i]=(string)$sco['sco-id'];
-                    $i++;
-                }
-            }
-            return $ids;
-        }
+		if ($xml instanceof \SimpleXMLElement)
+		{
+			if($xml->status['code'] == "ok")
+			{
+				$ids = array();
+				$i   = 0;
+				foreach($xml->scos->sco as $sco)
+				{
+					if($sco['source-sco-id'] == "" && $sco['duration'] != "")
+					{
+						$ids[$i] = (string)$sco['sco-id'];
+						$i++;
+					}
+				}
+				return $ids;
+			}
+		}
         return NULL;
     }
 
@@ -1057,7 +1098,6 @@ class ilAdobeConnectXMLAPI
 				   	throw new ilAdobeConnectDuplicateContentException('add_cnt_err_duplicate');
 				}
 			}
-
 			return NULL;
 		}
     }
@@ -1103,7 +1143,6 @@ class ilAdobeConnectXMLAPI
 				   	throw new ilAdobeConnectDuplicateContentException('add_cnt_err_duplicate');
 				}
 			}
-			
             return false;
 		}
     }
@@ -1125,18 +1164,25 @@ class ilAdobeConnectXMLAPI
 
 		$xml = $this->sendRequest($url);
 
-		if ($xml->status['code']=="ok")
+		if($xml instanceof SimpleXMLElement)
 		{
-			return true;
-		}
-       	else
-		{
-			$ilLog->write('AdobeConnect deleteContent Request: '.$url);
-			if($xml)
+			if($xml->status['code'] == "ok")
 			{
-				$ilLog->write('AdobeConnect deleteContent Response: ' . $xml->asXML());
+				return true;
 			}
-            return false;
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect deleteContent Response: ' . $xml->asXML());
+				}
+				return false;
+			}
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect deleteContent Request: ' . $url);
+			return false;
 		}
     }
 
@@ -1222,19 +1268,24 @@ class ilAdobeConnectXMLAPI
         $ilLog->write("addUser Url: ". $url);
 
 		$xml = $this->sendRequest($url);
-
-		if($xml->status['code'] == 'ok')
+		if($xml instanceof SimpleXMLElement)
 		{
-			return true;
+			if($xml->status['code'] == 'ok')
+			{
+				return true;
+			}
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect addUser Response: ' . $xml->asXML());
+				}
+				return false;
+			}
 		}
 		else
 		{
-			$ilLog->write('AdobeConnect addUser Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect addUser Response: ' . $xml->asXML());
-			}
-
+			$ilLog->write('AdobeConnect addUser Request: ' . $url);
 			return false;
 		}
     }
@@ -1365,7 +1416,7 @@ class ilAdobeConnectXMLAPI
 
 		$xml = $this->sendRequest($url);
 
-        return ($xml->status['code']=="ok"?true:false);
+        return ($xml->status['code']=="ok" ? true : false);
     }
 
 	/**
@@ -1389,7 +1440,7 @@ class ilAdobeConnectXMLAPI
 
 		$xml = $this->sendRequest($url);
 
-        return ($xml->status['code']=="ok"?true:false);
+        return ($xml->status['code']=="ok" ? true : false);
     }
 
 	/**
@@ -1418,8 +1469,6 @@ class ilAdobeConnectXMLAPI
 
 	public function updateMeetingParticipant($meeting_id, $login, $session= NULL, $permission)
 	{
-		global $ilLog;
-		
 		$principal_id = $this->getPrincipalId($login, $session);
 		
 		$url = $this->getApiUrl(array(
@@ -1434,16 +1483,6 @@ class ilAdobeConnectXMLAPI
 		{
 			return true;
 		}
-//		//deactivated for switch to avoid failure-message 
-//		else
-//		{
-//			$ilLog->write('AdobeConnect updateMeetingParticipant Request: '.$url);
-//			$ilLog->write('AdobeConnect updateMeetingParticipant Response: '.$xml->asXML());
-//
-//		#	ilUtil::sendFailure($lng->txt('add_user_failed'));
-//
-//			return false;
-//		}
 	}
 
     /**
@@ -1490,7 +1529,6 @@ class ilAdobeConnectXMLAPI
                 $result[] = (string)$meeting['sco-id'];
             }
         }
-
         return $result;
     }
 
@@ -1511,22 +1549,26 @@ class ilAdobeConnectXMLAPI
 		));
 		$xml = $this->sendRequest($url);
 
-        if ($xml->status['code']=="ok")
-        {
-        	return (string)$xml->{'principal-list'}->principal['principal-id'];
-        }
-        else
-        {
-			$ilLog->write('AdobeConnect getPrincipalId Request: '.$url);
-			if($xml)
+		if($xml instanceof SimpleXMLElement)
+		{
+			if($xml->status['code'] == "ok")
 			{
-				$ilLog->write('AdobeConnect getPrincipalId Response: ' . $xml->asXML());
+				return (string)$xml->{'principal-list'}->principal['principal-id'];
 			}
-
-        	return NULL;
-        }
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getPrincipalId Response: ' . $xml->asXML());
+				}
+			}
+		}
+		else
+			{
+			$ilLog->write('AdobeConnect getPrincipalId Request: ' . $url);
+			return NULL;
+		}
     }
-
 
     /**
      *  Check whether a user is host in a meeting.
@@ -1583,33 +1625,38 @@ class ilAdobeConnectXMLAPI
 		global $ilLog;
 
 		$url = $this->getApiUrl(array(
-    		'action' 		=> 'report-bulk-consolidated-transactions',
-    		'filter-type' 	=> 'meeting',
-    		'filter-sco-id' => $a_sco_id
-    	));
+			'action'        => 'report-bulk-consolidated-transactions',
+			'filter-type'   => 'meeting',
+			'filter-sco-id' => $a_sco_id
+		));
 		$xml = $this->sendRequest($url);
 
-        if ($xml->status['code']=="ok")
+		if($xml instanceof SimpleXMLElement)
 		{
-			foreach ($xml->{'report-bulk-consolidated-transactions'}->row as $meeting)
+			if($xml->status['code'] == "ok")
 			{
-				if ($meeting->{'status'} =='in-progress')
+				foreach($xml->{'report-bulk-consolidated-transactions'}->row as $meeting)
 				{
-					$result[] = (string)$meeting->{'user-name'};
+					if($meeting->{'status'} == 'in-progress')
+					{
+						$result[] = (string)$meeting->{'user-name'};
+					}
+				}
+				return $result;
+			}
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getActiveUsers Response: ' . $xml->asXML());
 				}
 			}
-			return $result;
-        }
-        else
+		}
+		else
 		{
-			$ilLog->write('AdobeConnect getActiveUsers Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect getActiveUsers Response: ' . $xml->asXML());
-			}
-
-            return array();
-        }
+			$ilLog->write('AdobeConnect getActiveUsers Request: ' . $url);
+		}
+		return array();
     }
     
     /**
@@ -1643,10 +1690,8 @@ class ilAdobeConnectXMLAPI
     	return $api_url;
     }
 
-
-
     /**
-     *
+     * @deprecated
      * Performs a cached call based on a static cache.
      *
      * @param string $url
@@ -1661,7 +1706,6 @@ class ilAdobeConnectXMLAPI
 		}
 
 		$xml = $this->sendRequest($url);
-
 		self::$scocontent_cache[$hash] = $xml;
 
 		return $xml;
@@ -1683,17 +1727,6 @@ class ilAdobeConnectXMLAPI
 				$x_user_id.': '.$user
 			)
 		);
-
-//		$opts = array(
-//			'http' => array(
-//				'method'  => 'GET',
-//				'header'  => $headers
-//			),
-//			'https' => array(
-//				'method'  => 'GET',
-//				'header'  => $headers
-//			),
-//		);
 
 		$url = $this->getApiUrl(array(
 			'action' 		=> 'login',
@@ -1794,21 +1827,25 @@ class ilAdobeConnectXMLAPI
 		));
 
 		$xml = $this->sendRequest($url);
-
-		if ($xml->status['code']=="ok")
+		if($xml instanceof SimpleXMLElement)
 		{
-			return (string)$xml->scos->sco->{'date-end'};
+			if($xml->status['code'] == "ok")
+			{
+				return (string)$xml->scos->sco->{'date-end'};
+			}
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getDateEnd Response: ' . $xml->asXML());
+				}
+			}
 		}
 		else
 		{
-			$ilLog->write('AdobeConnect getDateEnd Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect getDateEnd Response: ' . $xml->asXML());
-			}
-
-			return NULL;
+			$ilLog->write('AdobeConnect getDateEnd Request: ' . $url);
 		}
+		return NULL;
 	}
 
 	public function lookupUserFolderId($login, $session = null)
@@ -1825,10 +1862,7 @@ class ilAdobeConnectXMLAPI
 		$xml = $this->sendRequest($url);
 
 		$id = NULL;
-		if(
-			$xml instanceof SimpleXMLElement &&
-			'ok' == (string)$xml->status['code']
-		)
+		if( $xml instanceof SimpleXMLElement && 'ok' == (string)$xml->status['code'])
 		{
 			foreach($xml->scos->sco as $sco)
 			{
@@ -1838,11 +1872,9 @@ class ilAdobeConnectXMLAPI
 				}
 			}
 		}
-
 		return $id;
 	}
-	
-	
+
 	public function createUserFolder($login, $session = null)
 	{
 		global $ilLog;
@@ -1857,19 +1889,25 @@ class ilAdobeConnectXMLAPI
 
 		$xml = $this->sendRequest($url);
 		$id = NULL;
-
-		if ($xml->status['code']=="ok")
+		if($xml instanceof SimpleXMLElement)
 		{
-			return (string)$xml->sco['sco-id'];
+			if($xml->status['code'] == "ok")
+			{
+				return (string)$xml->sco['sco-id'];
+			}
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect createUserFolder Response: ' . $xml->asXML());
+				}
+			}
 		}
 		else
 		{
-			$ilLog->write('AdobeConnect createUserFolder Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect createUserFolder Response: ' . $xml->asXML());
-			}
+			$ilLog->write('AdobeConnect createUserFolder Request: ' . $url);
 		}
+
 		return NULL;
 	}
 
@@ -1919,24 +1957,27 @@ class ilAdobeConnectXMLAPI
 		$xml = $this->sendRequest($url);
 
 		$data = array();
-		if ($xml->status['code']=="ok")
+		if($xml instanceof SimpleXMLElement)
 		{
-			$data['start_date'] =  (string)$xml->scos->sco->{'date-begin'};
-			$data['end_date'] =  (string)$xml->scos->sco->{'date-end'};
-
+			if($xml->status['code'] == "ok")
+			{
+				$data['start_date'] = (string)$xml->scos->sco->{'date-begin'};
+				$data['end_date']   = (string)$xml->scos->sco->{'date-end'};
+				return $data;
+			}
+			else
+			{
+				if($xml)
+				{
+					$ilLog->write('AdobeConnect getStartDate Response: ' . $xml->asXML());
+				}
+			}
 		}
 		else
 		{
-			$ilLog->write('AdobeConnect getStartDate Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect getStartDate Response: ' . $xml->asXML());
-			}
-
-			return NULL;
+			$ilLog->write('AdobeConnect getStartDate Request: ' . $url);
 		}
-
-		return $data;
+		return NULL;
 	}
 
 	/**
@@ -1945,8 +1986,6 @@ class ilAdobeConnectXMLAPI
 	 */
 	public function getContentIconAttribute($sco_id, $folder_id, $session = null)
 	{
-		global $ilLog;
-
 		$url = $this->getApiUrl(array(
 			'action' => 'sco-contents',
 			'sco-id' => $folder_id,
@@ -1955,15 +1994,18 @@ class ilAdobeConnectXMLAPI
 
 		$xml = $this->sendRequest($url);
 		$icon = '';
-
-		if ($xml->status['code']=="ok")
+		if($xml instanceof SimpleXMLElement)
 		{
-			foreach($xml->scos->sco as $sco)
+			if($xml->status['code'] == "ok")
 			{
-				$icon= (string)$sco['icon'];
+				foreach($xml->scos->sco as $sco)
+				{
+					$icon = (string)$sco['icon'];
+				}
 			}
+			return $icon;
 		}
-		return $icon;
+		return null;
 	}
 	
 	/**
@@ -1981,27 +2023,29 @@ class ilAdobeConnectXMLAPI
 	
 		$xml = $this->sendRequest($url_1);
 		$templates = array();
-
-		if(is_array($xml->shortcuts->sco))
+		if($xml instanceof SimpleXMLElement)
 		{
-			foreach($xml->shortcuts->sco as $folder)
+			if(is_array($xml->shortcuts->sco))
 			{
-				if(($folder['type'] == 'shared-meeting-templates') || $folder['type'] == 'my-meeting-templates')
+				foreach($xml->shortcuts->sco as $folder)
 				{
-					$sco_id	= (string)$folder['sco-id'];
-					$txt_folder_name = $folder['type'] == 'shared-meeting-templates' ? $txt_shared_meeting_templates : $txt_my_meeting_templates;
-					$url_2 = $this->getApiUrl(array(
-						'action'  => 'sco-contents',
-						'sco-id'  => $sco_id
-					));
-					$xml_2  = $this->sendRequest($url_2);
-
-					if(is_array($xml_2->scos->sco))
+					if(($folder['type'] == 'shared-meeting-templates') || $folder['type'] == 'my-meeting-templates')
 					{
-						foreach($xml_2->scos->sco as $sco)
+						$sco_id          = (string)$folder['sco-id'];
+						$txt_folder_name = $folder['type'] == 'shared-meeting-templates' ? $txt_shared_meeting_templates : $txt_my_meeting_templates;
+						$url_2           = $this->getApiUrl(array(
+							'action' => 'sco-contents',
+							'sco-id' => $sco_id
+						));
+						$xml_2           = $this->sendRequest($url_2);
+
+						if(is_array($xml_2->scos->sco))
 						{
-							$template_sco_id  = (string)$sco['sco-id'];
-							$templates[$template_sco_id] = (string)$sco->{'name'} . ' (' . $txt_folder_name . ')';
+							foreach($xml_2->scos->sco as $sco)
+							{
+								$template_sco_id             = (string)$sco['sco-id'];
+								$templates[$template_sco_id] = (string)$sco->{'name'} . ' (' . $txt_folder_name . ')';
+							}
 						}
 					}
 				}
@@ -2011,14 +2055,12 @@ class ilAdobeConnectXMLAPI
 		return $templates;	
 	}
 
-
 	/**
 	 * @param $ctx
 	 * @return stream context || null
 	 */
 	protected function proxy($ctx = null)
 	{
-	
 		require_once('Services/Http/classes/class.ilProxySettings.php');
 
 		if( ilProxySettings::_getInstance()->isActive() )
@@ -2039,7 +2081,6 @@ class ilAdobeConnectXMLAPI
 
 			if( $ctx == null)
 			{
-
 				$proxyStreamContext = stream_context_get_default ($proxyContext);
 				libxml_set_streams_context($proxyStreamContext);
 
@@ -2052,7 +2093,6 @@ class ilAdobeConnectXMLAPI
 				);
 
 				return stream_context_create($mergedProxyContext);
-
 			}
 
 		} elseif( is_array($ctx) && count($ctx) ) {
@@ -2072,10 +2112,8 @@ class ilAdobeConnectXMLAPI
 		global $DIC;
 
 		$session = 'ac_sess_' . $DIC->user()->getId() ;
-
 		$apiCookiePath = self::XAVC_COOKIE_PATH. $session . '.txt';
 
-		//, 'application/xml'
 		$request = \Httpful\Request::get($url,  null, 'text/xml')
 			->expectsType('xml')
 			->addOnCurlOption(CURLOPT_COOKIEJAR, $apiCookiePath)
@@ -2083,7 +2121,8 @@ class ilAdobeConnectXMLAPI
 			->withoutStrictSsl();
 
 		require_once('Services/Http/classes/class.ilProxySettings.php');
-		if (ilProxySettings::_getInstance()->isActive()) {
+		if (ilProxySettings::_getInstance()->isActive())
+		{
 			$proxyHost = ilProxySettings::_getInstance()->getHost();
 			$proxyPort = ilProxySettings::_getInstance()->getPort();
 

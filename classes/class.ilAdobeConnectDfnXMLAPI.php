@@ -59,7 +59,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 
 		$ilLog->write("addUser URL: ". $url);
 
-		$xml = simplexml_load_file($url);
+		$xml = $this->sendRequest($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -93,7 +93,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'action' 	=> 'lms-user-exists',
 			'session' 	=> $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->sendRequest($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -135,19 +135,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'session' 	=> $session
 		));
 
-		$context = array(
-			'http' => array(
-				'timeout' => 4
-			),
-			'https' => array(
-				'timeout' => 4
-			)
-		);
-
-		$ctx = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
-
+		$xml = $this->sendRequest($url);
 		if($xml->status['code'] == 'ok')
 		{
 			return (string)$xml->cookie;
@@ -159,62 +147,51 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		return false;
 	}
 
-	/**
-	 * @param string $user
-	 * @param string $pass
-	 * @param string $session
-	 * @return bool
-	 */
-	public function login($user, $pass, $session)
-	{
-		/**
-		 * @var $ilLog ilLog
-		 */
-		global $ilLog, $lng;
-
-		if(isset(self::$loginsession_cache[$session]))
-		{
-			return true;
-		}
-
-		$url = $this->getApiUrl(array(
-			'action' 		=> 'login',
-			'login' 		=> $user,
-			'password' 		=> $pass,
-			'session' 		=> $session
-		));
-
-		$context = array(
-			'http' => array(
-				'timeout' => 4
-			),
-			'https' => array(
-				'timeout' => 4
-			)
-		);
-
-		$ctx = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
-
-		if($xml->status['code'] == 'ok')
-		{
-			self::$loginsession_cache[$session] = true;
-			return true;
-		}
-		else
-		{
-			unset(self::$loginsession_cache[$session]);
-			$ilLog->write('AdobeConnect login Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect login Response: ' . $xml->asXML());
-			}
-			$ilLog->write('AdobeConnect login failed: '.$user);
-			ilUtil::sendFailure($lng->txt('login_failed'));
-			return false;
-		}
-	}
+//	/**
+//	 * @param string $user
+//	 * @param string $pass
+//	 * @param string $session
+//	 * @return bool
+//	 */
+//	public function login($user, $pass, $session)
+//	{
+//		/**
+//		 * @var $ilLog ilLog
+//		 */
+//		global $ilLog, $lng;
+//
+//		if(isset(self::$loginsession_cache[$session]))
+//		{
+//			return true;
+//		}
+//
+//		$url = $this->getApiUrl(array(
+//			'action' 		=> 'login',
+//			'login' 		=> $user,
+//			'password' 		=> $pass,
+//			'session' 		=> $session
+//		));
+//
+//		$xml = $this->sendRequest($url);
+//
+//		if($xml->status['code'] == 'ok')
+//		{
+//			self::$loginsession_cache[$session] = true;
+//			return true;
+//		}
+//		else
+//		{
+//			unset(self::$loginsession_cache[$session]);
+//			$ilLog->write('AdobeConnect login Request: '.$url);
+//			if($xml)
+//			{
+//				$ilLog->write('AdobeConnect login Response: ' . $xml->asXML());
+//			}
+//			$ilLog->write('AdobeConnect login failed: '.$user);
+//			ilUtil::sendFailure($lng->txt('login_failed'));
+//			return false;
+//		}
+//	}
 
 	/**
 	 * @param String $session
