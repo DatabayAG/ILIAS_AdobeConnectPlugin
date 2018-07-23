@@ -65,6 +65,12 @@ class ilAdobeConnectXMLAPI
 		$this->getBreezeSession(false);
 	}
 
+	public function generateUserSessionCookie($login)
+	{
+		$this->getBreezeSession(false);
+		$this->externalLogin($login);
+		return $this->getBreezeSession(false);
+	}
 
 	public function getXUserId()
 	{
@@ -1737,7 +1743,6 @@ class ilAdobeConnectXMLAPI
 			}
 		}
 
-		$session = $this->getFrontendSession();
 		if($this->login($user, $pwd, null))
 		{
 			$ilLog->write("Adobe Connect ".__METHOD__.": Successfully authenticated session (Id: ".$ilUser->getId()." | ".$ilUser->getLogin().").");
@@ -1768,8 +1773,6 @@ class ilAdobeConnectXMLAPI
 			return NULL;
 		}
 	}
-
-
 
 	/**
 	 *  Gets meeting or content modification date
@@ -2090,59 +2093,4 @@ class ilAdobeConnectXMLAPI
 
 		return $response->body;
 	}
-
-
-	public function enterMeetingRoom($url)
-	{
-		// @todo
-	}
-
-	public function getFrontendSession()
-	{
-		//todo
-//		global $ilLog;
-//
-//		$url = $this->getApiUrl(array('action' => 'common-info'));
-//		$xml = $this->sendFrontendRequest($url);
-//
-//		if($xml && $xml->common->cookie != "")
-//		{
-//			$session = (string)$xml->common->cookie;
-//			return $session;
-//		}
-//		else
-//		{
-//			$ilLog->write('AdobeConnect getBreezeSession Request: ' . $url);
-//			if($xml)
-//			{
-//				$ilLog->write('AdobeConnect getBreezeSession Response: ' . $xml->asXML());
-//			}
-//
-//			return null;
-//		}
-	}
-	public function sendFrontendRequest($url)
-	{
-		//todo
-//		global $DIC;
-//
-//		$session = 'ac_ext_sess_' . $DIC->user()->getId() ;
-//
-//		$apiCookiePath = self::XAVC_COOKIE_PATH. $session . '.txt';
-//
-//		$request = \Httpful\Request::get($url)
-//								   ->withoutStrictSsl();
-//
-//		require_once('Services/Http/classes/class.ilProxySettings.php');
-//		if (ilProxySettings::_getInstance()->isActive()) {
-//			$proxyHost = ilProxySettings::_getInstance()->getHost();
-//			$proxyPort = ilProxySettings::_getInstance()->getPort();
-//
-//			$request = $request->useProxy($proxyHost, $proxyPort);
-//		}
-//
-//		$response = $request->send();
-//		return $response->body;
-	}
-
 }
