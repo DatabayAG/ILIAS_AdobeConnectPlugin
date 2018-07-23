@@ -616,16 +616,17 @@ class ilAdobeConnectXMLAPI
 
 		$xml = $this->sendRequest($url);
 
-        if ($xml->status['code']=="ok")
-		{
-			return (string)$xml->scos->sco->{'date-begin'};
-		}	
-        else
-		{
+		if ($xml instanceof \SimpleXMLElement) {
+			if ($xml->status['code'] == "ok") {
+				return (string)$xml->scos->sco->{'date-begin'};
+			} else {
+				$ilLog->write('AdobeConnect getStartDate Response: '.$xml->asXML());
+			}
+		} else {
 			$ilLog->write('AdobeConnect getStartDate Request: '.$url);
-			$ilLog->write('AdobeConnect getStartDate Response: '.$xml->asXML());
-		
-            return NULL;
+			$ilLog->write('The API does not respond with a valid XML body');
+
+			return NULL;
 		}
 	}
 
