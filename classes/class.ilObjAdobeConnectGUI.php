@@ -1220,8 +1220,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$ilAdobeConnectUser->ensureAccountExistance();
 
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-//		$xmlAPI->logout( $_SESSION['xavc_last_sso_sessid'] );
-		$session = $ilAdobeConnectUser->loginUser();
+		$xavc_login = $ilAdobeConnectUser->getXAVCLogin();
+		//login current user session
+		$session = $xmlAPI->generateUserSessionCookie($xavc_login);
 		$_SESSION['xavc_last_sso_sessid'] = $session;
 
 		$url = ilUtil::appendUrlParameterString($url, 'session=' . $session);

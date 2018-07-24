@@ -2016,30 +2016,23 @@ class ilAdobeConnectXMLAPI
 	{
 		$txt_shared_meeting_templates = $pluginObj->txt('shared_meeting_templates');
 		$txt_my_meeting_templates = $pluginObj->txt('my_meeting_templates');
-		
-		$url_1 = $this->getApiUrl(array(
-			'action' => 'sco-shortcuts'
-		));
+
+		$url_1 = $this->getApiUrl(array('action' => 'sco-shortcuts'));
 	
 		$xml = $this->sendRequest($url_1);
 		$templates = array();
 		if($xml instanceof SimpleXMLElement)
 		{
-			if(is_array($xml->shortcuts->sco))
-			{
 				foreach($xml->shortcuts->sco as $folder)
 				{
 					if(($folder['type'] == 'shared-meeting-templates') || $folder['type'] == 'my-meeting-templates')
 					{
 						$sco_id          = (string)$folder['sco-id'];
 						$txt_folder_name = $folder['type'] == 'shared-meeting-templates' ? $txt_shared_meeting_templates : $txt_my_meeting_templates;
-						$url_2           = $this->getApiUrl(array(
-							'action' => 'sco-contents',
-							'sco-id' => $sco_id
-						));
-						$xml_2           = $this->sendRequest($url_2);
 
-						if(is_array($xml_2->scos->sco))
+						$url_2 = $this->getApiUrl(array('action' => 'sco-contents', 'sco-id' => $sco_id));
+						$xml_2 = $this->sendRequest($url_2);
+						if($xml_2 instanceof SimpleXMLElement)
 						{
 							foreach($xml_2->scos->sco as $sco)
 							{
@@ -2050,7 +2043,6 @@ class ilAdobeConnectXMLAPI
 					}
 				}
 			}
-		}
 		asort($templates);
 		return $templates;	
 	}
