@@ -604,6 +604,11 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			}
 			else
 			{
+				$GLOBALS['ilLog']->write(sprintf(
+					'Trying to create user with: login %s / firstname: %s / lastname: %s / email: %s',
+					$this->externalLogin, $ownerObj->getFirstName(), $ownerObj->getLastName(), $ownerObj->getEmail() 
+				));
+
 				$this->xmlApi->addUser
 					(
 						$this->externalLogin,
