@@ -737,16 +737,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
                     $presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
+                    $xmlAPI->logout( $_SESSION['xavc_last_sso_sessid'] );
                     //login current user session
-					if( !ilAdobeConnectServer::getSetting('enhanced_security_mode') == false || $settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_DFN)
-					{
-						$session = $xmlAPI->getBreezeSession(true);
-					}
-					else
-					{
-						$session = $xmlAPI->generateUserSessionCookie($xavc_login);
-					}
-
+                    $session = $ilAdobeConnectUser->loginUser();
                     $_SESSION['xavc_last_sso_sessid'] = $session;
                     $url = $presentation_url.$this->object->getURL().'?session='.$session;
                     
@@ -1244,9 +1237,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$ilAdobeConnectUser->ensureAccountExistance();
 
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-		$xavc_login = $ilAdobeConnectUser->getXAVCLogin();
-		//login current user session
-		$session = $xmlAPI->generateUserSessionCookie($xavc_login);
+		$xmlAPI->logout( $_SESSION['xavc_last_sso_sessid'] );
+		$session = $ilAdobeConnectUser->loginUser();
 		$_SESSION['xavc_last_sso_sessid'] = $session;
 
 		$url = ilUtil::appendUrlParameterString($url, 'session=' . $session);

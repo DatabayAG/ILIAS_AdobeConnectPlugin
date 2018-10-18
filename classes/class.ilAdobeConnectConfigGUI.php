@@ -176,10 +176,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 		$form_lead_time->setInfo($this->getPluginObject()->txt('schedule_lead_time_info'));
 		$this->form->addItem($form_lead_time);
 
-		$form_security_mode = new ilCheckboxInputGUI($this->getPluginObject()->txt('enhanced_security_mode'), 'enhanced_security_mode');
-		$form_security_mode->setInfo($this->pluginObj->txt('enhanced_security_mode_info'));
-		$this->form->addItem($form_security_mode);
-
 		$head_line = new ilFormSectionHeaderGUI();
 		$head_line->setTitle($this->getPluginObject()->txt('presentation_server_settings'));
 		$this->form->addItem($head_line);
@@ -223,7 +219,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
 		$values['x_user_id'] = ilAdobeConnectServer::getSetting('x_user_id')? ilAdobeConnectServer::getSetting('x_user_id') : 'x_user_id';
 
-		$values['enhanced_security_mode'] = ilAdobeConnectServer::getSetting('enhanced_security_mode', 0);
 		$this->form->setValuesByArray($values);
 	}
 
@@ -302,8 +297,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 					}
 					ilAdobeConnectServer::setSetting($key, trim($value));
 				}
-				ilAdobeConnectServer::setSetting('enhanced_security_mode', (int)$this->form->getInput('enhanced_security_mode'));
-
 				ilAdobeConnectServer::setSetting('auth_mode_switchaai_account_type',serialize($this->form->getInput('auth_mode_switchaai_account_type')));
 				ilAdobeConnectServer::_getInstance()->commitSettings();
 				
@@ -314,8 +307,14 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                     if(ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH)
                     {
 					    $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
+                        $session = $xmlAPI->getBreezeSession();
 
-                        if(!$xmlAPI->login(trim($this->form->getInput('login')), trim($this->form->getInput('password')), null))
+                        if(!$session)
+                        {
+                            throw new ilException('err_invalid_server');
+                        }
+
+                        if(!$xmlAPI->login(trim($this->form->getInput('login')), trim($this->form->getInput('password')), $session))
                         {
                             throw new ilException('err_authentication_failed');
                         }

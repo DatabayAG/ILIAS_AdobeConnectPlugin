@@ -305,5 +305,3 @@ use_meeting_template#:#Veranstaltungsvorlage verwenden
 use_meeting_template_info#:#Wenn dies aktiviert ist, kann eine existierende Veranstaltungsvorlage ausgewählt werden, die bei der Erstellung verwendet werden kann.
 shared_meeting_templates#:#Gemeinsame Vorlagen
 my_meeting_templates#:#Meine Vorlagen
-enhanced_security_mode#:#Erweiterte Sicherheit
-enhanced_security_mode_info#:#Erweiterte Sicherheit wird ab Adobe Connect Version 9.0.4 unterstützt

@@ -21,24 +21,6 @@ class ilAdobeConnectPlugin extends ilRepositoryObjectPlugin
 	}
 
 	/**
-	 * @inheritdoc
-	 */
-	protected function init()
-	{
-		parent::init();
-
-		$this->registerAutoloader();
-	}
-
-	/**
-	 * Registers the plugin autoloader
-	 */
-	private function registerAutoloader()
-	{
-		require_once dirname(__FILE__) . '/../autoload.php';
-	}
-
-	/**
 	 * @param $string a_type
 	 * @param $string $a_size
 	 * @return string
