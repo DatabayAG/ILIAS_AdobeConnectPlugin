@@ -46,15 +46,12 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 		switch($a_permission)
 		{
 			case 'visible':
-				return true;
-				break;
-
-			case 'delete':
-				return true;	
-					break;
-				
-			case 'write':
 			case 'edit_permission':
+			case 'delete':
+				return true;
+					break;
+
+			case 'write':
 			case 'read':
 				if(
 					!self::_hasMemberRole($a_user_id, $a_ref_id)
