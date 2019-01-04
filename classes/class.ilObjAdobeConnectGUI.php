@@ -2960,7 +2960,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$ilToolbar->addButton($this->lng->txt("crs_search_members"),
 				$ilCtrl->getLinkTargetByClass('ilRepositorySearchGUI', 'start'));
 		} elseif (
-			$has_access && $this->object->getParticipantsObject()->getParticipants() > 0 &&
+			$has_access && count($this->object->getParticipantsObject()->getParticipants()) > 0 &&
 			(int)ilAdobeConnectServer::getSetting('allow_crs_grp_trigger')
 		) {
 			$ilToolbar->setFormAction($this->ctrl->getFormAction($this));
