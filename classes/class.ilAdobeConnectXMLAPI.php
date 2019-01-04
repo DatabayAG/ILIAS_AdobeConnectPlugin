@@ -1403,21 +1403,10 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean                  Returns true if everything is ok
      */
-    public function addMeetingParticipant($meeting_id, $login, $session= NULL)
-    {
-        $principal_id = $this->getPrincipalId($login, $session);
-
-		$url = $this->getApiUrl(array(
-			'action' 		=> 'permissions-update',
-			'acl-id' 		=> $meeting_id,
-			'principal-id' => $principal_id,
-			'permission-id'=> 'view'
-		));
-
-		$xml = $this->sendRequest($url);
-
-        return ($xml->status['code']=="ok" ? true : false);
-    }
+	public function addMeetingParticipant($meeting_id, $login, $session = null)
+	{
+		return $this->updateMeetingParticipant($meeting_id, $login, $session, 'view');
+	}
 
 	/**
      *  Add a host to the meeting
@@ -1427,21 +1416,10 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean                  Returns true if everything is ok
      */
-    public function addMeetingHost($meeting_id, $login, $session= NULL)
-    {
-        $principal_id = $this->getPrincipalId($login, $session);
-
-		$url = $this->getApiUrl(array(
-			'action' 		=> 'permissions-update',
-			'acl-id' 		=> $meeting_id,
-			'principal-id' => $principal_id,
-			'permission-id'=> 'host'
-		));
-
-		$xml = $this->sendRequest($url);
-
-        return ($xml->status['code']=="ok" ? true : false);
-    }
+	public function addMeetingHost($meeting_id, $login, $session = null)
+	{
+		return $this->updateMeetingParticipant($meeting_id, $login, $session, 'host');
+	}
 
 	/**
 	 *  Add a moderator to the meeting
@@ -1453,24 +1431,15 @@ class ilAdobeConnectXMLAPI
 	 */
 	public function addMeetingModerator($meeting_id, $login, $session= NULL)
 	{
-		$principal_id = $this->getPrincipalId($login, $session);
-
-		$url = $this->getApiUrl(array(
-			'action'        => 'permissions-update',
-			'acl-id'        => $meeting_id,
-			'principal-id'  => $principal_id,
-			'permission-id' => 'mini-host'
-		));
-
-		$xml = $this->sendRequest($url);
-
-		return ($xml->status['code'] == "ok" ? true : false);
+		return $this->updateMeetingParticipant($meeting_id, $login, $session, 'mini-host');
 	}
 
 	public function updateMeetingParticipant($meeting_id, $login, $session= NULL, $permission)
 	{
+		global $ilLog;
+
 		$principal_id = $this->getPrincipalId($login, $session);
-		
+
 		$url = $this->getApiUrl(array(
 			'action' 		=> 'permissions-update',
 			'principal-id' => $principal_id,
@@ -1478,11 +1447,21 @@ class ilAdobeConnectXMLAPI
 			'permission-id'=> $permission
 		));
 
+		$ilLog->write($url);
+
 		$xml = $this->sendRequest($url);
-        if($xml->status['code'] == 'ok')
-		{
-			return true;
+		if ($xml instanceof \SimpleXMLElement) {
+			if ($xml->status['code'] == 'ok') {
+				$ilLog->write("Successfully updated participant status");
+				return true;
+			} else {
+				$ilLog->write('Participant status update failed: ' . $xml->asXML());
+			}
+		} else {
+			$ilLog->write('Participant status update failed, no XML given in response');
 		}
+
+		return false;
 	}
 
     /**
@@ -1493,20 +1472,10 @@ class ilAdobeConnectXMLAPI
      * @param String $session
      * @return boolean                  Returns true if everything is ok
      */
-    public function deleteMeetingParticipant($meeting_id, $login, $session= NULL)
-    {
-         $principal_id = $this->getPrincipalId($login, $session);
-
-		$url = $this->getApiUrl(array(
-			'action' 		=> 'permissions-update',
-			'acl-id' 		=> $meeting_id,
-			'principal-id' => $principal_id,
-			'permission-id'=> 'remove'
-		));
-		$xml = $this->sendRequest($url);
-
-        return ($xml->status['code'] == "ok" ? true : false);
-    }
+	public function deleteMeetingParticipant($meeting_id, $login, $session = null)
+	{
+		return $this->updateMeetingParticipant($meeting_id, $login, $session, 'remove');
+	}
 
     /**
      *  Returns all meeting ids on the Adobe Connect server

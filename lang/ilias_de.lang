@@ -305,3 +305,10 @@ use_meeting_template#:#Veranstaltungsvorlage verwenden
 use_meeting_template_info#:#Wenn dies aktiviert ist, kann eine existierende Veranstaltungsvorlage ausgewählt werden, die bei der Erstellung verwendet werden kann.
 shared_meeting_templates#:#Gemeinsame Vorlagen
 my_meeting_templates#:#Meine Vorlagen
+btn_sync_parent_participants_crs#:#Benutzer aus Kurs übernehmen
+btn_sync_parent_participants_grp#:#Benutzer aus Gruppe übernehmen
+msg_sync_parent_participants_success#:#Die Benutzer wurden erfolgreich übernommen.
+msg_sync_parent_participants_partly#:#Es konnten nur %s Benutzer übernommen werden, bei folgenden Benutzern gab es Probleme: %s
+msg_sync_parent_participants_failed#:#Folgende Benutzer konnten nicht übernommen werden: %s
+msg_sync_parent_participants_no_action#:#Die Aktion wurde nicht ausgeführt.
+failed_api_participant_update#:#Der Status des Benutzers im Meeting konnte nicht über die API aktualisiert werden.
