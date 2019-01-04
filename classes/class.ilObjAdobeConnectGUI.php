@@ -2921,7 +2921,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		 * @var $ilToolbar ilToolbarGUI
 		 * @var $lng $lng
 		 */
-		global $ilCtrl, $lng, $ilUser, $illToolbar;
+		global $ilCtrl, $lng, $ilUser, $ilToolbar;
 
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 		$this->pluginObj->includeClass('class.ilXAVCTableGUI.php');
