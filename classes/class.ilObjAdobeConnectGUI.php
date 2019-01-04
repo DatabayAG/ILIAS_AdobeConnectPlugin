@@ -3015,7 +3015,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$result = $this->object->addCrsGrpMembers($this->object->getRefId(), $scoId);
 		
 		if (0 === count($result->users)) {
-			ilUtil::sendSuccess($this->pluginObj->txt('msg_sync_parent_participants_no_action'), true);
+			ilUtil::sendInfo($this->pluginObj->txt('msg_sync_parent_participants_no_action'), true);
 		} else {
 			$succeeds = array_filter($result->users, function (stdClass $user) {
 				return $user->success;
