@@ -299,3 +299,10 @@ use_meeting_templates#:#Use meeting templates
 use_meeting_templates_info#:#If aktivated, an existing meeting template can be selected for meeting room creation.
 shared_meeting_templates#:#Shared Templates
 my_meeting_templates#:#My Templates
+btn_sync_parent_participants_crs#:#Adopt Users from Course
+btn_sync_parent_participants_grp#:#Adopt Users from Group
+msg_sync_parent_participants_success#:#The users have been successfully adopted.
+msg_sync_parent_participants_partly#:#Only %s user(s) could be adopted, the update failed for the following users: %s
+msg_sync_parent_participants_failed#:#The update failed for the following users: %s
+msg_sync_parent_participants_no_action#:#No action performed.
+failed_api_participant_update#:#Could not update the participant status of the users for the current meeting via API.

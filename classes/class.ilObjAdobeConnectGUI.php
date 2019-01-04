@@ -182,6 +182,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					case "detachAdmin":
 					case "addCrsGrpMembers":
 					case 'showContent':
+					case "syncParentParticipants":
 					case "editParticipants":
 					case "updateParticipants":
 					case 'performSso':
@@ -2920,7 +2921,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		 * @var $ilToolbar ilToolbarGUI
 		 * @var $lng $lng
 		 */
-		global $ilCtrl, $lng, $ilUser;
+		global $ilCtrl, $lng, $ilUser, $illToolbar;
 
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 		$this->pluginObj->includeClass('class.ilXAVCTableGUI.php');
@@ -2958,6 +2959,19 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			// search button
 			$ilToolbar->addButton($this->lng->txt("crs_search_members"),
 				$ilCtrl->getLinkTargetByClass('ilRepositorySearchGUI', 'start'));
+		} elseif (
+			$has_access && $this->object->getParticipantsObject()->getParticipants() > 0 &&
+			(int)ilAdobeConnectServer::getSetting('allow_crs_grp_trigger')
+		) {
+			$ilToolbar->setFormAction($this->ctrl->getFormAction($this));
+			require_once 'Services/UIComponent/Button/classes/class.ilSubmitButton.php';
+			$syncParticipantsBtn = \ilSubmitButton::getInstance();
+			$syncParticipantsBtn->setCaption(
+				$this->pluginObj->txt('btn_sync_parent_participants_' . $this->object->getParticipantsObject()->getType()),
+				false
+			);
+			$syncParticipantsBtn->setCommand('syncParentParticipants');
+			$ilToolbar->addButtonInstance($syncParticipantsBtn);
 		}
 
 		$this->pluginObj->includeClass('class.ilXAVCParticipantsTableGUI.php');
@@ -2968,11 +2982,80 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$table->setProvider(new ilXAVCParticipantsDataProvider($ilDB, $this));
 		$table->populate();
 
-		$my_tpl->setVariable('FORM',$table->getHTML().$this->getPerformTriggerHtml());
+		$contentParts = [$table->getHTML()];
+
+		if (!isset($_GET['ignoreCrsGrpTrigger'])) {
+			$contentParts[] = $this->getPerformTriggerHtml();
+		}
+
+		$my_tpl->setVariable('FORM', implode('', $contentParts));
 
 		$this->tpl->setContent($my_tpl->get());
 	}
-	
+
+	/**
+	 * 
+	 */
+	private function syncParentParticipants()
+	{
+		ignore_user_abort(true);
+		@set_time_limit(0);
+
+		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
+		if ((int)ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') == 0) {
+			$this->ilias->raiseError($this->lng->txt('no_permission'), $this->ilias->error_obj->MESSAGE);
+		}
+
+		$parentParticipantIds = $this->object->getParticipantsObject()->getParticipants();
+		if (0 === count($parentParticipantIds)) {
+			$this->ctrl->redirect($this, 'editParticipants');
+		}
+
+		$scoId = ilObjAdobeConnect::_lookupScoId(ilObject::_lookupObjectId($this->object->getRefId()));
+		$result = $this->object->addCrsGrpMembers($this->object->getRefId(), $scoId);
+		
+		if (0 === count($result->users)) {
+			ilUtil::sendInfo($this->pluginObj->txt('msg_sync_parent_participants_no_action'), true);
+		} else {
+			$succeeds = array_filter($result->users, function (stdClass $user) {
+				return $user->success;
+			});
+
+			$failures = array_filter($result->users, function (stdClass $user) {
+				return !$user->success;
+			});
+
+			$failedDetails = '';
+			if (count($failures) > 0) {
+				$failureList = array_map(function (stdClass $user) {
+					return implode(': ', [
+						\ilObjUser::_lookupLogin($user->usr_id),
+						$this->pluginObj->txt($user->message)
+					]);
+				}, $failures);
+
+				$failedDetails = '<ul><li>' . implode('</li><li>', $failureList) . '</li></ul>';
+			} 
+
+			if (0 === count($failures)) {
+				ilUtil::sendSuccess($this->pluginObj->txt('msg_sync_parent_participants_success'), true);
+			} elseif (0 === count($succeeds)) {
+				ilUtil::sendFailure(sprintf(
+					$this->pluginObj->txt('msg_sync_parent_participants_failed'),
+					$failedDetails
+				), true);
+			} else {
+				ilUtil::sendInfo(sprintf(
+					$this->pluginObj->txt('msg_sync_parent_participants_partly'),
+					count($succeeds), $failedDetails
+				), true);
+			}
+		}
+
+		$this->ctrl->setParameter($this, 'ignoreCrsGrpTrigger', 1);
+		$this->ctrl->redirect($this, 'editParticipants');
+	}
+
 	public function performCrsGrpTrigger()
 	{
 		ignore_user_abort(true);
@@ -3003,17 +3086,19 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			else
 			{
 				$new_member_ids = array_diff($crs_grp_member_ids, $current_member_ids);
-				$delete_member_ids = array_diff($current_member_ids, $crs_grp_member_ids);
 
 				if(is_array($new_member_ids) && count($new_member_ids) > 0)
 				{
 					$this->object->addCrsGrpMembers($this->object->getRefId(), $sco_id, $new_member_ids);
 				}
 
+				// Conceptual Issue: Disabled auto deletion (cause issues with linked objects or users manually added to the meeting)
+				/*
+				$delete_member_ids = array_diff($current_member_ids, $crs_grp_member_ids);
 				if(is_array($delete_member_ids) && count($delete_member_ids) > 0)
 				{
 					$this->object->deleteCrsGrpMembers($sco_id, $delete_member_ids);
-				}
+				}*/
 			}
 		}
 		$response->succcess = true;
