@@ -715,7 +715,11 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		$xavcRoles = new ilAdobeConnectRoles($ref_id);
 		foreach ($usersByRole as $role => $users) {
 			foreach ($users as $usrId) {
-				$xavcRoles->addAdministratorRole($usrId);
+				if ($role === 'member') {
+					$xavcRoles->addMemberRole($usrId);
+				} else {
+					$xavcRoles->addAdministratorRole($usrId);
+				}
 
 				$isLocalMember = ilXAVCMembers::_isMember($usrId, $ref_id);
 				$xavcMemberObj = new ilXAVCMembers($ref_id, $usrId);
