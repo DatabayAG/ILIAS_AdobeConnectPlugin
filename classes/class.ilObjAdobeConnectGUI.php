@@ -1328,7 +1328,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 /*
  * User joins XAVC_object
  */
-	public function join()
+	public function join($redirect = true)
 	{
 		global $DIC;
 		$ilCtrl = $DIC->ctrl();
@@ -1425,8 +1425,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			ilObjUser::_addDesktopItem($user_id, $this->object->getRefId(), 'xavc');
 		}
 
-		$ilCtrl->setParameter($this, 'cmd', 'showContent');
-		$ilCtrl->redirect($this, "showContent");
+		if ($redirect) {
+			$ilCtrl->setParameter($this, 'cmd', 'showContent');
+			$ilCtrl->redirect($this, "showContent");
+		}
 	}
 
 	public function leave()
