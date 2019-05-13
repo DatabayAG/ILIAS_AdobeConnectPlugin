@@ -40,11 +40,7 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 	*/
 	function initCommands()
 	{
-		if(strtolower($_GET['baseClass']) != 'ilpersonaldesktopgui')
-		{
-			$this->link_enabled = true;
-		}
-
+		$this->link_enabled = false;
 		$this->copy_enabled = false;
 		
 		$command_array = array();
