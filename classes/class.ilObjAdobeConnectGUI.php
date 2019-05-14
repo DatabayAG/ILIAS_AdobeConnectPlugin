@@ -248,7 +248,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			ilObjUser::_addDesktopItem($ilUser->getId(), $this->object->getRefId(), 'xavc');
 		}
 
-		$this->object->addCrsGrpMembers($this->object->getRefId(), $this->object->getScoId());
+		if (ilAdobeConnectServer::getSetting('allow_crs_grp_trigger')) {
+			$this->object->addCrsGrpMembers($this->object->getRefId(), $this->object->getScoId());
+		}
 
 		$this->editProperties();
 	}
