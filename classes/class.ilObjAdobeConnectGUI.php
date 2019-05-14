@@ -106,6 +106,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				$this->checkPermission("read");
 
 				$this->pluginObj->includeClass('class.ilAdobeConnectUsersGalleryCollectionProvider.php');
+				$this->pluginObj->includeClass('class.ilAdobeConnectContainerParticipants.php');
 				$this->tabs->activateTab('participants');
 				$this->__setSubTabs('participants');
 				$this->tabs->activateSubTab("showMembersGallery");
