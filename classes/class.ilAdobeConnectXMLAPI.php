@@ -268,14 +268,9 @@ class ilAdobeConnectXMLAPI
 		$xml_string = file_get_contents($url, false, $ctx);
 		$xml        = simplexml_load_string($xml_string);
 
-		if($xml && $xml->common->cookie != "")
+		if($xml && (string)$xml->common->version)
 		{
-
-			if((string)$xml->common->version)
-			{
-				$api_version = (string)$xml->common->version;
-			}
-
+			$api_version = (string)$xml->common->version;
 			return $api_version;
 		}
 		else
