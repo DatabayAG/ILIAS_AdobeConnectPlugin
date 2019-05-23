@@ -92,6 +92,15 @@ class ilAdobeConnectServer
 	 * @var string $x_user_id Header-Variable needed for HTTP-Header-Auth.
 	 */
 	private $x_user_id = null;
+
+	/**
+	 * @var bool
+	 */
+	private $html_client = false;
+	/**
+	 * @var  string 
+	 */
+	private $api_version = 0;
 	
 	/**
 	 *  Singleton instance
@@ -139,6 +148,9 @@ class ilAdobeConnectServer
 		$this->x_user_id = self::getSetting('x_user_id');
 		$this->user_assignment_mode = self::getSetting('user_assignment_mode');
 		$this->auth_mode = self::getSetting('auth_mode');
+		
+		$this->html_client =  self::getSetting('html_client');
+		$this->api_version = self::getSetting('api_version');
 	}
 
 	/**
@@ -341,6 +353,38 @@ class ilAdobeConnectServer
 		return $this->x_user_id;
 	}
 
+	/**
+	 * @return null
+	 */
+	public function getApiVersion()
+	{
+		return $this->api_version;
+	}
+
+	/**
+	 * @param null $api_version
+	 */
+	public function setApiVersion($api_version)
+	{
+		$this->api_version = $api_version;
+	}
+
+	/**
+	 * @return bool
+	 */
+	public function getHtmlClient()
+	{
+		return $this->html_client;
+	}
+
+	/**
+	 * @param bool $html_client
+	 */
+	public function setHtmlClient($html_client)
+	{
+		$this->html_client = $html_client;
+	}
+	
 	/**
 	 * @param null $user_assignment_mode
 	 */
