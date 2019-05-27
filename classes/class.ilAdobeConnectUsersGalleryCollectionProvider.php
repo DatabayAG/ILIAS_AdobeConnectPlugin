@@ -24,6 +24,7 @@ class ilAdobeConnectUsersGalleryCollectionProvider extends ilAbstractUsersGaller
 	 */
 	public function __construct(ilObjAdobeConnect $object)
 	{
+		$this->object = $object;
 	}
 
 	/**
