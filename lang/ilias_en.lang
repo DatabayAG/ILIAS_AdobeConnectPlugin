@@ -300,3 +300,5 @@ use_meeting_templates#:#Use meeting templates
 use_meeting_templates_info#:#If aktivated, an existing meeting template can be selected for meeting room creation.
 shared_meeting_templates#:#Shared Templates
 my_meeting_templates#:#My Templates
+enhanced_security_mode#:#Enhanced Security
+enhanced_security_mode_info#:#Enhanced security is supported since Adobe Connect version 9.0.4

@@ -42,22 +42,22 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	 * @param string $session
 	 * @return bool
 	 */
-	public function addUser($login, $email, $pass, $first_name, $last_name, $session)
+	public function addUser($login, $email, $pass, $first_name, $last_name, $session = null)
 	{
 		global  $DIC;
 		$ilLog = $DIC->logger()->root();
 
 		$url = $this->getApiUrl(array(
-			'action' 		=> 'lms-user-create',
+			'action' 	=> 'lms-user-create',
 			'login' 		=> $login,
-			'first-name' 	=> $first_name,
-			'last-name' 	=> $last_name,
-			'session' 		=> $session
+			'first-name' => $first_name,
+			'last-name' => $last_name,
+			'session' => $session
 		));
 
 		$ilLog->write("addUser URL: ". $url);
 
-		$xml = simplexml_load_file($url);
+		$xml = $this->sendRequest($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -79,7 +79,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	 * @param string $session
 	 * @return bool|string
 	 */
-	public function searchUser($login, $session)
+	public function searchUser($login, $session = NULL)
 	{
 		global  $DIC;
 		$ilLog = $DIC->logger()->root();
@@ -87,17 +87,18 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		$url = $this->getApiUrl(array(
 			'login'     => $login,
 			'action' 	=> 'lms-user-exists',
-			'session' 	=> $session
+			'session' => $session
 		));
-		$xml = simplexml_load_file($url);
-
-		if($xml->status['code'] == 'ok')
+		$xml = $this->sendRequest($url);
+		if($xml instanceof \SimpleXMLElement)
 		{
-			$list = $xml->{'principal-list'};
-			
-			$id = (string)$list->principal['principal-id'];
+			if($xml->status['code'] == 'ok')
+			{
+				$list = $xml->{'principal-list'};
+				$id = (string)$list->principal['principal-id'];
 
-			return $id;
+				return $id;
+			}
 		}
 		else
 		{
@@ -126,18 +127,10 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		$url = $this->getApiUrl(array(
 			'action' 	=> 'lms-user-login',
 			'login' 	=> $user,
-			'session' 	=> $session
+			'session' => $session
 		));
 
-		$context = array(
-			'http' => array('timeout' => 4),
-			'https' => array('timeout' => 4)
-		);
-
-		$ctx = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
-
+		$xml = $this->sendRequest($url);
 		if($xml->status['code'] == 'ok')
 		{
 			return (string)$xml->cookie;
@@ -149,76 +142,68 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		return false;
 	}
 
-	/**
-	 * @param string $user
-	 * @param string $pass
-	 * @param string $session
-	 * @return bool
-	 */
-	public function login($user, $pass, $session)
-	{
-		global  $DIC;
-		$ilLog = $DIC->logger()->root();
-		$lng = $DIC->language();
-
-		if(isset(self::$loginsession_cache[$session]))
-		{
-			return true;
-		}
-
-		$url = $this->getApiUrl(array(
-			'action' 		=> 'login',
-			'login' 		=> $user,
-			'password' 		=> $pass,
-			'session' 		=> $session
-		));
-
-		$context = array(
-			'http' => array(
-				'timeout' => 4
-			),
-			'https' => array(
-				'timeout' => 4
-			)
-		);
-
-		$ctx = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
-
-		if($xml->status['code'] == 'ok')
-		{
-			self::$loginsession_cache[$session] = true;
-			return true;
-		}
-		else
-		{
-			unset(self::$loginsession_cache[$session]);
-			$ilLog->write('AdobeConnect login Request: '.$url);
-			if($xml)
-			{
-				$ilLog->write('AdobeConnect login Response: ' . $xml->asXML());
-			}
-			$ilLog->write('AdobeConnect login failed: '.$user);
-			ilUtil::sendFailure($lng->txt('login_failed'));
-			return false;
-		}
-	}
-
-	/**
-	 * @param String $session
-	 * @return bool|void
-	 */
-	public function logout($session)
-	{
-	}
+//	/**
+//	 * @param string $user
+//	 * @param string $pass
+//	 * @param string $session
+//	 * @return bool
+//	 */
+//	public function login($user, $pass, $session)
+//	{
+//		global  $DIC;
+//		$ilLog = $DIC->logger()->root();
+//		$lng = $DIC->language();
+//
+//		if(isset(self::$loginsession_cache[$session]))
+//		{
+//			return true;
+//		}
+//
+//		$url = $this->getApiUrl(array(
+//			'action' 		=> 'login',
+//			'login' 		=> $user,
+//			'password' 		=> $pass,
+//			'session' 		=> $session
+//		));
+//
+//		$context = array(
+//			'http' => array(
+//				'timeout' => 4
+//			),
+//			'https' => array(
+//				'timeout' => 4
+//			)
+//		);
+//
+//		$ctx = $this->proxy($context);
+//		$xml_string = file_get_contents($url, false, $ctx);
+//		$xml = simplexml_load_string($xml_string);
+//
+//		if($xml->status['code'] == 'ok')
+//		{
+//			self::$loginsession_cache[$session] = true;
+//			return true;
+//		}
+//		else
+//		{
+//			unset(self::$loginsession_cache[$session]);
+//			$ilLog->write('AdobeConnect login Request: '.$url);
+//			if($xml)
+//			{
+//				$ilLog->write('AdobeConnect login Response: ' . $xml->asXML());
+//			}
+//			$ilLog->write('AdobeConnect login failed: '.$user);
+//			ilUtil::sendFailure($lng->txt('login_failed'));
+//			return false;
+//		}
+//	}
 
 	/**
 	 * @param String $login
 	 * @param String $session
 	 * @return null|String
 	 */
-	public function getPrincipalId($login, $session)
+	public function getPrincipalId($login, $session = null)
 	{
 		return $this->searchUser($login, $session);
 	}
