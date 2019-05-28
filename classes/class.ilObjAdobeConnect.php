@@ -351,7 +351,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			$this->setInstructions($post_instructions);
 			$this->setContactInfo($post_contact);
 			$this->setAcLanguage($_POST['ac_language']);
-			$this->setHtmlClient($_POST['html_client']);
+			$this->setUseHtmlClient($_POST['html_client']);
 			
 			if(isset($_POST['time_type_selection']) && $_POST['time_type_selection'] == 'permanent_room')
 			{
@@ -525,7 +525,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		$read_records   = $this->getReadRecords();
 		$folder_id      = $this->getFolderId();
 		$lang           = $this->getAcLanguage();
-		$html_client = $this->getHtmlClient();
+		$html_client = $this->isHtmlClientEnabled();
 		
 		global $DIC;
 		$ilDB = $DIC->database();
@@ -639,7 +639,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				'folder_id'		=> array('integer', $folder_id),
 				'url_path'		=> array('text', $meeting_url),
 				'language'		=> array('text', $this->getAcLanguage()),
-				'html_client' 	=> array('integer', $this->getHtmlClient())
+				'html_client' 	=> array('integer', $this->isHtmlClientEnabled())
 			)
 		);
 	}
@@ -932,7 +932,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			$this->xmlApi->updateMeeting($this->sco_id, $this->getTitle(), $this->getDescription(),
 				date('Y-m-d', $this->start_date->getUnixTime()), date('H:i', $this->start_date->getUnixTime()),
 				date('Y-m-d', $end_date->getUnixTime()), date('H:i', $end_date->getUnixTime()), $session, 
-				$this->getAcLanguage(), $this->getHtmlClient());
+				$this->getAcLanguage(), $this->isHtmlClientEnabled());
 			
 			$this->xmlApi->updatePermission($this->sco_id, $session, $this->permission);
 		}
@@ -947,7 +947,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				'perm_read_contents' => array('integer', $this->getReadContents()),
 				'perm_read_records'  => array('integer', $this->getReadRecords()),
 				'language'           => array('text', $this->getAcLanguage()),
-				'html_client'	=> array('integer', $this->getHtmlClient())
+				'html_client'	=> array('integer', $this->isHtmlClientEnabled())
 			),
 			array('sco_id' => array('integer', $this->getScoId())));
 		
@@ -1004,7 +1004,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		$new_obj->setScoId($this->getScoId());
 		$new_obj->setFolderId($this->getFolderId());
 		$new_obj->setAcLanguage($this->getAcLanguage());
-		$new_obj->setHtmlClient($this->getHtmlClient());
+		$new_obj->setUseHtmlClient($this->isHtmlClientEnabled());
 		$new_obj->update();
 		
 		// add xavc-member,  assign roles
@@ -1781,7 +1781,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	/**
 	 * @return bool
 	 */
-	public function getHtmlClient()
+	public function isHtmlClientEnabled()
 	{
 		return $this->html_client;
 	}
@@ -1789,7 +1789,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	/**
 	 * @param bool $html_client
 	 */
-	public function setHtmlClient($html_client)
+	public function setUseHtmlClient($html_client)
 	{
 		$this->html_client = $html_client;
 	}

@@ -55,7 +55,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 	 */
 	public function configure()
 	{
-		$this->readApiVersion();
 		$this->editAdobeSettings();
 	}
 
@@ -325,7 +324,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 					{
 						ilAdobeConnectServer::setSetting('use_user_folders', 0);
 					}
-
+					
+					$this->readApiVersion();
+                    
 					ilUtil::sendSuccess($lng->txt('settings_saved'), true);
 					$ilCtrl->redirect($this, 'editAdobeSettings');
 				}

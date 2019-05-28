@@ -372,7 +372,7 @@ class ilAdobeConnectServer
 	/**
 	 * @return bool
 	 */
-	public function getHtmlClient()
+	public function isHtmlClientEnabled()
 	{
 		return $this->html_client;
 	}
@@ -380,7 +380,7 @@ class ilAdobeConnectServer
 	/**
 	 * @param bool $html_client
 	 */
-	public function setHtmlClient($html_client)
+	public function setUseHtmlClient($html_client)
 	{
 		$this->html_client = $html_client;
 	}
@@ -480,7 +480,6 @@ class ilAdobeConnectServer
 
 		return $map;
 	}
-
 
 	/*
 	 * @param int $auth_mode_key
