@@ -432,6 +432,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		
 		$lang_selector->setOptions($lang_options);
 		$this->form->addItem($lang_selector);
+
+		$html_client = new ilCheckboxInputGUI($this->pluginObj->txt('html_client'), 'html_client');
+		$html_client->setInfo($this->pluginObj->txt('html_client_info'));
+		$this->form->addItem($html_client);
 		
 		$this->form->addCommandButton("updateProperties", $this->txt("save"));
 		$this->form->addCommandButton("editProperties", $this->txt("cancel"));
@@ -495,6 +499,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		{
 			$values['ac_language'] = 'de';
 		}
+		
+		$values['html_client'] = $this->object->getHtmlClient();
 
 		$this->form->setValuesByArray($values);
 	}
@@ -553,6 +559,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->object->setInstructions($this->form->getInput('instructions'));
 			$this->object->setContactInfo($this->form->getInput('contact_info'));
 			$this->object->setAcLanguage($this->form->getInput('ac_language'));
+			$this->object->setUseHtmlClient($this->form->getInput('html_client'));
 			
 			$enable_perm_room = (ilAdobeConnectServer::getSetting('enable_perm_room','1') && $this->form->getInput('time_type_selection') == 'permanent_room') ? true: false;
 			$this->object->setPermanentRoom( $enable_perm_room ?  1 : 0 );
@@ -695,10 +702,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
 		$this->pluginObj->includeClass('class.ilAdobeConnectQuota.php');
 
+		$settings = ilAdobeConnectServer::_getInstance();
+
 		if(null !== $this->object->getStartDate())
 		{
             //SWITCH
-            $settings = ilAdobeConnectServer::_getInstance();
             if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI)
             {
                 //@Todo MST check this IF-Statement
@@ -744,7 +752,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                     //login current user session
                     $session = $ilAdobeConnectUser->loginUser();
                     $_SESSION['xavc_last_sso_sessid'] = $session;
-                    $url = $presentation_url.$this->object->getURL().'?session='.$session;
+                    if($settings->isHtmlClientEnabled() == 1 && $this->object->getHtmlClient() == 1)
+					{
+						$html_client = '&html-view=true';
+					}
+                    $url = $presentation_url.$this->object->getURL().'?session='.$session.$html_client;
                     
                     $GLOBALS['ilLog']->write(sprintf("Generated URL %s for user '%s'", $url, $xavc_login));
 
@@ -869,7 +881,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$my_tpl->setVariable('CONTENT_TABLE', $table->getHTML());
 		}
 		return $my_tpl->get();
-
 	}
 
     /**
@@ -2571,6 +2582,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$lang_selector->setOptions($lang_options);
 		$form->addItem($lang_selector);
 		
+		$html_client = new ilCheckboxInputGUI($this->pluginObj->txt('html_client'), 'html_client');
+		$html_client->setInfo($this->pluginObj->txt('html_client_info'));
+		$form->addItem($html_client);
+
 		$form->addCommandButton("save", $this->pluginObj->txt($this->getType()."_add"));
 		$form->addCommandButton("cancelCreation", $this->lng->txt("cancel"));
 
