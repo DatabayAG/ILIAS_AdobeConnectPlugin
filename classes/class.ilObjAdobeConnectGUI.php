@@ -431,6 +431,17 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->form->addItem($cb_uploads);
 		$this->form->addItem($cb_records);
 
+		$lang_selector = new ilSelectInputGUI($GLOBALS['lng']->txt('language'), 'ac_language');
+		$adobe_langs = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'tr', 'ru', 'ja', 'zh', 'ko'];
+		$this->lng->loadLanguageModule('meta');
+		foreach($adobe_langs as $lang)
+		{
+			$lang_options[$lang] = $GLOBALS['lng']->txt('meta_l_'.$lang);
+		}
+
+		$lang_selector->setOptions($lang_options);
+		$this->form->addItem($lang_selector);
+
 		$this->form->addCommandButton("updateProperties", $this->txt("save"));
 		$this->form->addCommandButton("editProperties", $this->txt("cancel"));
 
@@ -466,6 +477,22 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$values['read_contents'] = $this->object->getReadContents();
 		$values['read_records'] = $this->object->getReadRecords();
+
+		$default_lang = $GLOBALS['lng']->getDefaultLanguage();
+		$adobe_langs = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'tr', 'ru', 'ja', 'zh', 'ko'];
+
+		if(in_array($this->object->getAcLanguage(), $adobe_langs))
+		{
+			$values['ac_language'] = $this->object->getAcLanguage();
+		}
+		else if(in_array($default_lang, $adobe_langs))
+		{
+			$values['ac_language'] = $default_lang;
+		}
+		else
+		{
+			$values['ac_language'] = 'de';
+		}
 
 		$this->form->setValuesByArray($values);
 	}
@@ -546,6 +573,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->object->setInstructions($this->form->getInput('instructions'));
 			$this->object->setContactInfo($this->form->getInput('contact_info'));
 			$this->object->setPermanentRoom($this->form->getInput('time_type_selection') == 'permanent_room' ?  1 : 0 );
+			$this->object->setAcLanguage($this->form->getInput('ac_language'));
 
 			$this->object->setReadContents((int)$this->form->getInput('read_contents'));
 			$this->object->setReadRecords((int)$this->form->getInput('read_records'));
@@ -2603,6 +2631,16 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$tpl_id = new ilHiddenInputGUI('tpl_id');
 		$tpl_id->setValue($item['id']);
 		$form->addItem($tpl_id);
+
+		$lang_selector = new ilSelectInputGUI($this->lng->txt('language'), 'ac_language');
+		$adobe_langs = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'tr', 'ru', 'ja', 'zh', 'ko'];
+		$GLOBALS['lng']->loadLanguageModule('meta');
+		foreach($adobe_langs as $lang)
+		{
+			$lang_options[$lang] = $GLOBALS['lng']->txt('meta_l_'.$lang);
+		}
+		$lang_selector->setOptions($lang_options);
+		$form->addItem($lang_selector);
 
 		$form->addCommandButton("save", $this->pluginObj->txt($this->getType()."_add"));
 		$form->addCommandButton("cancelCreation", $this->lng->txt("cancel"));
