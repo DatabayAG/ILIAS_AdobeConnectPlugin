@@ -626,3 +626,16 @@ if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'language'))
 			      'default' => 'de'));
 }
 ?>
+<#37>
+<?php
+if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'html_client'))
+{
+	$ilDB->addTableColumn('rep_robj_xavc_data', 'html_client',
+		array(
+			'type' => 'integer',
+			'length' => 1,
+			'notnull' => false,
+			'default'=> 0
+		));
+}
+?>

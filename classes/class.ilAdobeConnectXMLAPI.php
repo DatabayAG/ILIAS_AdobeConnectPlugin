@@ -44,6 +44,7 @@ class ilAdobeConnectXMLAPI
 	 * @var array
 	 */
 	protected static $scocontent_cache = array();
+
 	
 	/**
 	 * ilAdobeConnectXMLAPI constructor.
@@ -55,6 +56,7 @@ class ilAdobeConnectXMLAPI
 		$this->port      = $this->adcInfo->getPort();
 		$this->x_user_id = $this->adcInfo->getXUserId();
 		$this->auth_mode = $this->adcInfo->getAuthMode();
+		$this->api_version = $this->adcInfo->getApiVersion();
 		$this->proxy();
 	}
 	
@@ -247,6 +249,40 @@ class ilAdobeConnectXMLAPI
 			return false;
 		}
 	}
+
+	/**
+	 * @return null|string
+	 */
+	public function getApiVersion()
+	{
+		global $DIC;
+		$ilLog = $DIC->logger()->root();
+
+		$url = $this->getApiUrl(array('action' => 'common-info'));
+
+		$context    = array(
+			'http'  => array('timeout' => 4),
+			'https' => array('timeout' => 4)
+		);
+		$ctx        = $this->proxy($context);
+		$xml_string = file_get_contents($url, false, $ctx);
+		$xml        = simplexml_load_string($xml_string);
+
+		if($xml && (string)$xml->common->version)
+		{
+			$api_version = (string)$xml->common->version;
+			return $api_version;
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect getApiVersion Request: ' . $url);
+			if($xml)
+			{
+				$ilLog->write('AdobeConnect getApiVersion Response: ' . $xml->asXML());
+			}
+			return null;
+		}
+	}	
 	
 	/**
 	 * @param bool $useCache
@@ -359,7 +395,7 @@ class ilAdobeConnectXMLAPI
 	 * @return array                  Meeting sco-id AND Meeting url-path; NULL if something is wrong
 	 * @throws ilException
 	 */
-	public function addMeeting($name, $description, $start_date, $start_time, $end_date, $end_time, $folder_id, $session, $source_sco_id = 0, $ac_language = 'de')
+	public function addMeeting($name, $description, $start_date, $start_time, $end_date, $end_time, $folder_id, $session, $source_sco_id = 0, $ac_language = 'de', $html_client = false)
 	{
 		global $DIC;
 		$ilLog = $DIC->logger()->root();
@@ -375,6 +411,11 @@ class ilAdobeConnectXMLAPI
 			'session'     => $session,
 			'lang'        => $ac_language
 		);
+		
+		if($html_client)
+		{
+			$api_parameter['meetingHtmlLaunch'] =  'true';	
+		}
 		
 		if($source_sco_id > 0)
 		{
@@ -420,7 +461,7 @@ class ilAdobeConnectXMLAPI
 	 * @param String $session
 	 * @return boolean              Returns true if everything is ok
 	 */
-	public function updateMeeting($meeting_id, $name, $description, $start_date, $start_time, $end_date, $end_time, $session, $ac_language)
+	public function updateMeeting($meeting_id, $name, $description, $start_date, $start_time, $end_date, $end_time, $session, $ac_language, $html_client = false)
 	{
 		global $DIC;
 		$lng = $DIC->language();
@@ -436,6 +477,11 @@ class ilAdobeConnectXMLAPI
 			'session'     => $session,
 			'lang'        => $ac_language
 		));
+
+		if($html_client )
+		{
+			$api_parameter['meetingHtmlLaunch']= 'true';
+		}
 		$xml = simplexml_load_file($url);
 		
 		if($xml->status['code'] == 'ok')
@@ -661,6 +707,38 @@ class ilAdobeConnectXMLAPI
 			$ilLog->write('AdobeConnect getURL Response: ' . $xml->asXML());
 		}
 		return NULL;
+	}
+	
+	public function getScoInfo($sco_id, $folder_id, $session)
+	{
+		global $DIC;
+		$ilLog = $DIC->logger()->root();
+
+		$url = $this->getApiUrl(array(
+			'action'        => 'sco-info',
+			'sco-id'        => $sco_id,
+			'filter-sco-id' => $sco_id,
+			'session'       => $session
+		));
+
+		$xml = $this->getCachedSessionCall($url);
+
+		if($xml->status['code'] == "ok")
+		{
+			$sco_data['date_begin'] = $xml->sco->{'date-begin'};
+			$sco_data['date_created'] = $xml->sco->{'date-created'};
+			$sco_data['date_end'] = $xml->sco->{'date-end'};
+			$sco_data['date_modified'] = $xml->sco->{'date-modified'};
+			$sco_data['meetingHTMLLaunch'] = $xml->sco->{'meetingHTMLLaunch'};
+			return $sco_data;
+		}
+		else
+		{
+			$ilLog->write('AdobeConnect getStartDate Request: ' . $url);
+			$ilLog->write('AdobeConnect getStartDate Response: ' . $xml->asXML());
+
+			return NULL;
+		}
 	}
 	
 	/**
@@ -1414,7 +1492,7 @@ class ilAdobeConnectXMLAPI
 		{
 			$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'denied');
 		}
-		
+	
 		return is_array($result) ? $result : array();
 	}
 	

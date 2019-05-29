@@ -324,7 +324,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 					{
 						ilAdobeConnectServer::setSetting('use_user_folders', 0);
 					}
-
+					
+					$this->readApiVersion();
+                    
 					ilUtil::sendSuccess($lng->txt('settings_saved'), true);
 					$ilCtrl->redirect($this, 'editAdobeSettings');
 				}
@@ -672,6 +674,33 @@ $tbl .= "</table>";
 		$matrix->setHtml($tbl);
 		
 		$this->form->addItem($matrix);
+		
+		$api_version = new ilNonEditableValueGUI($this->pluginObj->txt('api_version'), 'api_version');
+		$this->form->addItem($api_version);
+		
+		$html_client = new ilCheckboxInputGUI($this->pluginObj->txt('html_client'), 'html_client');
+		$html_client->setInfo($this->pluginObj->txt('html_client_info'));
+		if(version_compare(ilAdobeConnectServer::getSetting('api_version'), '10.0.0' ,'<'))
+		{
+			$html_client->setDisabled(true);
+		}
+		$this->form->addItem($html_client);
+	}
+
+	/**
+	 * 
+	 */
+	private function readApiVersion()
+	{
+		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
+		$session = $xmlAPI->getBreezeSession();
+		$api_version = $xmlAPI->getApiVersion();
+		
+		ilAdobeConnectServer::setSetting('api_version',  $api_version);
+		if(version_compare($api_version, '10.0.0' ,'<'))
+		{
+			ilAdobeConnectServer::setSetting('html_client', 0);
+		}
 	}
 
 	public function getIliasSettingsValues()
@@ -698,6 +727,10 @@ $tbl .= "</table>";
 //		$values['grp_owner'] = ilAdobeConnectServer::getSetting('grp_owner')? ilAdobeConnectServer::getSetting('grp_owner') : 'host';
 		$values['grp_admin'] = ilAdobeConnectServer::getSetting('grp_admin')? ilAdobeConnectServer::getSetting('grp_admin') : 'mini-host';
 		$values['grp_member'] = ilAdobeConnectServer::getSetting('grp_member')? ilAdobeConnectServer::getSetting('grp_member') : 'view';
+		
+		$values['api_version'] = ilAdobeConnectServer::getSetting('api_version', 0);
+		$values['html_client'] = ilAdobeConnectServer::getSetting('html_client')? ilAdobeConnectServer::getSetting('html_client') : 0;
+		
 		$this->form->setValuesByArray($values);
 	}
 	
@@ -751,6 +784,7 @@ $tbl .= "</table>";
 //			ilAdobeConnectServer::setSetting('grp_owner', $this->form->getInput('grp_owner'));
 			ilAdobeConnectServer::setSetting('grp_admin', $this->form->getInput('grp_admin'));
 			ilAdobeConnectServer::setSetting('grp_member', $this->form->getInput('grp_member'));
+			ilAdobeConnectServer::setSetting('html_client', (int)$this->form->getInput('html_client'));
 		
 			ilUtil::sendSuccess($lng->txt('settings_saved'), true);
 			$ilCtrl->redirect($this, 'editIliasSettings');
