@@ -500,7 +500,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$values['ac_language'] = 'de';
 		}
 		
-		$values['html_client'] = $this->object->getHtmlClient();
+		$values['html_client'] = $this->object->isHtmlClientEnabled();
 
 		$this->form->setValuesByArray($values);
 	}
@@ -752,7 +752,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                     //login current user session
                     $session = $ilAdobeConnectUser->loginUser();
                     $_SESSION['xavc_last_sso_sessid'] = $session;
-                    if($settings->isHtmlClientEnabled() == 1 && $this->object->getHtmlClient() == 1)
+                    if($settings->isHtmlClientEnabled() == 1 && $this->object->isHtmlClientEnabled() == 1)
 					{
 						$html_client = '&html-view=true';
 					}
