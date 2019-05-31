@@ -748,9 +748,16 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
                     $presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
-                    $xmlAPI->logout( $_SESSION['xavc_last_sso_sessid'] );
                     //login current user session
-                    $session = $ilAdobeConnectUser->loginUser();
+					if( !ilAdobeConnectServer::getSetting('enhanced_security_mode') == false || $settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_DFN)
+					{
+						$session = $xmlAPI->getBreezeSession(true);
+					}
+					else
+					{
+						$session = $xmlAPI->generateUserSessionCookie($xavc_login);
+					}
+
                     $_SESSION['xavc_last_sso_sessid'] = $session;
                     if($settings->isHtmlClientEnabled() == 1 && $this->object->getHtmlClient() == 1)
 					{
@@ -1251,8 +1258,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$ilAdobeConnectUser->ensureAccountExistance();
 
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-		$xmlAPI->logout( $_SESSION['xavc_last_sso_sessid'] );
-		$session = $ilAdobeConnectUser->loginUser();
+		$xavc_login = $ilAdobeConnectUser->getXAVCLogin();
+		//login current user session
+		$session = $xmlAPI->generateUserSessionCookie($xavc_login);
 		$_SESSION['xavc_last_sso_sessid'] = $session;
 
 		$url = ilUtil::appendUrlParameterString($url, 'session=' . $session);
@@ -1734,12 +1742,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 			$targetDir      = dirname(ilUtil::ilTempnam());
 			$targetFilePath = $targetDir . '/' . $fdata['name'];
+			$filemame = strlen($this->cform->getInput('tit')) ? $this->cform->getInput('tit') : $fdata['name'];
+			$file_description = $this->cform->getInput('des');
 
 			ilUtil::moveUploadedFile($fdata['tmp_name'], $fdata['name'], $targetFilePath);
 			try
 			{
-				$filemame = strlen($this->cform->getInput('tit')) ? $this->cform->getInput('tit') : $fdata['name'];
-				$url = $this->object->addContent($filemame, $this->cform->getInput('des'));
+				$url = $this->object->addContent($filemame, $file_description);
 				if(!strlen($url))
 				{
 					throw new ilAdobeConnectContentUploadException('add_cnt_err');
