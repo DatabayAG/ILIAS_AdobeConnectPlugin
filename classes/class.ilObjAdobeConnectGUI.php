@@ -1728,12 +1728,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 			$targetDir      = dirname(ilUtil::ilTempnam());
 			$targetFilePath = $targetDir . '/' . $fdata['name'];
+			$filemame = strlen($this->cform->getInput('tit')) ? $this->cform->getInput('tit') : $fdata['name'];
+			$file_description = $this->cform->getInput('des');
 
 			ilUtil::moveUploadedFile($fdata['tmp_name'], $fdata['name'], $targetFilePath);
 			try
 			{
-				$filemame = strlen($this->cform->getInput('tit')) ? $this->cform->getInput('tit') : $fdata['name'];
-				$url = $this->object->addContent($filemame, $this->cform->getInput('des'));
+				$url = $this->object->addContent($filemame, $file_description);
 				if(!strlen($url))
 				{
 					throw new ilAdobeConnectContentUploadException('add_cnt_err');

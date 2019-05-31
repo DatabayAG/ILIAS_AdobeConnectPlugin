@@ -827,15 +827,17 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		
 		while($rec = $ilDB->fetchAssoc($set))
 		{
-			$this->sco_id         = $rec["sco_id"];
-			$this->instructions   = $rec['instructions'];
-			$this->contact_info   = $rec['contact_info'];
+			$this->sco_id  = $rec["sco_id"];
+			$this->start_date =  new ilDateTime($rec['start_date'], IL_CAL_UNIX);
+			$this->end_date =  new ilDateTime($rec['end_date'], IL_CAL_UNIX);
+			$this->instructions = $rec['instructions'];
+			$this->contact_info = $rec['contact_info'];
 			$this->permanent_room = $rec['permanent_room'];
-			$this->read_contents  = $rec['perm_read_contents'];
-			$this->read_records   = $rec['perm_read_records'];
-			$this->folder_id      = $rec['folder_id'];
-			$this->url            = $rec['url_path'];
-			$this->ac_language    = $rec['language'];
+			$this->read_contents = $rec['perm_read_contents'];
+			$this->read_records  = $rec['perm_read_records'];
+			$this->folder_id = $rec['folder_id'];
+			$this->url = $rec['url_path'];
+			$this->ac_language = $rec['language'];
 		}
 		
 		if($this->sco_id == NULL)
@@ -850,12 +852,18 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				$this->url = substr($this->xmlApi->getURL($this->sco_id, $this->folder_id, null, 'meeting'), 0, -1);
 			}
 			
-			$date_begin = $this->xmlApi->getStartDate($this->sco_id, $this->folder_id, null);
-			$this->start_date = new ilDateTime(strtotime($date_begin), IL_CAL_UNIX);
-			$date_end_string = $this->xmlApi->getEndDate($this->sco_id, $this->folder_id, null);
-			$end_date         = new ilDateTime(strtotime($date_end_string), IL_CAL_UNIX);
-			$this->end_date   = $end_date;
-			$unix_duration    = $end_date->getUnixTime() - $this->start_date->getUnixTime();
+			if(!$this->start_date)
+			{
+				$date_begin       = $this->xmlApi->getStartDate($this->sco_id, $this->folder_id, null);
+				$this->start_date = new ilDateTime(strtotime($date_begin), IL_CAL_UNIX);
+			}
+			if(!$this->end_date)
+			{
+				$date_end_string = $this->xmlApi->getEndDate($this->sco_id, $this->folder_id, null);
+				$this->end_date  =  new ilDateTime(strtotime($date_end_string), IL_CAL_UNIX);
+			}
+			
+			$unix_duration    = $this->end_date->getUnixTime() - $this->start_date->getUnixTime();
 			
 			$hours          = floor($unix_duration / 3600);
 			$minutes        = floor(($unix_duration - $hours * 3600) / 60);
@@ -1607,9 +1615,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				throw new \ilAdobeConnectContentUploadException('add_cnt_err');
 			}
 
-			if (strtolower($xml->status['code']) !== 'ok') {
-				throw new \ilAdobeConnectContentUploadException('add_cnt_err');
-			}
+//			if (strtolower($xml->status['code']) !== 'ok') {
+//				throw new \ilAdobeConnectContentUploadException('add_cnt_err');
+//			}
 		} catch (\Exception $e) {
 			$GLOBALS['ilLog']->write($e->getMessage());
 
