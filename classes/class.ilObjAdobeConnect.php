@@ -1682,6 +1682,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function setUseHtmlClient($html_client)
 	{
-		$this->html_client = $html_client;
+		$this->html_client = (bool)$html_client;
 	}
 }
