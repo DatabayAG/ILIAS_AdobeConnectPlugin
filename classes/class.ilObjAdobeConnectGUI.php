@@ -559,7 +559,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->object->setInstructions($this->form->getInput('instructions'));
 			$this->object->setContactInfo($this->form->getInput('contact_info'));
 			$this->object->setAcLanguage($this->form->getInput('ac_language'));
-			$this->object->setUseHtmlClient($this->form->getInput('html_client'));
+			$this->object->setUseHtmlClient((int)$this->form->getInput('html_client'));
 			
 			$enable_perm_room = (ilAdobeConnectServer::getSetting('enable_perm_room','1') && $this->form->getInput('time_type_selection') == 'permanent_room') ? true: false;
 			$this->object->setPermanentRoom( $enable_perm_room ?  1 : 0 );
