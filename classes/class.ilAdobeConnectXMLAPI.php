@@ -429,7 +429,7 @@ class ilAdobeConnectXMLAPI
 						'action' => 'acl-field-update',
 						'field-id' => 'meetingHTMLLaunch',
 						'value' => 'true',
-						'acl-id' => $xml->sco['sco-id'],
+						'acl-id' => (string)$xml->sco['sco-id'],
 						'session' => $session
 					);
 				
