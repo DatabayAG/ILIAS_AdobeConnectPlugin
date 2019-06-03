@@ -412,11 +412,6 @@ class ilAdobeConnectXMLAPI
 			'lang'        => $ac_language
 		);
 		
-		if($html_client)
-		{
-			$api_parameter['meetingHtmlLaunch'] =  'true';	
-		}
-		
 		if($source_sco_id > 0)
 		{
 			$api_parameter['source-sco-id'] = (string)$source_sco_id;
@@ -427,6 +422,19 @@ class ilAdobeConnectXMLAPI
 		
 		if($xml->status['code'] == "ok")
 		{
+			if($html_client)
+			{
+				$html_client_parameter = 
+					array(
+						'action' => 'acl-field-update',
+						'field-id' => 'meetingHTMLLaunch',
+						'value' => 'true',
+						'acl-id' => $xml->sco['sco-id'],
+						'session' => $session
+					);
+				
+				$result = $this->updateACLField($html_client_parameter);
+			}
 			return array('meeting_id' => (string)$xml->sco['sco-id'], 'meeting_url' => (string)$xml->sco->{'url-path'});
 		}
 		else
@@ -448,6 +456,27 @@ class ilAdobeConnectXMLAPI
 			return NULL;
 		}
 	}
+
+	/**
+	 * @param array $api_parameter
+	 * @return bool
+	 */
+	public function updateACLField(array $api_parameter)
+	{
+		global $DIC;
+		$ilLog = $DIC->logger();
+		
+		$url = $this->getApiUrl($api_parameter);
+		$xml = simplexml_load_file($url);
+		
+		if($xml->status['code'] == "ok")
+		{
+			return true;
+		}
+
+		$ilLog->write('AdobeConnect updateACLField Request failed: ' . $url);
+		return false;
+	}
 	
 	/**
 	 *  Updates an existing meeting
@@ -467,7 +496,7 @@ class ilAdobeConnectXMLAPI
 		$lng = $DIC->language();
 		$ilLog = $DIC->logger()->root();
 		
-		$url = $this->getApiUrl(array(
+		$api_parameter = array(
 			'action'      => 'sco-update',
 			'sco-id'      => $meeting_id,
 			'name'        => $name,
@@ -476,12 +505,23 @@ class ilAdobeConnectXMLAPI
 			'date-end'    => $end_date . "T" . $end_time,
 			'session'     => $session,
 			'lang'        => $ac_language
-		));
+		);
 
-		if($html_client )
+		if($html_client)
 		{
-			$api_parameter['meetingHtmlLaunch']= 'true';
+			$html_client_parameter =
+				array(
+					'action' => 'acl-field-update',
+					'field-id' => 'meetingHTMLLaunch',
+					'value' => 'true',
+					'acl-id' =>$meeting_id,
+					'session' => $session
+				);
+			$result = $this->updateACLField($html_client_parameter);
 		}
+		
+		$url = $this->getApiUrl($api_parameter);
+		
 		$xml = simplexml_load_file($url);
 		
 		if($xml->status['code'] == 'ok')
