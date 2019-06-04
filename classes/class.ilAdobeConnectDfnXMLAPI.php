@@ -55,20 +55,19 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'session' => $session
 		));
 
-		$ilLog->write("addUser URL: ". $url);
+		$ilLog->info("addUser URL: ". $url);
 
 		$xml = $this->sendRequest($url);
-
-		if($xml->status['code'] == 'ok')
+		if($xml instanceof \SimpleXMLElement && $xml->status['code'] == 'ok')
 		{
 			return true;
 		}
 		else
 		{
-			$ilLog->write('AdobeConnect addUser Request:  '.$url);
+			$ilLog->error('AdobeConnect addUser Request failed:  '.$url);
 			if($xml)
 			{
-				$ilLog->write('AdobeConnect addUser Response: ' . $xml->asXML());
+				$ilLog->error('AdobeConnect addUser Response: ' . $xml->asXML());
 			}
 			return false;
 		}
@@ -89,6 +88,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'action' 	=> 'lms-user-exists',
 			'session' => $session
 		));
+		
 		$xml = $this->sendRequest($url);
 		if($xml instanceof \SimpleXMLElement)
 		{
@@ -103,10 +103,10 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		else
 		{
 			// user doesn't exist at adobe connect server
-			$ilLog->write('AdobeConnect searchUser Request:  '.$url);
+			$ilLog->error('AdobeConnect searchUser Request:  '.$url);
 			if($xml)
 			{
-				$ilLog->write('AdobeConnect searchUser Response: ' . $xml->asXML());
+				$ilLog->error('AdobeConnect searchUser Response: ' . $xml->asXML());
 			}
 			return false;
 		}
@@ -131,13 +131,13 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		));
 
 		$xml = $this->sendRequest($url);
-		if($xml->status['code'] == 'ok')
+		if($xml instanceof \SimpleXMLElement && $xml->status['code'] == 'ok')
 		{
 			return (string)$xml->cookie;
 		}
 
-		$ilLog->write('AdobeConnect lms-user-login Request: '.$url);
-		$ilLog->write('AdobeConnect lms-user-login failed:  '.$user);
+		$ilLog->error('AdobeConnect lms-user-login Request: '.$url);
+		$ilLog->error('AdobeConnect lms-user-login failed:  '.$user);
 		ilUtil::sendFailure($lng->txt('login_failed'));
 		return false;
 	}

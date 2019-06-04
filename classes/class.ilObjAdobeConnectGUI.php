@@ -751,7 +751,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                     //login current user session
 					if( !ilAdobeConnectServer::getSetting('enhanced_security_mode') == false || $settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_DFN)
 					{
-						$session = $xmlAPI->getBreezeSession(true);
+						// do not change this!
+						$session =$xmlAPI->externalLogin($xavc_login);
 					}
 					else
 					{
@@ -3182,6 +3183,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
         $this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
+		$this->pluginObj->includeClass('class.ilXAVCPermissions.php');
 
 		$has_write_permission =  $ilAccess->checkAccess("write", "", $this->object->getRefId());
 

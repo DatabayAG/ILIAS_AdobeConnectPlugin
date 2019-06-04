@@ -178,8 +178,13 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
 		$form_security_mode = new ilCheckboxInputGUI($this->getPluginObject()->txt('enhanced_security_mode'), 'enhanced_security_mode');
 		$form_security_mode->setInfo($this->pluginObj->txt('enhanced_security_mode_info'));
-		$this->form->addItem($form_security_mode);
 
+		if(version_compare(ilAdobeConnectServer::getSetting('api_version'), '9.0.4' ,'<'))
+		{
+			$form_security_mode->setDisabled(true);
+		}
+		$this->form->addItem($form_security_mode);
+		
 		$head_line = new ilFormSectionHeaderGUI();
 		$head_line->setTitle($this->getPluginObject()->txt('presentation_server_settings'));
 		$this->form->addItem($head_line);

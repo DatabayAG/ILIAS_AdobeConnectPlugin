@@ -140,7 +140,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 * @var bool
 	 */
 	public $use_meeting_template = false;
-	public $session_instance;
 	/**
 	 * @var string
 	 */
@@ -149,10 +148,10 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 * @var bool
 	 */
 	public $html_client = false;
-	
+
 	/**
-	 * Constructor
-	 * @access    public
+	 * ilObjAdobeConnect constructor.
+	 * @param int $a_ref_id
 	 */
 	public function __construct($a_ref_id = 0)
 	{
@@ -169,9 +168,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			$this->contents = new ilAdobeConnectContents();
 		}
 		
-		$instance            = ilAdobeConnectServer::_getInstance();
-		$this->adminLogin    = $instance->getLogin();
-		$this->adminPass     = $instance->getPasswd();
+		$instance = ilAdobeConnectServer::_getInstance();
+		$this->adminLogin = $instance->getLogin();
+		$this->adminPass = $instance->getPasswd();
 		$this->externalLogin = $this->checkExternalUser();
 		
 		$this->xmlApi = ilXMLApiFactory::getApiByAuthMode();
@@ -445,7 +444,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
 		// receive folder id
 		$this->externalLogin = $this->checkExternalUser();
-		$folder_id           = $this->getFolderIdByLogin($this->externalLogin);
+		$folder_id = $this->getFolderIdByLogin($this->externalLogin);
 		
 		if(!$folder_id)
 		{
@@ -475,7 +474,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				$ilUser->getPasswd(),
 				$ilUser->getFirstName(),
 				$ilUser->getLastName()
-
 			);
 		}
 		
@@ -805,9 +803,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				
 				ilXAVCMembers::deleteXAVCMember($usr_id, $this->getRefId());
 				$xavc_login = ilXAVCMembers::_lookupXAVCLogin($usr_id);
-
-				
-					$this->xmlApi->deleteMeetingParticipant($sco_id, $xavc_login, null);
+				$this->xmlApi->deleteMeetingParticipant($sco_id, $xavc_login, null);
 				
 				//remove from pd
 				ilObjUser::_dropDesktopItem($usr_id, $this->getRefId(), 'xavc');
@@ -1576,9 +1572,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function getContentIconAttribute($sco_id)
 	{
-		
 		$icons = array();
-			$icons[] = $this->xmlApi->getContentIconAttribute($sco_id, $this->sco_id, null);
+		$icons[] = $this->xmlApi->getContentIconAttribute($sco_id, $this->sco_id, null);
 		return $icons;
 	}
 	
