@@ -52,11 +52,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 		$lng = $DIC->language();
 		
 		$this->parent_obj->pluginObj->includeClass('class.ilXAVCPermissions.php');
-		$is_owner = false;
-		if($ilUser->getId() == $this->parent_obj->object->getOwner())
-		{
-			$is_owner = true;
-		}	
+		$is_owner = $ilUser->getId() == $this->parent_obj->object->getOwner();
 		
 		if($is_owner || ilXAVCPermissions::hasAccess($ilUser->getId(), $this->parent_obj->ref_id, AdobeConnectPermissions::PERM_CHANGE_ROLE))
 		{

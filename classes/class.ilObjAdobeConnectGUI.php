@@ -317,11 +317,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 //			break;
 			case 'participants':
 				$xavc_access = ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_EDIT_PARTICIPANTS);
-				$is_owner = false;
-				if($ilUser->getId() == $this->object->getOwner())
-				{
-					$is_owner = true;
-				}
+				$is_owner = $ilUser->getId() == $this->object->getOwner();
+				
 				if($is_owner || $xavc_access )
 				{
 					$this->tabs->addSubTab("editParticipants",$lng->txt("crs_member_administration"),$this->ctrl->getLinkTarget($this,'editParticipants'));
@@ -2970,7 +2967,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$my_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.meeting_participant_table.html", true, true);
 
 		$has_access = ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_ADD_PARTICIPANTS);
-		$is_owner = ilObject::_lookupOwner($ilUser->getId()) == $ilUser->getId() ? true: false;
+		$is_owner = ilObject::_lookupOwner($ilUser->getId()) == $ilUser->getId();
 		if((count($this->object->getParticipantsObject()->getParticipants()) == 0 && $has_access) || $is_owner )
 		{
 			// add members
