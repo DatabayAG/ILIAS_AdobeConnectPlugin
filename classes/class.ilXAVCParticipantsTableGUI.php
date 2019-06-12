@@ -52,11 +52,13 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 		$lng = $DIC->language();
 		
 		$this->parent_obj->pluginObj->includeClass('class.ilXAVCPermissions.php');
-		if(ilXAVCPermissions::hasAccess($ilUser->getId(), $this->parent_obj->ref_id, AdobeConnectPermissions::PERM_CHANGE_ROLE))
+		$is_owner = $ilUser->getId() == $this->parent_obj->object->getOwner();
+		
+		if($is_owner || ilXAVCPermissions::hasAccess($ilUser->getId(), $this->parent_obj->ref_id, AdobeConnectPermissions::PERM_CHANGE_ROLE))
 		{
 			$this->addMultiCommand('updateParticipants',$lng->txt('update'));
 		}
-		if(ilXAVCPermissions::hasAccess($ilUser->getId(), $this->parent_obj->ref_id, AdobeConnectPermissions::PERM_ADD_PARTICIPANTS))
+		if($is_owner || ilXAVCPermissions::hasAccess($ilUser->getId(), $this->parent_obj->ref_id, AdobeConnectPermissions::PERM_ADD_PARTICIPANTS))
 		{
 			$this->addMultiCommand('detachMember', $lng->txt('delete'));
 		}
@@ -78,7 +80,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 			$this->ctrl->setParameter($this->parent_obj, 'usr_id', '');
 			if($row['user_id']== $this->parent_obj->object->getOwner())
 			{
-				$row['checkbox'] = ilUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], true);
+				$row['checkbox'] = ilUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], false);
 			}
 			else
 			{
@@ -104,7 +106,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 		if($row['xavc_status'])
 		{
 			$xavc_options = array(
-				"host"		=> $this->parent_obj->pluginObj->txt("presenter" ),
+				"host"		=> $this->parent_obj->pluginObj->txt("presenter"),
 				"mini-host" => $this->parent_obj->pluginObj->txt("moderator"),
 				"view"		=> $this->parent_obj->pluginObj->txt("participant"),
 				"denied"	=> $this->parent_obj->pluginObj->txt("denied")
@@ -112,13 +114,11 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 			
 			if($row['xavc_status'])
 			{
+				$row['xavc_status'] = ilUtil::formSelect($row['xavc_status'],'xavc_status['.$row['user_id'].']', $xavc_options);
+
 				if($row['user_id'] == $this->parent_obj->object->getOwner())
 				{
-					$row['xavc_status'] = $this->lng->txt("owner" );
-				}
-				else
-				{
-					$row['xavc_status'] = ilUtil::formSelect($row['xavc_status'],'xavc_status['.$row['user_id'].']', $xavc_options);	
+					$row['xavc_status'] .=  ' ('.$this->lng->txt("owner" ).')  ';
 				}
 			}
 			else
