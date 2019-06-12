@@ -2982,7 +2982,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$my_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.meeting_participant_table.html", true, true);
 
 		$has_access = ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_ADD_PARTICIPANTS);
-		$is_owner = ilObject::_lookupOwner($ilUser->getId()) == $ilUser->getId();
+		$is_owner = $this->object->getOwner() == $ilUser->getId();
 		if((count($this->object->getParticipantsObject()->getParticipants()) == 0 && $has_access) || $is_owner )
 		{
 			// add members
