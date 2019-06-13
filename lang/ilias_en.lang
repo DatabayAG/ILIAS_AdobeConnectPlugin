@@ -303,3 +303,4 @@ my_meeting_templates#:#My Templates
 api_version#:#Adobe Connect API-Version
 html_client#:#Enable HTML-Client 
 html_client_info#:#When enabled, users can enter meetings using the HTML client. Attention! This functionality requires Adobe Connect 10
+local_roles#:#Local Roles

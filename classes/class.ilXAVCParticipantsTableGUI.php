@@ -11,6 +11,8 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 	 */
 	public $ctrl;
 	
+	protected $local_roles = [];
+	
 	/**
 	 * @param        $a_parent_obj
 	 * @param string $a_parent_cmd
@@ -19,7 +21,6 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 	{
 		global $DIC;
 		$this->ctrl = $DIC->ctrl();
-
 		$this->setId('xavc_participants');
 
 		$this->setDefaultOrderDirection('ASC');
@@ -29,7 +30,8 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 
 		parent::__construct($a_parent_obj, $a_parent_cmd);
 
-	
+		$this->readLocalRoles();
+			
 		$this->setEnableNumInfo(true);
 
 		$this->setTitle($a_parent_obj->pluginObj->txt("participants"));
@@ -45,6 +47,25 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 		
 	}
 
+	private function readLocalRoles()
+	{
+		global $DIC;
+		
+		$roles = $DIC->rbac()->review()->getLocalRoles($this->parent_obj->object->getRefId());
+		foreach($roles as $role_id)
+		{
+			$role_title = ilObject::_lookupTitle($role_id);
+			if(strpos($role_title, 'admin'))
+			{
+				$this->local_roles[$role_id] =  array('role_id' => $role_id, 'role_title' => $DIC->language()->txt('administrator'));
+			}	
+			elseif(strpos($role_title, 'member'))
+			{
+				$this->local_roles[$role_id] = array('role_id' => $role_id, 'role_title' => $DIC->language()->txt('member'));
+			}
+		}
+	}
+	
 	private function addMultiCommands()
 	{
 		global $DIC; 
@@ -75,6 +96,8 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 	 */
 	protected function prepareRow(array &$row)
 	{
+		global $DIC;
+		
 		if((int)$row['user_id'])
 		{
 			$this->ctrl->setParameter($this->parent_obj, 'usr_id', '');
@@ -85,6 +108,22 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 			else
 			{
 				$row['checkbox'] = ilUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], (int)$row['user_id'] ? false : true);
+			}
+
+			$assigned_roles = $DIC->rbac()->review()->assignedRoles($row['user_id']);
+			foreach($this->local_roles as $local_role)
+			{
+				$this->tpl->setCurrentBlock('roles');
+				
+				$this->tpl->setVariable('USER_ID', $row['user_id']);
+				$this->tpl->setVariable('ROLE_ID', $local_role['role_id']);
+				$this->tpl->setVariable('ROLE_NAME', $local_role['role_title']);
+
+				if(in_array($local_role['role_id'], $assigned_roles))
+				{
+					$this->tpl->setVariable('ROLE_CHECKED', 'selected="selected"');
+				}
+				$this->tpl->parseCurrentBlock();
 			}
 		}
 		else
@@ -150,6 +189,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 			$this->addColumn($this->optionalColumns[$column]['txt'], $column);
 		}
 		$this->addColumn($this->parent_obj->pluginObj->txt('user_status'), 'xavc_status');
+		$this->addColumn($this->parent_obj->pluginObj->txt('local_roles'), 'xavc_roles');
 		
 	}
 
@@ -198,6 +238,6 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 	 */
 	protected function getStaticData()
 	{
-		return array('checkbox', 'user_name', 'login', 'xavc_status');
+		return array('checkbox', 'user_name', 'login', 'xavc_status', 'xavc_roles');
 	}
 }
