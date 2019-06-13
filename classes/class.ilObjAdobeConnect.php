@@ -13,7 +13,6 @@ include_once("./Services/Calendar/classes/class.ilDateTime.php");
  */
 class ilObjAdobeConnect extends ilObjectPlugin
 {
-	
 	const ACCESS_LEVEL_PRIVATE = 'denied';  // no guests !
 	const ACCESS_LEVEL_PROTECTED = 'remove';
 	const ACCESS_LEVEL_PUBLIC = 'view-hidden';
@@ -194,7 +193,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				$parent_ref = $tree->checkForParentType($this->getRefId(), 'crs');
 			}
 			
-			$object_id          = ilObject::_lookupObjectId($parent_ref);
+			$object_id = ilObject::_lookupObjectId($parent_ref);
 			$this->participants = ilAdobeConnectContainerParticipants::getInstanceByObjId($object_id);
 		}
 	}
@@ -674,108 +673,24 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 
-			foreach($admins as $user_id)
+		foreach($admins as $user_id)
+		{
+			if($user_id == $this->getOwner())
 			{
-				if($user_id == $this->getOwner())
-				{
-					continue;
-				}
-				
-				$xavcRoles->addAdministratorRole($user_id);
-				
-				$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
-				// local member table
-				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
-				
-				$status = $role_map[$oParticipants->getType() . '_admin'];
-				
-				$xavcMemberObj->setStatus($status);
-				$xavcMemberObj->setScoId($sco_id);
-				
-				if($is_member)
-				{
-					$xavcMemberObj->updateXAVCMember();
-				}
-				else
-				{
-					$xavcMemberObj->insertXAVCMember();
-				}
-				
-				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
+				continue;
 			}
-			
-			foreach($tutors as $user_id)
-			{
-				if($user_id == $this->getOwner())
-				{
-					continue;
-				}
-				
-				$xavcRoles->addAdministratorRole($user_id);
-				
-				$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
-				// local member table
-				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
-				
-				$status = $role_map[$oParticipants->getType() . '_tutor'];
-				
-				$xavcMemberObj->setStatus($status);
-				$xavcMemberObj->setScoId($sco_id);
-				
-				if($is_member)
-				{
-					$xavcMemberObj->updateXAVCMember();
-				}
-				else
-				{
-					$xavcMemberObj->insertXAVCMember();
-				}
-				
-				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
-			}
-			
-			foreach($members as $user_id)
-			{
-				if($user_id == $this->getOwner())
-				{
-					continue;
-				}
-				
-				$xavcRoles->addMemberRole($user_id);
-				$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
-				// local member table
-				$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
-				
-				$status = $role_map[$oParticipants->getType() . '_member'];
-				
-				$xavcMemberObj->setStatus($status);
-				$xavcMemberObj->setScoId($sco_id);
-				
-				if($is_member)
-				{
-					$xavcMemberObj->updateXAVCMember();
-				}
-				else
-				{
-					$xavcMemberObj->insertXAVCMember();
-				}
-				
-				$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
-			}
-			
-			$owner_id = ilObject::_lookupOwner($oParticipants->getObjId());
-			
-			$xavcRoles->addAdministratorRole($owner_id);
-			
-			$is_member = ilXAVCMembers::_isMember($owner_id, $ref_id);
+
+			$xavcRoles->addAdministratorRole($user_id);
+
+			$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
 			// local member table
-			$xavcMemberObj = new ilXAVCMembers($ref_id, $owner_id);
-			
-			$status = $role_map[$oParticipants->getType() . '_owner'];
+			$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
+
+			$status = $role_map[$oParticipants->getType() . '_admin'];
+
 			$xavcMemberObj->setStatus($status);
-			
 			$xavcMemberObj->setScoId($sco_id);
-			
+
 			if($is_member)
 			{
 				$xavcMemberObj->updateXAVCMember();
@@ -784,8 +699,92 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			{
 				$xavcMemberObj->insertXAVCMember();
 			}
-			
-			$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($owner_id), null, $status);
+
+			$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
+		}
+
+		foreach($tutors as $user_id)
+		{
+			if($user_id == $this->getOwner())
+			{
+				continue;
+			}
+
+			$xavcRoles->addAdministratorRole($user_id);
+
+			$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
+			// local member table
+			$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
+
+			$status = $role_map[$oParticipants->getType() . '_tutor'];
+
+			$xavcMemberObj->setStatus($status);
+			$xavcMemberObj->setScoId($sco_id);
+
+			if($is_member)
+			{
+				$xavcMemberObj->updateXAVCMember();
+			}
+			else
+			{
+				$xavcMemberObj->insertXAVCMember();
+			}
+
+			$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
+		}
+
+		foreach($members as $user_id)
+		{
+			if($user_id == $this->getOwner())
+			{
+				continue;
+			}
+
+			$xavcRoles->addMemberRole($user_id);
+			$is_member = ilXAVCMembers::_isMember($user_id, $ref_id);
+			// local member table
+			$xavcMemberObj = new ilXAVCMembers($ref_id, $user_id);
+
+			$status = $role_map[$oParticipants->getType() . '_member'];
+
+			$xavcMemberObj->setStatus($status);
+			$xavcMemberObj->setScoId($sco_id);
+
+			if($is_member)
+			{
+				$xavcMemberObj->updateXAVCMember();
+			}
+			else
+			{
+				$xavcMemberObj->insertXAVCMember();
+			}
+
+			$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), null, $status);
+		}
+
+		$owner_id = ilObject::_lookupOwner($oParticipants->getObjId());
+
+		$xavcRoles->addAdministratorRole($owner_id);
+
+		$is_member = ilXAVCMembers::_isMember($owner_id, $ref_id);
+		// local member table
+		$xavcMemberObj = new ilXAVCMembers($ref_id, $owner_id);
+
+		$status = $role_map[$oParticipants->getType() . '_owner'];
+		$xavcMemberObj->setStatus($status);
+
+		$xavcMemberObj->setScoId($sco_id);
+
+		if($is_member)
+		{
+			$xavcMemberObj->updateXAVCMember();
+		}
+		else
+		{
+			$xavcMemberObj->insertXAVCMember();
+		}
+
+		$this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($owner_id), null, $status);
 	}
 	
 	public function deleteCrsGrpMembers($sco_id, $delete_user_ids)
@@ -890,13 +889,13 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		global $DIC;
 		$ilDB = $DIC->database();
 
-			$end_date = new ilDateTime($this->start_date->getUnixTime() + $this->duration["hours"] * 3600 + $this->duration["minutes"] * 60, IL_CAL_UNIX);
-			$this->xmlApi->updateMeeting($this->sco_id, $this->getTitle(), $this->getDescription(),
-				date('Y-m-d', $this->start_date->getUnixTime()), date('H:i', $this->start_date->getUnixTime()),
-				date('Y-m-d', $end_date->getUnixTime()), date('H:i', $end_date->getUnixTime()),  
-				$this->getAcLanguage(), $this->isHtmlClientEnabled());
-			
-			$this->xmlApi->updatePermission($this->sco_id, null,  $this->permission);
+		$end_date = new ilDateTime($this->start_date->getUnixTime() + $this->duration["hours"] * 3600 + $this->duration["minutes"] * 60, IL_CAL_UNIX);
+		$this->xmlApi->updateMeeting($this->sco_id, $this->getTitle(), $this->getDescription(),
+			date('Y-m-d', $this->start_date->getUnixTime()), date('H:i', $this->start_date->getUnixTime()),
+			date('Y-m-d', $end_date->getUnixTime()), date('H:i', $end_date->getUnixTime()),
+			$this->getAcLanguage(), $this->isHtmlClientEnabled());
+
+		$this->xmlApi->updatePermission($this->sco_id, null, $this->permission);
 		
 		$ilDB->update('rep_robj_xavc_data',
 			array(
@@ -1201,10 +1200,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		return $end_date;
 	}
 	
-	/*
-	* Contents functions
-	*/
-	
 	/**
 	 *  Reads contents from Adobe Connect server
 	 * @param string $by_type null|content|record
@@ -1212,64 +1207,60 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function readContents($by_type = NULL)
 	{
-		
-		$ids = array();
-		
-			$ids = ($this->xmlApi->getContentIds($this->sco_id, null) ? $this->xmlApi->getContentIds($this->sco_id, null) : array());
-			
-			foreach($ids as $id)
+		$ids = ($this->xmlApi->getContentIds($this->sco_id, null) ? $this->xmlApi->getContentIds($this->sco_id, null) : array());
+
+		foreach($ids as $id)
+		{
+			$date_created = $this->xmlApi->getDateCreated($id, $this->sco_id, null);
+
+			$date_end = $this->xmlApi->getDateEnd($id, $this->sco_id, null);
+			if($date_end == '')
 			{
-				$date_created = $this->xmlApi->getDateCreated($id, $this->sco_id, null);
-				
-				$date_end = $this->xmlApi->getDateEnd($id, $this->sco_id, null);
-				if($date_end == '')
-				{
-					$type = 'content';
-				}
-				else
-				{
-					$type = 'record';
-				}
-				
-				if($by_type == NULL || $by_type == $type)
-				{
-					$attributes = array(
-						"sco-id"       => $id,
-						"name"         => $this->xmlApi->getName($id, $this->sco_id, null),
-						"url"          => $this->xmlApi->getURL($id, $this->sco_id, null),
-						"date-created" => new ilDateTime(substr($date_created, 0, 10) . " " . substr($date_created, 11, 8), IL_CAL_DATETIME),
-						"date-end"     => $date_end,
-						"description"  => $this->xmlApi->getDescription($id, $this->sco_id, null),
-						"type"         => $type
-					);
-					$this->contents->addContent($attributes);
-				}
+				$type = 'content';
 			}
-			return true;
+			else
+			{
+				$type = 'record';
+			}
+
+			if($by_type == NULL || $by_type == $type)
+			{
+				$attributes = array(
+					"sco-id"       => $id,
+					"name"         => $this->xmlApi->getName($id, $this->sco_id, null),
+					"url"          => $this->xmlApi->getURL($id, $this->sco_id, null),
+					"date-created" => new ilDateTime(substr($date_created, 0, 10) . " " . substr($date_created, 11, 8), IL_CAL_DATETIME),
+					"date-end"     => $date_end,
+					"description"  => $this->xmlApi->getDescription($id, $this->sco_id, null),
+					"type"         => $type
+				);
+				$this->contents->addContent($attributes);
+			}
 		}
+		return true;
+	}
 	
 	/**
 	 *  Reads records from Adobe Connect server
 	 */
 	public function readRecords()
 	{
-			$ids = $this->xmlApi->getRecordIds($this->sco_id, null);
-			foreach($ids as $id)
-			{
-				$date_created       = $this->xmlApi->getDateCreated($id, $this->sco_id, null);
-				$attributes_records = array(
-					"sco-id"       => $id,
-					"name"         => $this->xmlApi->getName($id, $this->getScoId(), null),
-					"url"          => $this->xmlApi->getURL($id, $this->sco_id, null),
-					"date-created" => new ilDateTime(substr($date_created, 0, 10) . " " . substr($date_created, 11, 8), IL_CAL_DATETIME),
-					"duration"     => $this->xmlApi->getDuration($id, $this->sco_id, null),
-					"description"  => $this->xmlApi->getDescription($id, $this->sco_id, null),
-					"type"         => "record"
-				);
-				$this->contents->addContent($attributes_records);
-			}
-			return true;
-
+		$ids = $this->xmlApi->getRecordIds($this->sco_id, null);
+		foreach($ids as $id)
+		{
+			$date_created       = $this->xmlApi->getDateCreated($id, $this->sco_id, null);
+			$attributes_records = array(
+				"sco-id"       => $id,
+				"name"         => $this->xmlApi->getName($id, $this->getScoId(), null),
+				"url"          => $this->xmlApi->getURL($id, $this->sco_id, null),
+				"date-created" => new ilDateTime(substr($date_created, 0, 10) . " " . substr($date_created, 11, 8), IL_CAL_DATETIME),
+				"duration"     => $this->xmlApi->getDuration($id, $this->sco_id, null),
+				"description"  => $this->xmlApi->getDescription($id, $this->sco_id, null),
+				"type"         => "record"
+			);
+			$this->contents->addContent($attributes_records);
+		}
+		return true;
 	}
 	
 	/**
@@ -1290,7 +1281,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	public function getContent($sco_id)
 	{
 		$contents = $this->searchContent(array("sco-id" => $sco_id));
-		
 		return $contents[0];
 	}
 	
@@ -1303,8 +1293,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function addContent($title = "untitled", $description = "")
 	{
-		
-			return $this->xmlApi->addContent($this->sco_id, $title, $description, null);
+		return $this->xmlApi->addContent($this->sco_id, $title, $description, null);
 	}
 	
 	/**
@@ -1316,7 +1305,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function updateContent($sco_id, $title, $description)
 	{
-			$this->xmlApi->updateContent($sco_id, $title, $description, null);
+		$this->xmlApi->updateContent($sco_id, $title, $description, null);
 	}
 	
 	/**
@@ -1325,7 +1314,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function deleteContent($sco_id)
 	{
-			$this->xmlApi->deleteContent($sco_id, null);
+		$this->xmlApi->deleteContent($sco_id, null);
 	}
 	
 	/**
@@ -1335,12 +1324,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function uploadContent($sco_id)
 	{
-			return $this->xmlApi->uploadContent($sco_id, null);
+		return $this->xmlApi->uploadContent($sco_id, null);
 	}
-	
-	/*
-	*   Participants functions
-	*/
 	
 	/**
 	 *  Returns meeting hosts
@@ -1348,8 +1333,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function getParticipants()
 	{
-		
-			return $this->xmlApi->getMeetingsParticipants($this->sco_id, null);
+		return $this->xmlApi->getMeetingsParticipants($this->sco_id, null);
 	}
 	
 	/**
@@ -1360,10 +1344,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	public function addParticipant($login)
 	{
 		//check if adobe connect account exists
-			$participant = $this->xmlApi->addMeetingParticipant($this->sco_id, $login, null);
-			return $participant;
-		}
-
+		$participant = $this->xmlApi->addMeetingParticipant($this->sco_id, $login, null);
+		return $participant;
+	}
 	
 	/**
 	 *  Add a new participant to the meeting
@@ -1379,7 +1362,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	
 	public function updateParticipant($login, $permission)
 	{
-			return $this->xmlApi->updateMeetingParticipant($this->sco_id, $login, null, $permission);
+		return $this->xmlApi->updateMeetingParticipant($this->sco_id, $login, null, $permission);
 	}
 	
 	/**
@@ -1389,8 +1372,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function deleteParticipant($login)
 	{
-		
-			return $this->xmlApi->deleteMeetingParticipant($this->sco_id, $login, null);
+		return $this->xmlApi->deleteMeetingParticipant($this->sco_id, $login, null);
 	}
 	
 	/**
@@ -1400,12 +1382,15 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function isParticipant($login)
 	{
-			return $this->xmlApi->isParticipant($login, $this->sco_id, null);
+		return $this->xmlApi->isParticipant($login, $this->sco_id, null);
 	}
-	
+
+	/**
+	 * @return string
+	 */
 	public function getPermissionId()
 	{
-			$permission = $this->xmlApi->getPermissionId($this->sco_id, null);
+		$permission = $this->xmlApi->getPermissionId($this->sco_id, null);
 		return $permission;
 	}
 	
@@ -1534,22 +1519,24 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		
 		return $row['sco_id'];
 	}
-	
+
+	/**
+	 * @param $folder_id
+	 * @return array
+	 */
 	public static function getScosByFolderId($folder_id)
 	{
-//		$instance         = ilAdobeConnectServer::_getInstance();
-//		$adminLogin = $instance->getLogin();
-//		$adminPass  = $instance->getPasswd();
-		
 		$xmlApi = ilXMLApiFactory::getApiByAuthMode();
-		
-			$scos = $xmlApi->getScosByFolderId($folder_id, null);
+		$scos = $xmlApi->getScosByFolderId($folder_id, null);
 		return $scos;
 	}
-	
+
+	/**
+	 * @param $externalLogin
+	 * @return null|String
+	 */
 	public function getFolderIdByLogin($externalLogin)
 	{
-
 		if(ilAdobeConnectServer::getSetting('use_user_folders') == 1)
 		{
 			$folder_id = $this->xmlApi->lookupUserFolderId($externalLogin, null);
@@ -1622,9 +1609,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 				throw new \ilAdobeConnectContentUploadException('add_cnt_err');
 			}
 
-//			if (strtolower($xml->status['code']) !== 'ok') {
-//				throw new \ilAdobeConnectContentUploadException('add_cnt_err');
-//			}
 		} catch (\Exception $e) {
 			$GLOBALS['ilLog']->write($e->getMessage());
 

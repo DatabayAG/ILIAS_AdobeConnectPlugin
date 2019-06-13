@@ -748,7 +748,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
                     $presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
-                    //login current user session
 					if( !ilAdobeConnectServer::getSetting('enhanced_security_mode') == false || $settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_DFN)
 					{
 						// do not change this!
