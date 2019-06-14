@@ -703,9 +703,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->pluginObj->includeClass('class.ilAdobeConnectQuota.php');
 
 		$settings = ilAdobeConnectServer::_getInstance();
+		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
+		
 
 		if(null !== $this->object->getStartDate())
 		{
+			$xmlAPI>performSSO();
+			
             //SWITCH
             if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI)
             {
@@ -744,7 +748,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                 if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink())
                     && $this->object->isParticipant( $xavc_login ))
                 {
-                    $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
 
                     $presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
@@ -953,21 +956,14 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				{
 					$content_id = $content->getAttributes()->getAttribute('sco-id');
 					$this->ctrl->setParameter($this, 'content_id', $content_id);
-//					if($content_type == 'content')
-//					{
-						$action = new ilAdvancedSelectionListGUI();
-						$action->setId('asl_' . $content_id . mt_rand(1, 50));
-						$action->setListTitle($this->lng->txt('actions'));
-						$action->addItem($this->lng->txt('edit'), '', $this->ctrl->getLinkTarget($this, 'editRecord'));
-						$action->addItem($this->lng->txt('delete'), '', $this->ctrl->getLinkTarget($this, 'askDeleteContents'));
+					$action = new ilAdvancedSelectionListGUI();
+					$action->setId('asl_' . $content_id . mt_rand(1, 50));
+					$action->setListTitle($this->lng->txt('actions'));
+					$action->addItem($this->lng->txt('edit'), '', $this->ctrl->getLinkTarget($this, 'editRecord'));
+					$action->addItem($this->lng->txt('delete'), '', $this->ctrl->getLinkTarget($this, 'askDeleteContents'));
 
-						$data[$i]['actions'] = $action->getHtml();
-//					}
-//					else
-//					{
-//						$data[$i]['actions'] = '';
-//					}
-				}
+					$data[$i]['actions'] = $action->getHtml();
+			}
 				++$i;
 			}
 			$table->setData($data);
@@ -975,8 +971,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$my_tpl->setVariable('CONTENT_TABLE', $table->getHTML());
 		}
 		return $my_tpl->get();
-
-
     }
 
 	// CRS-GRP-MEMBER ADMINITRATION
@@ -1213,7 +1207,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		if(!is_array($_POST['usr_id']))
 		{
 			ilUtil::sendInfo($this->txt('participants_select_one'));
-			return $this->editParticipants();
 		}
 		return $this->editParticipants();
 	}
@@ -1676,11 +1669,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	}
 
     /**
-     *
      * Inits a ilPropertyFormGUI for content search
-     *
-     * @access private
-     *
      */
     private function initContentSearchForm()
     {
@@ -1702,11 +1691,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
     }
 
     /**
-     *
      * Shows add content form
-     *
-     * @access public
-     *
      */
     public function showAddContent()
     {
@@ -1777,11 +1762,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	}
 
     /**
-     *
      * Called if the user clicked the cancel button of the content search result table
-     *
-     * @access public
-     *
      */
     public function cancelSearchContentFile()
     {
@@ -1791,7 +1772,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
     /**
      *  Search content that belongs to the current user and that meet the search criteria
-     *
      */
     public function searchContentFile()
     {
@@ -1921,7 +1901,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $this->tabs->activateTab('contents');
 
         $table = new ilTable2GUI($this, 'showFileSearchResult');
-
         $table->setLimit( 2147483647 );
 
         $table->setTitle($this->txt('files'));
@@ -2021,8 +2000,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
     /**
      * Shows edit content form
-     *
-     * @access public
      */
     public function editItem()
     {
@@ -2046,9 +2023,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->editItem();
 	}
 
-	/**
-	 * 
-	 */
 	protected function updateRecord()
 	{
 		$this->is_record = true;
@@ -2236,7 +2210,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
         // Title
 		$tit = new ilTextInputGUI($this->txt('title'), 'tit');
-//		$tit->setRequired(true);
 		$tit->setSize(40);
 		$tit->setMaxLength(127);
 		$this->cform->addItem($tit);
@@ -2320,7 +2293,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	{
 		global $DIC;
 		$ilUser = $DIC->user();
-		
 		
 		$settings = ilAdobeConnectServer::_getInstance();
 		//Login User - this creates a user if he not exists.
@@ -2530,11 +2502,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				$contact_info_3->setValue($contact_info_value);
 				$contact_info_3->setRows(self::CREATION_FORM_TA_ROWS);
 				$radio_existing->addSubItem($contact_info_3);
-			}
-			else
-			{
-				//$info = new ilNonEditableValueGUI($this->pluginObj->txt('no_available_rooms'));
-				//$radio_existing->addSubItem($info);
 			}
 		}
 		else
@@ -2963,7 +2930,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$tgui->setExternalSegmentation(true);
 
 		$tgui->enabled['footer'] = false;
-//		$tgui->setRowTemplate('tpl.schedule_row.html', 'Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect');
 		$tgui->setRowTemplate('tpl.schedule_row.html',$this->pluginObj->getDirectory());
 		$tgui->setData($data);
 		$tgui->setTitle(sprintf($this->txt('schedule_free_slots'), date('z', $totime - $fromtime)));

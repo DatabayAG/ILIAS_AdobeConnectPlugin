@@ -1557,10 +1557,10 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 * @param $sco_id
 	 * @return array
 	 */
-	public function getContentIconAttribute($sco_id)
+	public function getContentIconAttribute($sco_id, $session = null)
 	{
 		$icons = array();
-		$icons[] = $this->xmlApi->getContentIconAttribute($sco_id, $this->sco_id, null);
+		$icons[] = $this->xmlApi->getContentIconAttribute($sco_id, $this->sco_id);
 		return $icons;
 	}
 	
@@ -1662,5 +1662,12 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	public function setUseHtmlClient($html_client)
 	{
 		$this->html_client = (bool)$html_client;
+	}
+	
+	
+	public function performSSO()
+	{
+		
+		$this->xmlApi->performSSO();
 	}
 }

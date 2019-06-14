@@ -95,36 +95,6 @@ class ilAdobeConnectXMLAPI
 		return $this->x_user_id;
 	}
 	
-//	/**
-//	 * @return null|string
-//	 */
-//	public function getAdminSession()
-//	{
-//		$session = $this->getBreezeSession();
-//		
-//		if(!$session)
-//		{
-//			/**
-//			 * @todo introduce exception
-//			 */
-//			return null;
-//		}
-//		
-//		$success = $this->login($this->adcInfo->getLogin(), $this->adcInfo->getPasswd(), $session);
-//		
-//		if($success)
-//		{
-//			return $session;
-//		}
-//		else
-//		{
-//			/**
-//			 * @todo introduce exception
-//			 */
-//			return null;
-//		}
-//	}
-	
 	/**
 	 *  Logs in user on the Adobe Connect server. The session id is caches until the
 	 *  logout function is called with the session id.
