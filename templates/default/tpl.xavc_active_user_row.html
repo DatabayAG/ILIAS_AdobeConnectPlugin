@@ -3,5 +3,13 @@
 <td class="std">{VAL_USER_NAME}</td><!-- BEGIN optional_column -->
 <td class="std">{OPTIONAL_COLUMN_VAL}</td>
 <!-- END optional_column -->
-    <td class="std">{VAL_XAVC_STATUS}</td>
+<td class="std">{VAL_XAVC_STATUS}</td>
+    <td class="std">
+        <input type="hidden" name="members[]" value="{USER_ID}" />
+        <select multiple="multiple" name="roles[{USER_ID}][]" size="2">
+            <!-- BEGIN roles -->
+            <option value="{ROLE_ID}" {ROLE_CHECKED}>{ROLE_NAME}</option>
+            <!-- END roles -->
+        </select>
+    </td>
 </tr>

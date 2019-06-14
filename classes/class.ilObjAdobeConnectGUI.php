@@ -119,7 +119,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				$this->ctrl->forwardCommand($gui);
 				break;
 			case 'ilrepositorysearchgui':
-				$this->tabs->setTabActive('participants');
+				$this->tabs->activateTab('participants');
 				$rep_search = new ilRepositorySearchGUI();
 				$rep_search->setCallback(
 					$this,
@@ -147,7 +147,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 					// list all commands that need read permission here
 					case "addParticipant":
-					case "detachParticipant":
 					case "searchContentFile":
 					case 'cancelSearchContentFile':
 					case "showFileSearchResult":
@@ -162,13 +161,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					case "updateRecord":
 					case "showAddContent":
 					case "addContent":
-					case "assignAdmin":
-					case "performDetachAdmin":
 					case "performDetachMember":
 					case "performAddCrsGrpMembers":
 					case "addAsMember":
 					case "detachMember":
-					case "detachAdmin":
 					case "addCrsGrpMembers":
 					case 'showContent':
 					case "editParticipants":
@@ -317,7 +313,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 //			break;
 			case 'participants':
 				$xavc_access = ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_EDIT_PARTICIPANTS);
-				if(	$xavc_access )
+				$is_owner = $ilUser->getId() == $this->object->getOwner();
+				
+				if($is_owner || $xavc_access )
 				{
 					$this->tabs->addSubTab("editParticipants",$lng->txt("crs_member_administration"),$this->ctrl->getLinkTarget($this,'editParticipants'));
 
@@ -350,7 +348,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		}
 		else
 		{
-			$this->tpl->setContent($this->form->getHtml());
+			$this->tpl->setContent($this->form->getHTML());
 		}
 	}
 
@@ -783,7 +781,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 						$action->addItem($this->lng->txt('edit'), '', $this->ctrl->getLinkTarget($this, 'editItem'));
 						$action->addItem($this->lng->txt('delete'), '', $this->ctrl->getLinkTarget($this, 'askDeleteContents'));
 
-						$data[$i]['actions'] = $action->getHtml();
+						$data[$i]['actions'] = $action->getHTML();
 					}
 					else
 					{
@@ -868,7 +866,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					$action->addItem($this->lng->txt('edit'), '', $this->ctrl->getLinkTarget($this, 'editRecord'));
 					$action->addItem($this->lng->txt('delete'), '', $this->ctrl->getLinkTarget($this, 'askDeleteContents'));
 
-					$data[$i]['actions'] = $action->getHtml();
+					$data[$i]['actions'] = $action->getHTMLl();
 			}
 				++$i;
 			}
@@ -972,113 +970,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		return $this->editParticipants();
 	}
 
-    /**
-     *  Shows meeting hosts
-     *
-     */
-    public function showXavcRoles()
-    {
-	    global $DIC;
-	    $lng = $DIC->language();
-		$ilCtrl = $DIC->ctrl(); 
-		$ilToolbar = $DIC->toolbar();
-
-		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
-		$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
-		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
-		$this->pluginObj->includeClass('class.ilXAVCTableGUI.php');
-
-		$xavcRoles = new ilAdobeConnectRoles($this->object->getRefId());
-
-        $this->tabs->activateTab('participants');
-		$this->__setSubTabs('participants');
-		$this->tabs->activateSubTab("editParticipants");
-
-		$my_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.meeting_participant_table.html", true, true);
-
-        // add members
-		include_once 'Services/Search/classes/class.ilRepositorySearchGUI.php';
-		$types = array(
-			'add_member' => $this->lng->txt('member'),
-			'add_admin'	=> $this->lng->txt('administrator')
-		);
-
-		ilRepositorySearchGUI::fillAutoCompleteToolbar(
-			$this,
-			$ilToolbar,
-			array(
-				'auto_complete_name'	=> $lng->txt('user'),
-				'user_type'				=> $types,
-				'submit_name'			=> $lng->txt('add')
-			)
-		);
-		// add separator
-		$ilToolbar->addSeparator();
-
-		// search button
-		$ilToolbar->addButton($this->lng->txt("crs_search_members"),
-			$ilCtrl->getLinkTargetByClass('ilRepositorySearchGUI','start'));
-
-		// GET Admins
-		$admins = $xavcRoles->getCurrentAdministrators();
-
-		$counter = 0;
-		$f_result_1 = NULL;
-		foreach($admins as $user)
-		{
-			$f_result_1[$counter]['checkbox'] = ilUtil::formCheckbox('','usr_id[]', $user['user_id']);
-			$f_result_1[$counter]['user_name'] = $user['firstname'].' '.$user['lastname'];
-			++$counter;
-		}
-
-		// show Administrator Table
-		$tbl_admin = new ilXAVCTableGUI($this,'editParticipants');
-		$ilCtrl->setParameter($this,'cmd', 'editParticipants');
-		$tbl_admin->setTitle($lng->txt("crs_administrators"));
-		$tbl_admin->setId('tbl_admins');
-		$tbl_admin->setRowTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.xavc_active_user_row.html", false);
-
-		$tbl_admin->addColumn('', 'checkbox', '1%', true);
-		$tbl_admin->addColumn($this->pluginObj->txt('user_name'), 'user_name', '40%');
-		$tbl_admin->setSelectAllCheckbox('usr_id[]');
-		$tbl_admin->addMultiCommand('detachAdmin',$this->pluginObj->txt('detach_admin'));
-
-		$tbl_admin->setData($f_result_1);
-		$my_tpl->setVariable('ADMINS',$tbl_admin->getHTML());
-
-		// GET MEMBERS TABLE
-		$members = $xavcRoles->getCurrentMembers();
-		$counter = 0;
-		$f_result_2 = NULL;
-		foreach($members as $user)
-		{
-			$f_result_2[$counter]['checkbox'] = ilUtil::formCheckbox('','usr_id[]', $user['user_id']);
-			$f_result_2[$counter]['user_name'] = $user['firstname'].' '.$user['lastname'];
-			++$counter;
-		}
-
-		// show Member Table
-		$tbl_member = new ilXAVCTableGUI($this, 'editParticipants');
-		$ilCtrl->setParameter($this,'cmd', 'editParticipants');
-
-		$tbl_member->setTitle($lng->txt("members"));
-		$tbl_member->setId('tbl_member');
-		$tbl_member->setRowTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.xavc_active_user_row.html", false);
-
-		$tbl_member->addColumn('', 'checkbox', '1%', true);
-		$tbl_member->addColumn($this->pluginObj->txt('user_name'), 'user_name', '40%');
-		$tbl_member->setSelectAllCheckbox('usr_id[]');
-		$tbl_member->addMultiCommand('detachMember',$this->pluginObj->txt('detach_member'));
-		$tbl_member->addMultiCommand('assignAdmin',$this->pluginObj->txt('assign_admin'));
-
-		$tbl_member->setData($f_result_2);
-		$my_tpl->setVariable('MEMBERS',$tbl_member->getHTML());
-
-    	$this->tpl->setContent($my_tpl->get());
-    }
-
 	public function updateParticipants()
 	{
+		global $DIC;		
+
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 
 		if(!is_array($_POST['xavc_status']) || !is_array($_POST['usr_id']) )
@@ -1094,6 +989,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->txt("denied")=> "denied"
 		);
 
+		$local_roles = $DIC->rbac()->review()->getLocalRoles($this->object->getRefId());
+		
 		if(isset($_POST['usr_id']))
 		{
 			foreach ($_POST['usr_id'] as $selected_user)
@@ -1106,6 +1003,23 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					$memberObj->updateXAVCMember();
 
 					$this->object->updateParticipant(ilXAVCMembers::_lookupXAVCLogin($selected_user),$memberObj->getStatus());
+				}
+				
+				if(isset($_POST['roles'][$selected_user]))
+				{
+					$deassign_roles = array_diff($local_roles, $_POST['roles'][$selected_user]);
+					if($deassign_roles)
+					{
+						foreach($deassign_roles as $deassign_role_id )
+						{
+							$DIC->rbac()->admin()->deassignUser($deassign_role_id, $selected_user);
+						}
+					}
+					
+					foreach($_POST['roles'][$selected_user] as $role_id)
+					{
+						$DIC->rbac()->admin()->assignUser($role_id, $selected_user);
+					}
 				}
 			}
 		}
@@ -1204,17 +1118,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
 
 		$xavcRoles = new ilAdobeConnectRoles($this->object->getRefId());
-		$xavc_cur_users = $xavcRoles->getUsers();
 
 		$added_users = 0;
 		foreach($user_ids as $usr_id)
 		{
 			if(!ilObjUser::_lookupLogin($usr_id))
-			{
-				continue;
-			}
-
-			if(in_array($usr_id, $xavc_cur_users))
 			{
 				continue;
 			}
@@ -1275,7 +1183,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$status        = false;
 		$oParticipants = null;
-		$type          = '';
 		$owner         = 0;
 
 		if(count($this->object->getParticipantsObject()->getParticipants()) > 0)
@@ -1410,124 +1317,24 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 		$xavcRoles = new ilAdobeConnectRoles($this->object->getRefId());
 
-		$detach_user_ids = array();
-		$detach_user_ids = $_POST['usr_id'];
+		$detach_user_ids = is_array($_POST['usr_id']) ? $_POST['usr_id'] : array();
 
 		foreach($detach_user_ids as $usr_id)
 		{
-			$is_admin = $xavcRoles->isAdministrator($usr_id);
 			$xavcRoles->detachMemberRole($usr_id);
-			if(!$is_admin)
+			if($xavcRoles->isAdministrator($usr_id))
 			{
-				$xavc_login = ilXAVCMembers::_lookupXAVCLogin($usr_id);
-				ilXAVCMembers::deleteXAVCMember($usr_id, $this->object->getRefId());
-				$this->object->deleteParticipant($xavc_login);
-			}
+				$xavcRoles->detachAdministratorRole($usr_id);	
+			}	
+			
+			$xavc_login = ilXAVCMembers::_lookupXAVCLogin($usr_id);
+			ilXAVCMembers::deleteXAVCMember($usr_id, $this->object->getRefId());
+			$this->object->deleteParticipant($xavc_login);
 
 			//remove from pd
 			ilObjUser::_dropDesktopItem($usr_id, $this->object->getRefId(), 'xavc');
 		}
 		ilUtil::sendInfo($this->txt('participants_detached_successfully'));
-		return $this->editParticipants();
-	}
-
-	// detach admin role
-	public function detachAdmin()
-	{
-		global $DIC;
-		$tpl = $DIC->ui()->mainTemplate();
-
-		$this->tabs->activateTab('participants');
-		$this->__setSubTabs('participants');
-		$this->tabs->activateSubTab("editParticipants");
-
-		$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
-		$xavcRoles = new ilAdobeConnectRoles($this->object->getRefId());
-
-		$cnt_current_admins = count($xavcRoles->getCurrentAdministrators());
-		$cnt_selected_admins = count($_POST['usr_id']);
-
-       if(!is_array($_POST['usr_id']))
-		{
-			ilUtil::sendInfo($this->txt('participants_select_one'));
-			return $this->editParticipants();
-		}
-
-		if($cnt_selected_admins > 0 && $cnt_selected_admins == $cnt_current_admins)
-		{
-			// all administrators has been selected for detaching
-			ilUtil::sendFailure($this->txt('at_least_one_admin'));
-			return $this->editParticipants();
-		}
-		// CONFIRMATION
-		include_once('Services/Utilities/classes/class.ilConfirmationGUI.php');
-		$c_gui = new ilConfirmationGUI();
-
-		$c_gui->setFormAction($this->ctrl->getFormAction($this, 'performDetachAdmin'));
-		$c_gui->setHeaderText($this->pluginObj->txt('sure_detach_admin'));
-		$c_gui->setCancel($this->lng->txt('cancel'), 'editParticipants');
-		$c_gui->setConfirm($this->lng->txt('confirm'), 'performDetachAdmin');
-
-		foreach((array)$_POST['usr_id'] as $user_id)
-		{
-			$user_name = ilObjUser::_lookupName($user_id);
-			$c_gui->addItem('usr_id[]', $user_id, $user_name['firstname'].' '.$user_name['lastname']);
-		}
-
-		$tpl->setContent($c_gui->getHTML());
-	}
-
-	public function performDetachAdmin()
-	{
-		$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
-		$xavcRoles = new ilAdobeConnectRoles($this->object->getRefId());
-
-		$cnt_current_admins = count($xavcRoles->getCurrentAdministrators());
-		$cnt_selected_admins = count($_POST['usr_id']);
-
-       if(!is_array($_POST['usr_id']))
-		{
-			ilUtil::sendInfo($this->txt('participants_select_one'));
-			return $this->editParticipants();
-		}
-
-		if($cnt_selected_admins > 0 && $cnt_selected_admins == $cnt_current_admins)
-		{
-			// all administrators has been selected for detaching
-			ilUtil::sendFailure($this->txt('at_least_one_admin'));
-			return $this->editParticipants();
-		}
-
-        foreach($_POST['usr_id'] as $usr_id)
-		{
-			$xavcRoles->detachAdministratorRole($usr_id);
-			$xavcRoles->addMemberRole($usr_id);
-		}
-
-		ilUtil::sendInfo($this->txt('participants_detached_successfully'));
-		return $this->editParticipants();
-	}
-
-	// assign admin role
-	public function assignAdmin()
-	{
-		$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
-
-		$xavcRoles = new ilAdobeConnectRoles($this->object->getRefId());
-
-       if(!is_array($_POST['usr_id']))
-		{
-			ilUtil::sendInfo($this->txt('participants_select_one'));
-			return $this->editParticipants();
-		}
-
-        foreach($_POST['usr_id'] as $usr_id)
-		{
-			$xavcRoles->detachMemberRole($usr_id);
-			$xavcRoles->addAdministratorRole($usr_id);
-		}
-
-		ilUtil::sendInfo($this->txt('administrators_assigned_successfully'));
 		return $this->editParticipants();
 	}
 
@@ -2740,7 +2547,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			}
 			else
 			{
-				$this->tpl->setContent($form->getHtml());
+				$this->tpl->setContent($form->getHTML());
 			}
 		}
 		else
@@ -2762,7 +2569,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$num_max_ac_obj = ilAdobeConnectServer::getSetting('ac_interface_objects');
 		if((int)$num_max_ac_obj <= 0)
 		{
-			$tpl->setContent($form->getHtml());
+			$tpl->setContent($form->getHTML());
 			return 0;
 		}
 
@@ -2840,7 +2647,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$tgui->setData($data);
 		$tgui->setTitle(sprintf($this->txt('schedule_free_slots'), date('z', $totime - $fromtime)));
 
-		$tpl->setContent($form->getHtml() . '<br />' . $tgui->getHTML());
+		$tpl->setContent($form->getHTML() . '<br />' . $tgui->getHTML());
 	}
 
 	public function editParticipants()
@@ -2861,7 +2668,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$my_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.meeting_participant_table.html", true, true);
 
 		$has_access = ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_ADD_PARTICIPANTS);
-		if(count($this->object->getParticipantsObject()->getParticipants()) == 0 && $has_access)
+		$is_owner = $this->object->getOwner() == $ilUser->getId();
+		if((count($this->object->getParticipantsObject()->getParticipants()) == 0 && $has_access) || $is_owner )
 		{
 			// add members
 			include_once 'Services/Search/classes/class.ilRepositorySearchGUI.php';
