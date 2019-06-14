@@ -2219,7 +2219,7 @@ class ilAdobeConnectXMLAPI
 		{
 			$presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
-			if(ilAdobeConnectServer::getSetting('enhanced_security_mode') == false || $settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_DFN)
+			if(ilAdobeConnectServer::getSetting('enhanced_security_mode') == false)
 			{
 				// do not change this!
 				$session =$this->externalLogin($xavc_login);
