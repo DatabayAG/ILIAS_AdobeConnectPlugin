@@ -148,4 +148,60 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	{
 		return $this->searchUser($login, $session);
 	}
+
+	/**
+	 * @param ilObjAdobeConnect $ac_object
+	 */
+	public function performSSO(ilObjAdobeConnect $ac_object)
+	{
+		global $DIC;
+
+		$ilSetting = $DIC->settings();
+		$settings = ilAdobeConnectServer::_getInstance();
+
+		$ac_object->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
+		$ilAdobeConnectUser = new ilAdobeConnectUserUtil( $DIC->user()->getId() );
+		$ilAdobeConnectUser->ensureAccountExistance();
+
+		$xavc_login = $ilAdobeConnectUser->getXAVCLogin();
+
+		if ($ac_object->isParticipant( $xavc_login ))
+		{
+			$presentation_url = ilAdobeConnectServer::getPresentationUrl();
+
+			// do not change this!
+			$session =$this->externalLogin($xavc_login);
+
+			$_SESSION['xavc_last_sso_sessid'] = $session;
+			if($settings->isHtmlClientEnabled() == 1 && $ac_object->isHtmlClientEnabled() == 1)
+			{
+				$html_client = '&html-view=true';
+			}
+			$url = $presentation_url.$ac_object->getURL().'?session='.$session.$html_client;
+
+			$GLOBALS['ilLog']->write(sprintf("Generated URL %s for user '%s'", $url, $xavc_login));
+
+			$presentation_url = ilAdobeConnectServer::getPresentationUrl(true);
+			$logout_url = $presentation_url.'/api/xml?action=logout';
+
+			if ($ilSetting->get('short_inst_name') != "")
+			{
+				$title_prefix = $ilSetting->get('short_inst_name');
+			}
+			else
+			{
+				$title_prefix = 'ILIAS';
+			}
+
+			$sso_tpl = new ilTemplate($ac_object->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
+			$sso_tpl->setVariable('SPINNER_SRC', $ac_object->pluginObj->getDirectory().'/templates/js/spin.js');
+			$sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
+			$sso_tpl->setVariable('LOGOUT_URL', str_replace(['http://', 'https://'], '//', $logout_url));
+			$sso_tpl->setVariable('URL', $url);
+			$sso_tpl->setVariable('INFO_TXT',$ac_object->pluginObj->txt('redirect_in_progress'));
+			$sso_tpl->setVariable('OBJECT_TITLE', $ac_object->getTitle());
+			$sso_tpl->show();
+			exit;
+		}
+	} 
 }

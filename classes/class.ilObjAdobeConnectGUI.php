@@ -690,108 +690,14 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 	/**
 	 * Performs a single singn on an redirects to adobe connect server
-	 *
-	 * @access	public
 	 */
 	public function performSso()
 	{
-		global $DIC;
-		
-		$ilSetting = $DIC->settings();
-
-		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
-		$this->pluginObj->includeClass('class.ilAdobeConnectQuota.php');
-
-		$settings = ilAdobeConnectServer::_getInstance();
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
 		
-
-		if(null !== $this->object->getStartDate())
+		if(null !== $this->object->getStartDate()  && ($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink()))
 		{
-			$xmlAPI>performSSO();
-			
-            //SWITCH
-            if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI)
-            {
-                //@Todo MST check this IF-Statement
-                if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink()))
-                {
-					if ($ilSetting->get('short_inst_name') != "")
-					{
-						$title_prefix = $ilSetting->get('short_inst_name');
-					}
-					else
-					{
-						$title_prefix = 'ILIAS';
-					}
-
-					$presentation_url = ilAdobeConnectServer::getPresentationUrl();
-                    $url = ilAdobeConnectServer::getSetting('cave')."?back=".$presentation_url.$this->object->getURL();
-                    $sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
-					$sso_tpl->setVariable('SPINNER_SRC', $this->pluginObj->getDirectory().'/templates/js/spin.js');
-                    $sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
-                    $sso_tpl->setVariable('LOGOUT_URL', "");
-                    $sso_tpl->setVariable('URL', $url);
-                    $sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
-                    $sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
-                    $sso_tpl->show();
-					exit;
-                }
-            }
-            else
-            {
-                $ilAdobeConnectUser = new ilAdobeConnectUserUtil( $this->user->getId() );
-                $ilAdobeConnectUser->ensureAccountExistance();
-
-                $xavc_login = $ilAdobeConnectUser->getXAVCLogin();
-
-                if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink())
-                    && $this->object->isParticipant( $xavc_login ))
-                {
-
-                    $presentation_url = ilAdobeConnectServer::getPresentationUrl();
-
-					if( !ilAdobeConnectServer::getSetting('enhanced_security_mode') == false || $settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_DFN)
-					{
-						// do not change this!
-						$session =$xmlAPI->externalLogin($xavc_login);
-					}
-					else
-					{
-						$session = $xmlAPI->generateUserSessionCookie($xavc_login);
-					}
-
-                    $_SESSION['xavc_last_sso_sessid'] = $session;
-                    if($settings->isHtmlClientEnabled() == 1 && $this->object->isHtmlClientEnabled() == 1)
-					{
-						$html_client = '&html-view=true';
-					}
-                    $url = $presentation_url.$this->object->getURL().'?session='.$session.$html_client;
-                    
-                    $GLOBALS['ilLog']->write(sprintf("Generated URL %s for user '%s'", $url, $xavc_login));
-
-                    $presentation_url = ilAdobeConnectServer::getPresentationUrl(true);
-                    $logout_url = $presentation_url.'/api/xml?action=logout';
-
-                    if ($ilSetting->get('short_inst_name') != "")
-                    {
-                        $title_prefix = $ilSetting->get('short_inst_name');
-                    }
-                    else
-                    {
-                        $title_prefix = 'ILIAS';
-                    }
-                    $sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
-					$sso_tpl->setVariable('SPINNER_SRC', $this->pluginObj->getDirectory().'/templates/js/spin.js');
-                    $sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
-	                $sso_tpl->setVariable('LOGOUT_URL', str_replace(['http://', 'https://'], '//', $logout_url));
-                    $sso_tpl->setVariable('URL', $url);
-                    $sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
-                    $sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
-                    $sso_tpl->show();
-                    exit;
-                }
-            }
+			$xmlAPI->performSSO($this->object);
 		}
 		// Fallback action
 		$this->showContent();

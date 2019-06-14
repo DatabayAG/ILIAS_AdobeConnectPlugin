@@ -273,4 +273,34 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 			return true;
 		}
 	}
+
+	/**
+	 * @param ilObjAdobeConnect $ac_object
+	 */
+	public function performSSO(ilObjAdobeConnect$ac_object)
+	{
+		global $DIC;
+		
+		$ilSetting = $DIC->settings();
+
+		if ($ilSetting->get('short_inst_name') != "")
+		{
+			$title_prefix = $ilSetting->get('short_inst_name');
+		}
+		else
+		{
+			$title_prefix = 'ILIAS';
+		}
+		$presentation_url = ilAdobeConnectServer::getPresentationUrl();
+		$url = ilAdobeConnectServer::getSetting('cave')."?back=".$presentation_url.$ac_object->getURL();
+		$sso_tpl = new ilTemplate($ac_object->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
+		$sso_tpl->setVariable('SPINNER_SRC', $ac_object->pluginObj->getDirectory().'/templates/js/spin.js');
+		$sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
+		$sso_tpl->setVariable('LOGOUT_URL', "");
+		$sso_tpl->setVariable('URL', $url);
+		$sso_tpl->setVariable('INFO_TXT',$ac_object->pluginObj->txt('redirect_in_progress'));
+		$sso_tpl->setVariable('OBJECT_TITLE', $ac_object->getTitle());
+		$sso_tpl->show();
+		exit;
+	}
 }
