@@ -308,6 +308,7 @@ my_meeting_templates#:#Meine Vorlagen
 api_version#:#Adobe Connect API-Version
 html_client#:#HTML-Client aktivieren
 html_client_info#:#Wenn dies aktiviert ist, können Benutzer Meetings mit dem HTML-Client betreten. Achtung! Diese Funktionalität benötigt Adobe Connect 10
+local_roles#:#Lokale Rollen
 enhanced_security_mode#:#Erweiterte Sicherheit
 enhanced_security_mode_info#:#Erweiterte Sicherheit wird ab Adobe Connect Version 9.0.4 unterstützt
 advanced_ac_settings#:#Erweiterte Adobe Connect Einstellungen
