@@ -1177,40 +1177,36 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public function readContents($by_type = NULL)
 	{
-
 		$ids = array();
+		$ids = ($this->xmlApi->getContentIds($this->sco_id, null) ? $this->xmlApi->getContentIds($this->sco_id, null) : array());
 
-			$ids = ($this->xmlApi->getContentIds($this->sco_id, null) ? $this->xmlApi->getContentIds($this->sco_id, null) : array());
-
-			foreach($ids as $id)
-			{
+		if(is_array($ids)) {
+			foreach ($ids as $id) {
 				$date_created = $this->xmlApi->getDateCreated($id, $this->sco_id, null);
 
 				$date_end = $this->xmlApi->getDateEnd($id, $this->sco_id, null);
-				if($date_end == '')
-				{
+				if ($date_end == '') {
 					$type = 'content';
-				}
-				else
-				{
+				} else {
 					$type = 'record';
 				}
-				
-				if($by_type == NULL  || $by_type == $type)
-				{
-					$attributes   = array(
-						"sco-id"       => $id,
-						"name"         => $this->xmlApi->getName($id, $this->sco_id, null),
-						"url"          => $this->xmlApi->getURL($id, $this->sco_id, null),
-						"date-created" => new ilDateTime(substr($date_created, 0, 10) . " " . substr($date_created, 11, 8), IL_CAL_DATETIME),
-						"date-end"	=> $date_end,
-						"description"  => $this->xmlApi->getDescription($id, $this->sco_id, null),
-						"type"         => $type
+
+				if ($by_type == null || $by_type == $type) {
+					$attributes = array(
+						"sco-id" => $id,
+						"name" => $this->xmlApi->getName($id, $this->sco_id, null),
+						"url" => $this->xmlApi->getURL($id, $this->sco_id, null),
+						"date-created" => new ilDateTime(substr($date_created, 0, 10) . " " . substr($date_created,
+								11, 8), IL_CAL_DATETIME),
+						"date-end" => $date_end,
+						"description" => $this->xmlApi->getDescription($id, $this->sco_id, null),
+						"type" => $type
 					);
 					$this->contents->addContent($attributes);
 				}
 			}
-			return true;
+		}
+		return true;
 	}
 
 	/**
