@@ -54,10 +54,8 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'last-name' 	=> $last_name,
 			'session' 		=> $session
 		));
-
 		$ilLog->write("addUser URL: ". $url);
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -89,7 +87,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'action' 	=> 'lms-user-exists',
 			'session' 	=> $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -128,15 +126,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'login' 	=> $user,
 			'session' 	=> $session
 		));
-
-		$context = array(
-			'http' => array('timeout' => 4),
-			'https' => array('timeout' => 4)
-		);
-
-		$ctx = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -172,19 +162,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'password' 		=> $pass,
 			'session' 		=> $session
 		));
-
-		$context = array(
-			'http' => array(
-				'timeout' => 4
-			),
-			'https' => array(
-				'timeout' => 4
-			)
-		);
-
-		$ctx = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{

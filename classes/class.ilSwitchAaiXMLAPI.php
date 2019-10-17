@@ -261,8 +261,8 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 			'session'		=> $technical_user_session,
 			'permission-id'=> $permission
 		));
+		$xml = $this->adcInfo->getRemoteXML($url);
 
-		$xml = simplexml_load_file($url);
 		if($xml->status['code'] == 'ok')
 		{
 			return true;

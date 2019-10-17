@@ -125,15 +125,7 @@ class ilAdobeConnectXMLAPI
 				'password' => $pass,
 				'session'  => $session
 			));
-
-			$context = (array(
-				'http'  => array('timeout' => 4),
-				'https' => array('timeout' => 4)
-			));
-
-			$ctx        = $this->proxy($context);
-			$xml_string = file_get_contents($url, false, $ctx);
-			$xml        = simplexml_load_string($xml_string);
+			$xml = $this->adcInfo->getRemoteXML($url);
 
 			if($xml->status['code'] == 'ok')
 			{
@@ -181,7 +173,7 @@ class ilAdobeConnectXMLAPI
 				'password-verify' => $newPassword,
 				'user-id'         => $user_id
 			));
-			$xml = simplexml_load_file($url);
+			$xml = $this->adcInfo->getRemoteXML($url);
 
 			return $xml instanceof SimpleXMLElement && $xml->status['code'] == 'ok';
 		}
@@ -224,8 +216,7 @@ class ilAdobeConnectXMLAPI
 			'action'  => 'logout',
 			'session' => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($session == self::$breeze_session)
 		{
@@ -259,14 +250,7 @@ class ilAdobeConnectXMLAPI
 		$ilLog = $DIC->logger()->root();
 
 		$url = $this->getApiUrl(array('action' => 'common-info'));
-
-		$context    = array(
-			'http'  => array('timeout' => 4),
-			'https' => array('timeout' => 4)
-		);
-		$ctx        = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml        = simplexml_load_string($xml_string);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml && (string)$xml->common->version)
 		{
@@ -299,14 +283,7 @@ class ilAdobeConnectXMLAPI
 		}
 
 		$url = $this->getApiUrl(array('action' => 'common-info'));
-
-		$context    = array(
-			'http'  => array('timeout' => 4),
-			'https' => array('timeout' => 4)
-		);
-		$ctx        = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml        = simplexml_load_string($xml_string);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml && $xml->common->cookie != "")
 		{
@@ -342,8 +319,7 @@ class ilAdobeConnectXMLAPI
 			'action'  => 'sco-shortcuts',
 			'session' => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 		if(
 			$xml instanceof SimpleXMLElement &&
 			'ok' == (string)$xml->status['code']
@@ -373,8 +349,7 @@ class ilAdobeConnectXMLAPI
 			'session' => $session,
 			'sco-id'  => $scoId
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 		$id  = $xml->sco['folder-id'];
 
 		return ($id == "" ? NULL : $id);
@@ -418,7 +393,7 @@ class ilAdobeConnectXMLAPI
 		}
 
 		$url = $this->getApiUrl($api_parameter);
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -467,7 +442,7 @@ class ilAdobeConnectXMLAPI
 		$ilLog = $DIC->logger();
 
 		$url = $this->getApiUrl($api_parameter);
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -521,8 +496,7 @@ class ilAdobeConnectXMLAPI
 		}
 
 		$url = $this->getApiUrl($api_parameter);
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -557,8 +531,7 @@ class ilAdobeConnectXMLAPI
 			'sco-id'  => $sco_id,
 			'session' => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		//'no-data' means current  sco does not exists or sco is already deleted
 		if(($xml->status['code'] == 'ok') || ($xml->status['code'] == 'no-data'))
@@ -595,8 +568,7 @@ class ilAdobeConnectXMLAPI
 			'permission-id' => 'denied',
 			'session'       => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -631,8 +603,7 @@ class ilAdobeConnectXMLAPI
 			'permission-id' => 'view-hidden',
 			'session'       => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -667,8 +638,7 @@ class ilAdobeConnectXMLAPI
 			'permission-id' => 'remove',
 			'session'       => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -698,8 +668,7 @@ class ilAdobeConnectXMLAPI
 			'permission-id' => $a_permission_id,
 			'session'       => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -736,6 +705,7 @@ class ilAdobeConnectXMLAPI
 			'session'       => $session
 		));
 		$xml = $this->getCachedSessionCall($url);
+
 		if($xml->status['code'] == "ok")
 		{
 			return (string)$xml->scos->sco->{'url-path'};
@@ -760,7 +730,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -799,7 +768,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -822,8 +790,8 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
+		$xml     = $this->adcInfo->getRemoteXML($url);
 
-		$xml     = simplexml_load_file($url);
 		$counter = 0;
 		$result  = array();
 		if(is_array($xml->{'report-active-meetings'}->sco))
@@ -848,8 +816,8 @@ class ilAdobeConnectXMLAPI
 			'action'  => 'report-active-meetings',
 			'session' => $session
 		));
+		$xml     = $this->adcInfo->getRemoteXML($url);
 
-		$xml     = simplexml_load_file($url);
 		$counter = 0;
 		$result  = array();
 		if($xml->{'report-active-meetings'}->sco)
@@ -882,10 +850,9 @@ class ilAdobeConnectXMLAPI
 			'filter-type' => 'meeting',
 			'session'     => $session
 		));
+		$xml    = $this->adcInfo->getRemoteXML($url);
 
-		$xml    = simplexml_load_file($url);
 		$result = array();
-
 		if($xml->{'report-bulk-objects'})
 		{
 			foreach($xml->{'report-bulk-objects'}->row as $meeting)
@@ -923,8 +890,8 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
+
 		if($xml->status['code'] == "ok")
 		{
 			return (string)$xml->scos->sco->{'date-end'};
@@ -958,7 +925,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -994,7 +960,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -1030,7 +995,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -1066,7 +1030,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -1102,7 +1065,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -1136,7 +1098,6 @@ class ilAdobeConnectXMLAPI
 			'sco-id'  => $meeting_id,
 			'session' => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -1229,8 +1190,8 @@ class ilAdobeConnectXMLAPI
 			'description' => $description,
 			'session'     => $session
 		));
+		$xml = $this->adcInfo->getRemoteXML($url);
 
-		$xml = simplexml_load_file($url);
 		if($xml instanceof SimpleXMLElement && $xml->status['code'] == 'ok')
 		{
 			$server = $this->server;
@@ -1280,7 +1241,7 @@ class ilAdobeConnectXMLAPI
 			'description' => $description,
 			'session'     => $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml instanceof SimpleXMLElement && $xml->status['code'] == 'ok')
 		{
@@ -1321,7 +1282,7 @@ class ilAdobeConnectXMLAPI
 			'sco-id'  => $sco_id,
 			'session' => $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -1370,7 +1331,7 @@ class ilAdobeConnectXMLAPI
 			'filter-login' => $login,
 			'session'      => $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml instanceof \SimpleXMLElement  && $xml->status['code'] == 'ok')
 		{
@@ -1420,8 +1381,7 @@ class ilAdobeConnectXMLAPI
 			'session'      => $session
 		));
 		$ilLog->write("addUser Url: " . $url);
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -1509,25 +1469,25 @@ class ilAdobeConnectXMLAPI
 			));
 		}
 
-		$xml_host = simplexml_load_file($host);
+		$xml_host = $this->adcInfo->getRemoteXML($host);
 		foreach($xml_host->permissions->principal as $user)
 		{
 			$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'host');
 		}
 
-		$xml_mini_host = simplexml_load_file($mini_host);
+		$xml_mini_host = $this->adcInfo->getRemoteXML($mini_host);
 		foreach($xml_mini_host->permissions->principal as $user)
 		{
 			$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'mini-host');
 		}
 
-		$xml_view = simplexml_load_file($view);
+		$xml_view = $this->adcInfo->getRemoteXML($view);
 		foreach($xml_view->permissions->principal as $user)
 		{
 			$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'view');
 		}
 
-		$xml_denied = simplexml_load_file($denied);
+		$xml_denied = $this->adcInfo->getRemoteXML($denied);
 		foreach($xml_denied->permissions->principal as $user)
 		{
 			$result[(string)$user->login] = array("name" => (string)$user->name, "login" => (string)$user->login, 'status' => 'denied');
@@ -1554,8 +1514,7 @@ class ilAdobeConnectXMLAPI
 			'principal-id'  => $principal_id,
 			'permission-id' => 'view'
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		return ($xml->status['code'] == "ok" ? true : false);
 	}
@@ -1578,7 +1537,7 @@ class ilAdobeConnectXMLAPI
 			'principal-id'  => $principal_id,
 			'permission-id' => 'host'
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		return ($xml->status['code'] == "ok" ? true : false);
 	}
@@ -1601,7 +1560,7 @@ class ilAdobeConnectXMLAPI
 			'principal-id'  => $principal_id,
 			'permission-id' => 'mini-host'
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		return ($xml->status['code'] == "ok" ? true : false);
 	}
@@ -1624,10 +1583,7 @@ class ilAdobeConnectXMLAPI
 			'session'       => $session,
 			'permission-id' => $permission
 		));
-
-		$ctx    = $this->proxy(array());
-		$result = file_get_contents($url, false, $ctx);
-		$xml    = simplexml_load_string($result);
+		$xml = $this->adcInfo->getRemoteXML($url, array());
 		if($xml->status['code'] == 'ok')
 		{
 			return true;
@@ -1662,7 +1618,7 @@ class ilAdobeConnectXMLAPI
 			'principal-id'  => $principal_id,
 			'permission-id' => 'remove'
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		return ($xml->status['code'] == "ok" ? true : false);
 	}
@@ -1679,7 +1635,7 @@ class ilAdobeConnectXMLAPI
 			'filter-type' => 'meeting',
 			'session'     => $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		foreach($xml->{'report-bulk-objects'}->row as $meeting)
 		{
@@ -1708,7 +1664,7 @@ class ilAdobeConnectXMLAPI
 			'filter-login' => $login,
 			'session'      => $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -1743,7 +1699,7 @@ class ilAdobeConnectXMLAPI
 			'filter-principal-id' => $p_id,
 			'session'             => $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if(in_array((string)$xml->permissions->principal['permission-id'], array('host', 'mini-host', 'view')))
 		{
@@ -1768,8 +1724,7 @@ class ilAdobeConnectXMLAPI
 			'principal-id' => 'public-access',
 			'session'      => $session
 		));
-
-		$xml2          = simplexml_load_file($url2);
+		$xml2          = $this->adcInfo->getRemoteXML($url2);
 		$permission_id = (string)$xml2->permission['permission-id'];
 
 		// ADOBE CONNECT API BUG!!  if access-level is "PROTECTED" the api does not return a proper permission_id. it returns an empty string
@@ -1799,8 +1754,7 @@ class ilAdobeConnectXMLAPI
 			'session'       => $session,
 			'filter-sco-id' => $a_sco_id
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == "ok")
 		{
@@ -1865,8 +1819,7 @@ class ilAdobeConnectXMLAPI
 		{
 			return self::$scocontent_cache[$hash];
 		}
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		self::$scocontent_cache[$hash] = $xml;
 
@@ -1893,7 +1846,6 @@ class ilAdobeConnectXMLAPI
 				$x_user_id . ': ' . $user
 			)
 		);
-
 		$opts = array(
 			'http'  => array(
 				'method' => 'GET',
@@ -1909,11 +1861,8 @@ class ilAdobeConnectXMLAPI
 			'action'        => 'login',
 			'external-auth' => 'use'
 		));
+		$xml = $this->adcInfo->getRemoteXML($url, $opts);
 
-		$ctx    = $this->proxy($opts);
-		$result = file_get_contents($url, false, $ctx);
-
-		$xml = simplexml_load_string($result);
 		if($xml instanceof SimpleXMLElement && $xml->status['code'] == 'ok')
 		{
 			foreach($http_response_header as $header)
@@ -2009,7 +1958,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		if($xml->status['code'] == "ok")
@@ -2043,8 +1991,7 @@ class ilAdobeConnectXMLAPI
 			'filter-name' => $login,
 			'session'     => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		$id = NULL;
 		if(
@@ -2083,10 +2030,9 @@ class ilAdobeConnectXMLAPI
 			'name'      => $login,
 			'session'   => $session
 		));
+		$xml = $this->adcInfo->getRemoteXML($url);
 
-		$xml = simplexml_load_file($url);
 		$id  = NULL;
-
 		if($xml->status['code'] == "ok")
 		{
 			return (string)$xml->sco['sco-id'];
@@ -2114,8 +2060,7 @@ class ilAdobeConnectXMLAPI
 			'sco-id'  => $folder_id,
 			'session' => $session
 		));
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		$result = array();
 		if($xml instanceof SimpleXMLElement && 'ok' == (string)$xml->status['code'])
@@ -2152,7 +2097,6 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml = $this->getCachedSessionCall($url);
 
 		$data = array();
@@ -2187,10 +2131,9 @@ class ilAdobeConnectXMLAPI
 			'filter-sco-id' => $sco_id,
 			'session'       => $session
 		));
-
 		$xml  = $this->getCachedSessionCall($url);
-		$icon = '';
 
+		$icon = '';
 		if($xml->status['code'] == "ok")
 		{
 			foreach($xml->scos->sco as $sco)
@@ -2215,8 +2158,8 @@ class ilAdobeConnectXMLAPI
 			'action'  => 'sco-shortcuts',
 			'session' => $session
 		));
+		$xml       = $this->adcInfo->getRemoteXML($url_1);
 
-		$xml       = simplexml_load_file($url_1);
 		$templates = array();
 		if(is_array($xml->shortcuts->sco))
 		{
@@ -2232,7 +2175,7 @@ class ilAdobeConnectXMLAPI
 						'session' => $session
 
 					));
-					$xml_2           = simplexml_load_file($url_2);
+					$xml_2           = $this->adcInfo->getRemoteXML($url_2);
 
 					if(is_array($xml_2->scos->sco))
 					{
