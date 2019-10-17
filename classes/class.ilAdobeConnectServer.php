@@ -506,4 +506,126 @@ class ilAdobeConnectServer
 		}
 		return $result;
 	}
+
+	/**
+	 * Function: getRemoteXML($url, $opts)
+	 *  Fetches the content of a remote XML file/request and parse it.
+	 *
+	 * Parameters:
+	 *  $url <String> - The URL used for requesting/downloading the XML document
+	 *  $opts <Array> - [OPTIONAL] Additional options to be passed into stream_context_create(...)
+	 *
+	 * Returns:
+	 *  <SimpleXMLElement> The xml structure of the requested XML document
+	 */
+	public function getRemoteXML($url, $opts = array()) {
+		$xml_string = $this->getRemoteFile($url, $opts);
+		return simplexml_load_string($xml_string);
+	}
+
+	/**
+	 * Function: getRemoteFile($filename, $opts)
+	 *  Fetched content of given file (remotely) and uses
+	 *  the ILIAS proxy is confgured.
+	 *
+	 * Parameters:
+	 *  $filename <String> - (Remote) file to fetch content for
+	 *  $opts <Array> - [OPTIONAL] Additional options to be passed into stream_context_create(...)
+	 *
+	 * Returns:
+	 *  <String> Content of file, as given by file_get_contents($filename)
+	 */
+	public function getRemoteFile($filename, $opts = array()) {
+		$proxyOpts = $this->getProxyOptions($opts);
+		$context = stream_context_create($proxyOpts);
+		return file_get_contents($filename, false, $context);
+	}
+
+	/**
+	 * Function: getProxyOptions($opts)
+	 *  Returns options that can be passed into stream_context_create(...)
+	 *  to create a proxy-aware context.
+	 *
+	 * Parameter:
+	 *  $opts <Array> - See documentation for stream_context_create(...)
+	 *
+	 * Returns:
+	 *  <Array> Options enabling proxy for stream_context_create(...)
+	 */
+	protected function getProxyOptions($opts = array()) {
+		require_once('Services/Http/classes/class.ilProxySettings.php');
+
+		$proxy = $this->getIliasProxy();
+		if ($proxy !== false) {
+			if (!is_array($opts['http'])) {
+			$opts['http'] = array(
+				'http'  => array('timeout' => 4),
+				'https' => array('timeout' => 4),
+			);
+			}
+
+			$opts['http']['proxy']           = "tcp://{$proxy}";
+			$opts['http']['request_fulluri'] = true;
+
+			$opts['https']['proxy']           = "tcp://{$proxy}";
+			$opts['https']['request_fulluri'] = true;
+		}
+
+		return $opts;
+	}
+
+	/**
+	 * Function: getCurlHander($url, $verify)
+	 *  Creates a new curl handler with preconfigured settings,
+	 *  such as proxy, url, ssl-verification and more.
+	 *
+	 * Parameters:
+	 *  $url <String> - URL to send curl request against
+	 *  $verify <Boolean> Optionally disable SSL validation
+	 *
+	 * Returns:
+	 *  <resource> A resource handler to be used with php curl_* functions
+	 */
+	public function getCurlHander($url, $verify = false) {
+		require_once('Services/Http/classes/class.ilProxySettings.php');
+
+		$curl = curl_init();
+		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($curl, CURLOPT_URL, $url);
+
+		if ($verify === false) {
+			curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
+		}
+
+		$proxy = $this->getIliasProxy();
+		if ($proxy !== false) {
+			curl_setopt($curl, CURLOPT_PROXY, $proxy);
+			curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
+		}
+
+		return $curl;
+	}
+
+	/**
+	 * Function: getIliasProxy()
+	 *  Fetches the proxy url from ILIAS settings or returns false
+	 *  if there is no proxy!
+	 *
+	 * Returns:
+	 *  <String/Boolean> Proxy-URL or false
+	 */
+	protected function getIliasProxy() {
+		require_once('Services/Http/classes/class.ilProxySettings.php');
+
+		if (ilProxySettings::_getInstance()->isActive()) {
+			$proxy = ilProxySettings::_getInstance()->getHost();
+			$port = ilProxySettings::_getInstance()->getPort();
+			if ($port !== "") {
+			return "${proxy}:${port}";
+			}
+			return $proxy;
+		}
+		return false;
+	}
 }
