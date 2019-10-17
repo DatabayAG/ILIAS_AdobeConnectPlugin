@@ -149,6 +149,11 @@ class ilObjAdobeConnect extends ilObjectPlugin
 	 */
 	public $html_client = false;
 
+  /**
+   *
+   */
+  protected $instance;
+
 	/**
 	 * Constructor
 	 * @access    public
@@ -168,9 +173,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			$this->contents = new ilAdobeConnectContents();
 		}
 
-		$instance            = ilAdobeConnectServer::_getInstance();
-		$this->adminLogin    = $instance->getLogin();
-		$this->adminPass     = $instance->getPasswd();
+		$this->instance      = ilAdobeConnectServer::_getInstance();
+		$this->adminLogin    = $this->instance->getLogin();
+		$this->adminPass     = $this->instance->getPasswd();
 		$this->externalLogin = $this->checkExternalUser();
 
 		$this->xmlApi = ilXMLApiFactory::getApiByAuthMode();
@@ -1641,9 +1646,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
 	public static function getScosByFolderId($folder_id)
 	{
-		$instance   = ilAdobeConnectServer::_getInstance();
-		$adminLogin = $instance->getLogin();
-		$adminPass  = $instance->getPasswd();
+		$adminLogin = $this->instance->getLogin();
+		$adminPass  = $this->instance->getPasswd();
 
 		$xmlApi = ilXMLApiFactory::getApiByAuthMode();
 
