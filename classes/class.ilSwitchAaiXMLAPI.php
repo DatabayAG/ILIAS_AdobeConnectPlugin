@@ -93,11 +93,10 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 		{
 			return self::$technical_user_session;
 		}
-		$instance = ilAdobeConnectServer::_getInstance();
 
 		$params['action'] = 'login';
-		$params['login'] = $instance->getLogin();
-		$params['password'] = $instance->getPasswd();
+		$params['login'] = $this->adcInfo->getLogin();
+		$params['password'] = $this->adcInfo->getPasswd();
 
 		$api_url = self::getApiUrl($params);
 
