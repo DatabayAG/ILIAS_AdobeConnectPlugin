@@ -1718,19 +1718,14 @@ class ilObjAdobeConnect extends ilObjectPlugin
 			$postData['name'] = $title;
 		}
 
-		$curl = curl_init();
-		curl_setopt($curl, CURLOPT_VERBOSE, true);
-		curl_setopt($curl, CURLOPT_POST, true);
-		curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-		curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
-		curl_setopt($curl, CURLOPT_URL, $url);
-		curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
-		$postResult = curl_exec($curl);
-		curl_close($curl);
-
 		$this->pluginObj->includeClass('class.ilAdobeConnectContentUploadException.php');
 		try {
+			$curl = $this->instance->getCurlHander($url);
+			curl_setopt($curl, CURLOPT_POST, true);
+			curl_setopt($curl, CURLOPT_POSTFIELDS, $postData);
+			$postResult = curl_exec($curl);
+			curl_close($curl);
+
 			$GLOBALS['ilLog']->write("AdobeConnect: addContent result ...");
 			$GLOBALS['ilLog']->write($postResult);
 

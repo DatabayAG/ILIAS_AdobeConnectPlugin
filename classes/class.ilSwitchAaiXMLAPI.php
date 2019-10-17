@@ -100,11 +100,7 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 
 		$api_url = self::getApiUrl($params);
 
-		$ch = curl_init();
-		curl_setopt($ch, CURLOPT_URL, $api_url);
-		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($ch, CURLOPT_HEADER, TRUE);
-
+		$curl = $this->adcInfo->getCurlHander($api_url, true);
 		$output = curl_exec($ch);
 		$curlHeaderSize=curl_getinfo($ch,CURLINFO_HEADER_SIZE);
 
