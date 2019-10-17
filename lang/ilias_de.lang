@@ -207,7 +207,7 @@ auth_mode_dfn#:#Session-Cookie-basierte Authentifizierung mit DFN-Server
 xavc_x_user_id_info#:#Bitte beachten Sie, dass das die Konfigurationsdatei (web.xml) Ihrer Adobe Connect-Installation entsprechend angepasst werden muss. Genauere Informationen entnehmen Sie bitte der Adobe-Connect Dokumentation.
 authentification_mode_info#:#Legen Sie fest, welche Authentifizierungs-Methode verwendet werden soll.
 x_user_id_header_var#:#Header-Variable für die HTTP Header-Authentifizierung der Benutzer
-assigned_users_s#:#Der Benutzer wurde erfolgreich hinzugefügt 
+assigned_users_s#:#Der Benutzer wurde erfolgreich hinzugefügt
 assigned_users_p#:#Die Benutzer wurden erfolgreich hinzugefügt
 choose_creation_type#:#Art der Objekt-Erstellung
 create_new#:#Einen neuen Adobe Connect Raum anlegen
@@ -237,7 +237,7 @@ perm_upload_content#:#Material hochladen und löschen
 perm_change_role#:#Adobe Connect Rolle ändern
 ac_permissions#:#Adobe Connect Berechtigungen
 default_perm_room#:#Default-Wert für permanent offene Räume
-default_perm_room_info#:#Wenn dies aktiviert ist, wird beim Erstellen eines neuen Objektes die Checkbox "Permanent offener Raum" per Default angehakt  
+default_perm_room_info#:#Wenn dies aktiviert ist, wird beim Erstellen eines neuen Objektes die Checkbox "Permanent offener Raum" per Default angehakt
 perm_edit_participants#:#Teilnehmer Liste anzeigen
 perm_add_participants#:#Mitglieder hinzufügen und löschen
 assign_users_with_switch_aai_login#:#SWITCH AAI Login
@@ -246,7 +246,7 @@ choose_existing_room#:#Wählen Sie ein bestehendes Adobe-Connect Meeting aus, um
 sure_delete_participant_p#:#Sind Sie sicher, dass Sie die folgenden Teilnehmer löschen möchten?
 sure_delete_participant_s#:#Sind Sie sicher, dass Sie den folgenden Teilnehmer löschen möchten?
 crs_grp_trigger_enabled_info#:#Hinweis zum Löschen: Das automatische Ergänzen von Mitgliedern ist eingeschaltet. Um ein Mitglied dauerhaft zu entfernen, müssen Sie es auch aus der übergeordneten Gruppe/aus dem übergeordneten Kurs entfernen, ansonsten wird es im Adobe Meeting wieder eingetragen.
-err_duplicate_meeting#:#Es existiert bereits ein Adobe Connect-Raum mit dem angegebenen Namen. Bitte wählen Sie einen anderen Titel. 
+err_duplicate_meeting#:#Es existiert bereits ein Adobe Connect-Raum mit dem angegebenen Namen. Bitte wählen Sie einen anderen Titel.
 smpl_permanent_room_enabled#:# Dieser Meetingraum hat keine zeitlichen Einschränkungen.
 smpl_permanent_room_disabled#:#Der Meetingraum ist bis %s Uhr geöffnet.
 time_type_selection#:#Zeitliche Verfügbarkeit des Meetings
@@ -256,7 +256,7 @@ record#:#Aufnahme
 content_type#:#Typ
 il_xavc_member#:#Adobe Connect Mitglied
 il_xavc_admin#:#Adobe Connect Administrator
-add_to_desktop#:#Eintrag auf dem persönlichen Schreibtisch 
+add_to_desktop#:#Eintrag auf dem persönlichen Schreibtisch
 add_to_desktop_info#:#Wenn dies aktiviert ist, werden neu hinzugefügten Adobe Connect-Mitgliedern ein Link zum Adobe Connect-Meeting auf den persönlichen Schreibtisch gelegt.
 template_info#:#Die Einstellungstemplates, die Sie ankreuzen, stehen den Dozierenden beim Erstellen neuer Sitzungsräume zur Verfügung. Stellen Sie 'Basis Einstellungen' zur Verfügung, wenn nur ein Minimum an technischen Optionen sichtbar sein soll. Stellen Sie 'Erweiterte Einstellungen' zur Verfügung, wenn Sie den Leuten mehr Optionen und Hintergründe eröffnen möchten.
 perm_read_records#:#Aufnahmen ansehen
@@ -270,12 +270,12 @@ private_room#:#Nur registrierte Benutzer haben Zugang zum Raum (Gastzugriff gesp
 protected_room#:#Nur registrierte Benutzer und genehmigte Gäste dürfen den Raum betreten.
 public_room#:#Alle Personen, die die URL für das Meeting haben, dürfen den Raum betreten.
 content_file_types#:#Erlaubte Datei-Formate für Inhalte
-content_file_types_info#:#Geben Sie hier die Datei-Typen an, die in ein Adobe Connect Meeting hochgeladen werden können. 
+content_file_types_info#:#Geben Sie hier die Datei-Typen an, die in ein Adobe Connect Meeting hochgeladen werden können.
 contact_information#:#Kontaktinformationen
 office#:#Arbeit
 mobile#:#Mobil
 meeting_url#:#URL für das Meeting
-general#:#Allgemein 
+general#:#Allgemein
 read_contents#:#Materialien anzeigen
 read_records#:#Aufnahmen anzeigen
 perm_read_contents#:#Materialien ansehen
@@ -299,7 +299,7 @@ ilias_user#:#ILIAS Benutzer
 obj_title_suffix#:#Raum-Namen mit einem eindeutigen Suffix anlegen
 obj_title_suffix_info#:#Wenn dies aktiviert ist, wird bei dem Erstellen eines Raumes ein Suffix an Raum-Namen angehangen (Bsp.: raumname_/mandant_id/_/objekt_id/). In Ilias wird der Objekt-Titel ohne Suffix angezeigt
 enable_perm_room#:#Permanent offene Räume erlauben
-enable_perm_room_info#:#Wenn dies aktiviert ist, können Räume als permanent offen gekennzeichnet werden 
+enable_perm_room_info#:#Wenn dies aktiviert ist, können Räume als permanent offen gekennzeichnet werden
 members_gallery#:#Mitgliedergalerie
 use_meeting_template#:#Veranstaltungsvorlage verwenden
 use_meeting_template_info#:#Wenn dies aktiviert ist, kann eine existierende Veranstaltungsvorlage ausgewählt werden, die bei der Erstellung verwendet werden kann.

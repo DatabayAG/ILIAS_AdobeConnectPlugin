@@ -2,34 +2,34 @@
 
 /**
  * Meeting contents
- * 
+ *
  * @author Felix Paulano
  */
 class ilAdobeConnectContents
 {
-    /**
-     * array of contents
-     *
-     * @var  array $contents ilAdobeConnectContent       
+	/**
+	 * array of contents
+	 *
+	 * @var  array $contents ilAdobeConnectContent
 	 */
-    private $contents;
+	private $contents;
 
-    /**
-     * Default constructor
-     *
-     */
-    public function __construct() 
+	/**
+	 * Default constructor
+	 *
+	 */
+	public function __construct()
 	{
-        $this->contents = array();
-    }
+		$this->contents = array();
+	}
 
-    /**
-     *  Add a content to the container
-     *
-     * @param array $attributes
-     */
+	/**
+	 *  Add a content to the container
+	 *
+	 * @param array $attributes
+	 */
 	public function addContent($attributes)
-    {
+	{
 		/**
 		 * @var $pluginObj ilPlugin
 		 *
@@ -37,23 +37,23 @@ class ilAdobeConnectContents
 		$pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
 		$pluginObj->includeClass('class.ilAdobeConnectContent.php');
 
-        $this->contents[] = new ilAdobeConnectContent($attributes);
-    }
+		$this->contents[] = new ilAdobeConnectContent($attributes);
+	}
 
-    /**
-     *
-     * @param array $search_criteria
-     * @return array 
-     */
-    public function search($search_criteria = NULL)
-    {
-        $results = array();
-		/** 
-		 * @var $content  ilAdobeConnectContent 
+	/**
+	 *
+	 * @param array $search_criteria
+	 * @return array
+	 */
+	public function search($search_criteria = NULL)
+	{
+		$results = array();
+		/**
+		 * @var $content  ilAdobeConnectContent
 		 */
-        foreach ($this->contents as $content)
-        {
-            if($search_criteria != NULL)
+		foreach ($this->contents as $content)
+		{
+			if($search_criteria != NULL)
 			{
 				if($content->getAttributes()->match($search_criteria))
 				{
@@ -64,16 +64,16 @@ class ilAdobeConnectContents
 			{
 				$results[] = $content;
 			}
-        }
-        return $results;
-    }
+		}
+		return $results;
+	}
 
-    /**
-     *
-     * @return array
-     */
+	/**
+	 *
+	 * @return array
+	 */
 	public function getContents()
-    {
-        return $this->contents;
-    }
+	{
+		return $this->contents;
+	}
 }

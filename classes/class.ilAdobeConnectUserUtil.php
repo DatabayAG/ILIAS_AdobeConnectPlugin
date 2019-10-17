@@ -5,42 +5,42 @@
  */
 class ilAdobeConnectUserUtil
 {
-    /**
-     *  User id
-     *
-     * @var String
-     */
-    private $id;
-    /**
-     *  User email address
-     *
-     * @var String
-     */
-    private $email;
-    /**
-     *  User login
-     *
-     * @var String
-     */
-    private $login;
-    /**
-     *  User password
-     *
-     * @var String
-     */
-    private $pass;
-    /**
-     *  User first name
-     *
-     * @var String
-     */
-    private $first_name;
-    /**
-     *  User second name
-     *
-     * @var String
-     */
-    private $last_name;
+	/**
+	 *  User id
+	 *
+	 * @var String
+	 */
+	private $id;
+	/**
+	 *  User email address
+	 *
+	 * @var String
+	 */
+	private $email;
+	/**
+	 *  User login
+	 *
+	 * @var String
+	 */
+	private $login;
+	/**
+	 *  User password
+	 *
+	 * @var String
+	 */
+	private $pass;
+	/**
+	 *  User first name
+	 *
+	 * @var String
+	 */
+	private $first_name;
+	/**
+	 *  User second name
+	 *
+	 * @var String
+	 */
+	private $last_name;
 
 	/**
 	 *  Adobe Connect Login
@@ -49,13 +49,13 @@ class ilAdobeConnectUserUtil
 	 */
 	private $xavc_login;
 
-    /**
-     *  Constructor
-     *
-     * @param String $user_id
-     */
-    public function __construct($user_id)
-    {
+	/**
+	 *  Constructor
+	 *
+	 * @param String $user_id
+	 */
+	public function __construct($user_id)
+	{
 		$this->id = $user_id;
 		$this->readAdobeConnectUserData();
 	}
@@ -64,17 +64,17 @@ class ilAdobeConnectUserUtil
 	{
 //		$auth_mode = ilAdobeConnectServer::getSetting('auth_mode');
 //		 here we can decide in future if it is needed to check and/or create accounts at an AC-Server or not
-		
+
 		$this->ensureLocalAccountExistance();
 
-        //In the SWITCH aai case, we don't have enough permissions to search for users
-        //Therefore, we just try to add the user to the meeting, regardless of whether the account exists already or not
-        if(ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH)
-        {
-		    $this->ensureAdobeConnectAccountExistance();
-        }
+		//In the SWITCH aai case, we don't have enough permissions to search for users
+		//Therefore, we just try to add the user to the meeting, regardless of whether the account exists already or not
+		if(ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH)
+		{
+			$this->ensureAdobeConnectAccountExistance();
+		}
 	}
-	
+
 	private function readAdobeConnectUserData()
 	{
 		global $DIC;
@@ -102,23 +102,23 @@ class ilAdobeConnectUserUtil
 			$this->ensureAccountExistance();
 		}
 	}
-	
+
 	private function ensureLocalAccountExistance()
 	{
 		global $DIC;
 		$ilDB = $DIC->database();
-		
+
 		// generate valid xavc_login_name with assignment_mode-setting
 		$expected_login_name = self::generateXavcLoginName($this->getId());
-		
-        //check if is valid xavc_login
+
+		//check if is valid xavc_login
 		if(!$this->xavc_login && $expected_login_name) //|| $this->xavc_login != $expected_login_name)
 		{
 			$this->xavc_login = $expected_login_name;
 			// replace possible existing login_name
-//			$ilDB->manipulateF('DELETE FROM rep_robj_xavc_users WHERE user_id = %s', 
+//			$ilDB->manipulateF('DELETE FROM rep_robj_xavc_users WHERE user_id = %s',
 //				array('integer'), array($this->getId()));
-			
+
 			// insert generated login-name into xavc_users
 			$ilDB->replace(
 				'rep_robj_xavc_users',
@@ -134,16 +134,16 @@ class ilAdobeConnectUserUtil
 
 	private function ensureAdobeConnectAccountExistance()
 	{
-		// check if this login exists at ac-server  
+		// check if this login exists at ac-server
 		$search = $this->searchUser($this->xavc_login);
 
-        // if does not exist, create account at ac-server
+		// if does not exist, create account at ac-server
 		if(!$search)
 		{
 			$this->addUser();
 		}
 	}
-	
+
 	public function ensureUserFolderExistance($a_xavc_login = "")
 	{
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
@@ -152,7 +152,7 @@ class ilAdobeConnectUserUtil
 		$instance = ilAdobeConnectServer::_getInstance();
 		$login = $instance->getLogin();
 		$pass = $instance->getPasswd();
-		
+
 		if(ilAdobeConnectServer::getSetting('use_user_folders') == 1)
 		{
 			if($a_xavc_login)
@@ -167,12 +167,12 @@ class ilAdobeConnectUserUtil
 			if ($session != NULL && $xmlAPI->login($login, $pass, $session))
 			{
 				$folder_id = $xmlAPI->lookupUserFolderId($xavc_login, $session);
-				
+
 				if($folder_id == NULL)
 				{
 					$folder_id = $xmlAPI->createUserFolder($xavc_login, $session);
 				}
-				
+
 				return $folder_id;
 			}
 		}
@@ -189,61 +189,61 @@ class ilAdobeConnectUserUtil
 			}
 		}
 	}
-	
-    /**
-     *  Returns user id
-     *
-     * @return String
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-    /**
-     *  Returns user email
-     *
-     * @return String
-     */
-    public function getEmail()
-    {
-        return $this->email;
-    }
-    /**
-     *  Returns user login
-     *
-     * @return String
-     */
-    public function getLogin()
-    {
-        return $this->login;
-    }
-    /**
-     *  Returns user password
-     *
-     * @return String
-     */
-    public function getPass()
-    {
-        return $this->pass;
-    }
-    /**
-     *  Returns user first name
-     *
-     * @return String
-     */
-    public function getFirstName()
-    {
-        return $this->first_name;
-    }
-    /**
-     *  Returns user last name
-     *
-     * @return String
-     */
-    public function getLastName()
-    {
-        return $this->last_name;
-    }
+
+	/**
+	 *  Returns user id
+	 *
+	 * @return String
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
+	/**
+	 *  Returns user email
+	 *
+	 * @return String
+	 */
+	public function getEmail()
+	{
+		return $this->email;
+	}
+	/**
+	 *  Returns user login
+	 *
+	 * @return String
+	 */
+	public function getLogin()
+	{
+		return $this->login;
+	}
+	/**
+	 *  Returns user password
+	 *
+	 * @return String
+	 */
+	public function getPass()
+	{
+		return $this->pass;
+	}
+	/**
+	 *  Returns user first name
+	 *
+	 * @return String
+	 */
+	public function getFirstName()
+	{
+		return $this->first_name;
+	}
+	/**
+	 *  Returns user last name
+	 *
+	 * @return String
+	 */
+	public function getLastName()
+	{
+		return $this->last_name;
+	}
 	public function setXAVCLogin($a_xavc_login)
 	{
 		$this->xavc_login = $a_xavc_login;
@@ -253,56 +253,56 @@ class ilAdobeConnectUserUtil
 	{
 		return $this->xavc_login;
 	}
-    /**
-     *  Adds user to the Adobe Connect server
+	/**
+	 *  Adds user to the Adobe Connect server
 	 */
-    public function addUser()
-    {
+	public function addUser()
+	{
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
 		$session = $xmlAPI->getBreezeSession();
 
-        $instance = ilAdobeConnectServer::_getInstance();
-        $login = $instance->getLogin();
-        $pass = $instance->getPasswd();
+		$instance = ilAdobeConnectServer::_getInstance();
+		$login = $instance->getLogin();
+		$pass = $instance->getPasswd();
 
-        $user_pass = $this->generatePass();
-        
-        if ($session != NULL && $xmlAPI->login($login, $pass, $session))
-        {
+		$user_pass = $this->generatePass();
+
+		if ($session != NULL && $xmlAPI->login($login, $pass, $session))
+		{
 			$xmlAPI->addUser($this->getXAVCLogin(), $this->email, $user_pass, $this->first_name, $this->last_name, $session);
 			$xmlAPI->logout($session);
-        }
-    }
+		}
+	}
 
 	/**Search user on the Adobe Connect server
-	 * 
+	 *
 	 * @param string $a_xavc_login
 	 * @return bool|string
 	 */
 	public function searchUser($a_xavc_login = '')
-    {
-    	if($a_xavc_login)
-    	{
-    		$xavc_login = $a_xavc_login;
-    	}
-    	else
-    	{
-    		$xavc_login = $this->getXAVCLogin();
-    	}
-        $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-        $session = $xmlAPI->getBreezeSession();
+	{
+		if($a_xavc_login)
+		{
+			$xavc_login = $a_xavc_login;
+		}
+		else
+		{
+			$xavc_login = $this->getXAVCLogin();
+		}
+		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
+		$session = $xmlAPI->getBreezeSession();
 
-        $instance = ilAdobeConnectServer::_getInstance();
-        $login = $instance->getLogin();
-        $pass = $instance->getPasswd();
+		$instance = ilAdobeConnectServer::_getInstance();
+		$login = $instance->getLogin();
+		$pass = $instance->getPasswd();
 
-        if ($session != NULL && $xmlAPI->login($login, $pass, $session))
-        {
+		if ($session != NULL && $xmlAPI->login($login, $pass, $session))
+		{
 			$search = $xmlAPI->searchUser($xavc_login, $session);
-            $xmlAPI->logout($session);
-            return $search;
-        }
-    }
+			$xmlAPI->logout($session);
+			return $search;
+		}
+	}
 
 	/**
 	 *  Log in user on the Adobe Connect server
@@ -316,44 +316,44 @@ class ilAdobeConnectUserUtil
 		return $xmlAPI->externalLogin($this->getXAVCLogin(), null, $session);
 	}
 
-    /**
-     *  Log out user on the Adobe Connect server
-     *
-     * @param String $session
-     */
-    public function logoutUser($session)
-    {
-        $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-        $xmlAPI->logout($session);
-    }
+	/**
+	 *  Log out user on the Adobe Connect server
+	 *
+	 * @param String $session
+	 */
+	public function logoutUser($session)
+	{
+		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
+		$xmlAPI->logout($session);
+	}
 
-    /**
-     *  Generates a new password
-     *
-     * @return String   Generated pass
-     */
-    private function generatePass()
-    {
-        $caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        mt_srand(microtime() * 1000000);
+	/**
+	 *  Generates a new password
+	 *
+	 * @return String   Generated pass
+	 */
+	private function generatePass()
+	{
+		$caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+		mt_srand(microtime() * 1000000);
 
 		$password = '';
-        for($i = 0; $i < 8; $i++)
-        {
-            $key = mt_rand(0,strlen($caracteres)-1);
-            $password = $password . $caracteres{$key};
-        }
+		for($i = 0; $i < 8; $i++)
+		{
+			$key = mt_rand(0,strlen($caracteres)-1);
+			$password = $password . $caracteres{$key};
+		}
 
-        return $password;
-    }
+		return $password;
+	}
 
 	/** Generates the login name for a user depending on assignment_mode setting
-	 * 
-	 * @param integer $user_id user_id 
+	 *
+	 * @param integer $user_id user_id
 	 */
 	public static function generateXavcLoginName($user_id)
 	{
-        // set default when there is no setting set: assign_user_email
+		// set default when there is no setting set: assign_user_email
 		$assignment_mode = ilAdobeConnectServer::getSetting('user_assignment_mode')
 			? ilAdobeConnectServer::getSetting('user_assignment_mode')
 			: 'assign_user_email';
@@ -369,13 +369,13 @@ class ilAdobeConnectUserUtil
 				$xavc_login = IL_INST_ID.'_'.$user_id.'_'.ilObjUser::_lookupLogin($user_id);
 				break;
 
-            //The SWITCH aai/DFN case, only return e-mail address
+			//The SWITCH aai/DFN case, only return e-mail address
 			case 'assign_dfn_email':
 			case 'assign_breezeSession':
 				$xavc_login = ilObjUser::_lookupEmail($user_id);
 				break;
 		}
-		
+
 		return $xavc_login;
 	}
 }

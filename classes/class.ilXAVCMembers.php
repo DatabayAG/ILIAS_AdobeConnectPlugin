@@ -11,7 +11,7 @@ class ilXAVCMembers
 	public $status = null;
 	public $xavc_login = null;
 	public $principal_id = null;
-	
+
 	/**
 	 * @var ilDB
 	 */
@@ -20,8 +20,8 @@ class ilXAVCMembers
 	public function setScoId($a_sco_id)
 	{
 		$this->sco_id = $a_sco_id;
-	}	
-	
+	}
+
 	public function getScoId()
 	{
 		return $this->sco_id;
@@ -31,12 +31,12 @@ class ilXAVCMembers
 	{
 		$this->user_id = $a_user_id;
 	}
-	
+
 	public function getUserId()
 	{
 		return $this->user_id;
 	}
-	
+
 	public function setRefId($a_ref_id)
 	{
 		$this->ref_id = $a_ref_id;
@@ -79,12 +79,12 @@ class ilXAVCMembers
 	{
 		$this->status = $a_status;
 	}
-	
+
 	public function getStatus()
 	{
 		return $this->status;
 	}
-	
+
 	public function __construct($a_ref_id, $a_user_id )
 	{
 		global $DIC;
@@ -108,7 +108,7 @@ class ilXAVCMembers
 		{
 			$this->sco_id = $row['sco_id'];
 			$this->status = $row['xavc_status'];
-		}		
+		}
 	}
 
 	public function getXAVCMembers()
@@ -153,7 +153,7 @@ class ilXAVCMembers
 	public static function deleteXAVCMember($a_user_id, $a_ref_id)
 	{
 		global $DIC;
-		
+
 		$DIC->database()->manipulateF('
 			DELETE FROM rep_robj_xavc_members
 			WHERE user_id = %s
@@ -167,10 +167,10 @@ class ilXAVCMembers
 	{
 		global $DIC;
 		$ilDB = $DIC->database();
-		
+
 		$check = $ilDB->queryF('SELECT * FROM rep_robj_xavc_users WHERE user_id = %s',
 							   array('integer'), array($a_user_id));
-	
+
 		if($ilDB->numRows($check))
 		{
 			$ilDB->update('rep_robj_xavc_users',
@@ -207,7 +207,7 @@ class ilXAVCMembers
 	{
 		global $DIC;
 		$ilDB = $DIC->database();
-		
+
 		$user_id = null;
 
 		$res = $ilDB->queryf('SELECT user_id FROM rep_robj_xavc_users
@@ -219,12 +219,12 @@ class ilXAVCMembers
 		}
 		return $user_id;
 	}
-	
+
 	public static function _lookupStatus($a_user_id, $a_ref_id)
 	{
 		global $DIC;
 		$ilDB = $DIC->database();
-		
+
 		$xavc_status = null;
 
 		$res = $ilDB->queryf('SELECT xavc_status FROM rep_robj_xavc_members
@@ -252,7 +252,7 @@ class ilXAVCMembers
 			return true;
 		else return false;
 	}
-	
+
 	public static function getMemberIds($ref_id)
 	{
 		global $DIC;

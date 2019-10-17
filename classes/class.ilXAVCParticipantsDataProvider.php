@@ -22,7 +22,7 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
 			'usr_data.firstname',
 			'usr_data.login',
 			'usr_data.email'
-	
+
 		);
 
 		return implode(', ', $fields);
@@ -129,20 +129,20 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
 			foreach($xavc_participants as $participant)
 			{
 				$user_id = ilXAVCMembers::_lookupUserId($participant['login']);
-                //if the user_id is in the xavc members table in ilias (->$selected_user_ids), all information is already in $data['items'], so we just continue.
-                //if the user_id belongs to the technical user, we just continue, because we don't want him to be shown
-                if(in_array((int)$user_id, $selected_user_ids) || $participant['login'] == ilAdobeConnectServer::getSetting('login'))
-                {
-                    continue;
-                }
+				//if the user_id is in the xavc members table in ilias (->$selected_user_ids), all information is already in $data['items'], so we just continue.
+				//if the user_id belongs to the technical user, we just continue, because we don't want him to be shown
+				if(in_array((int)$user_id, $selected_user_ids) || $participant['login'] == ilAdobeConnectServer::getSetting('login'))
+				{
+					continue;
+				}
 
-                //when user_id is bigger than 0, he exists. So we get it's information by using ilObjUser
+				//when user_id is bigger than 0, he exists. So we get it's information by using ilObjUser
 				if($user_id > 0)
 				{
 					$tmp_user = ilObjectFactory::getInstanceByObjId($user_id, false);
 					if(!$tmp_user)
 					{
-						// Maybe delete entries xavc_members xavc_users tables 
+						// Maybe delete entries xavc_members xavc_users tables
 						continue;
 					}
 
@@ -162,19 +162,19 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
 					$firstname = $participant['name'];
 					$user_mail = '';
 				}
-				
+
 				$ac_user['user_id'] = $user_id;
 				$ac_user['firstname'] = $firstname;
 				$ac_user['lastname'] = $lastname;
 				$ac_user['login'] = $participant['login'];
 				$ac_user['email'] = $user_mail;
 				$ac_user['xavc_status'] = $participant['status'];
-				
-				
+
+
 				$data['items'][] = $ac_user;
 			}
 		}
-		
+
 		return $data;
 	}
 }

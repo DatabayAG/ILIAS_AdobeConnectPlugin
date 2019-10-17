@@ -94,7 +94,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 		if($xml->status['code'] == 'ok')
 		{
 			$list = $xml->{'principal-list'};
-			
+
 			$id = (string)$list->principal['principal-id'];
 
 			return $id;
@@ -110,7 +110,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @param null $user
 	 * @param null $pass
@@ -120,7 +120,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	public function externalLogin($user = null, $pass = null, $session = null )
 	{
 		global  $DIC;
-		$ilLog = $DIC->logger()->root(); 
+		$ilLog = $DIC->logger()->root();
 		$lng = $DIC->language();
 
 		$url = $this->getApiUrl(array(

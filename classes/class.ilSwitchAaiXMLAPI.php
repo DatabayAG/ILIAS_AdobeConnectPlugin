@@ -80,13 +80,13 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 		return $this->externalLogin();
 	}
 
-    /**
-     *  Logs in user on the Adobe Connect server.
-     *
-     *  With SWITCHaai we use this login only to log in the technical user!
-     *
-     * @return string $technical_user_session
-     */
+	/**
+	 *  Logs in user on the Adobe Connect server.
+	 *
+	 *  With SWITCHaai we use this login only to log in the technical user!
+	 *
+	 * @return string $technical_user_session
+	 */
 	public function login()
 	{
 		if(null !== self::$technical_user_session)
@@ -95,29 +95,29 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 		}
 		$instance = ilAdobeConnectServer::_getInstance();
 
-        $params['action'] = 'login';
-        $params['login'] = $instance->getLogin();
-        $params['password'] = $instance->getPasswd();
+		$params['action'] = 'login';
+		$params['login'] = $instance->getLogin();
+		$params['password'] = $instance->getPasswd();
 
-        $api_url = self::getApiUrl($params);
+		$api_url = self::getApiUrl($params);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $api_url);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_setopt($ch, CURLOPT_HEADER, TRUE);
+		$ch = curl_init();
+		curl_setopt($ch, CURLOPT_URL, $api_url);
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($ch, CURLOPT_HEADER, TRUE);
 
-        $output = curl_exec($ch);
-        $curlHeaderSize=curl_getinfo($ch,CURLINFO_HEADER_SIZE);
+		$output = curl_exec($ch);
+		$curlHeaderSize=curl_getinfo($ch,CURLINFO_HEADER_SIZE);
 
-        //Get the Header part from the output
-        $ResponseHeader = mb_substr($output, 0, $curlHeaderSize);
+		//Get the Header part from the output
+		$ResponseHeader = mb_substr($output, 0, $curlHeaderSize);
 
-        //get the breezeSession
-        preg_match_all('|BREEZESESSION=(.*);|U', $ResponseHeader, $content);
+		//get the breezeSession
+		preg_match_all('|BREEZESESSION=(.*);|U', $ResponseHeader, $content);
 		self::$technical_user_session = implode(';', $content[1]);
 
 		return self::$technical_user_session;
-    }
+	}
 
 	/**
 	 *  Gets meeting or content URL
@@ -132,7 +132,7 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
 	 */
 	public function getURL($sco_id, $folder_id, $session, $type)
 	{
-		global $DIC; 
+		global $DIC;
 		$ilLog = $DIC->logger()->root();
 
 		switch($type) {

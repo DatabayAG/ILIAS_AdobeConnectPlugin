@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -10,7 +10,7 @@
  * @version $Id:$
  */
 
-// class should be renamed to ilAdobeConnectSettings 
+// class should be renamed to ilAdobeConnectSettings
 //@Todo RENAME class to ilAdobeConnectSettings !!!
 class ilAdobeConnectServer
 {
@@ -19,7 +19,7 @@ class ilAdobeConnectServer
 	const ASSIGN_USER_ILIAS     = 'assign_ilias_login';
 	const ASSIGN_USER_SWITCH    = 'assign_breezeSession';
 	const ASSIGN_USER_DFN_EMAIL = 'assign_dfn_email';
-	
+
 	// Auth-Mode
 	const AUTH_MODE_PASSWORD  = 'auth_mode_password';
 	const AUTH_MODE_HEADER    = 'auth_mode_header';
@@ -82,12 +82,12 @@ class ilAdobeConnectServer
 	 * @var null
 	 */
 	private $user_assignment_mode = null;
-	
+
 	/**
 	 * @var string $auth_mode Authentification mode
 	 */
 	private $auth_mode = null;
-	
+
 	/**
 	 * @var string $x_user_id Header-Variable needed for HTTP-Header-Auth.
 	 */
@@ -98,10 +98,10 @@ class ilAdobeConnectServer
 	 */
 	private $html_client = false;
 	/**
-	 * @var  string 
+	 * @var  string
 	 */
 	private $api_version = 0;
-	
+
 	/**
 	 *  Singleton instance
 	 * @var ilAdobeConnectServer
@@ -144,11 +144,11 @@ class ilAdobeConnectServer
 		$this->presentation_port   = self::getSetting('presentation_port');
 
 		$this->num_max_vc = self::getSetting('num_max_vc');
-		
+
 		$this->x_user_id = self::getSetting('x_user_id');
 		$this->user_assignment_mode = self::getSetting('user_assignment_mode');
 		$this->auth_mode = self::getSetting('auth_mode');
-		
+
 		$this->html_client =  self::getSetting('html_client');
 		$this->api_version = self::getSetting('api_version');
 	}
@@ -384,7 +384,7 @@ class ilAdobeConnectServer
 	{
 		$this->html_client = $html_client;
 	}
-	
+
 	/**
 	 * @param null $user_assignment_mode
 	 */
@@ -413,7 +413,7 @@ class ilAdobeConnectServer
 
 			if($row = $ilDB->fetchAssoc($res))
 			{
-				return $row['value'];	
+				return $row['value'];
 			}
 		}
 
@@ -457,17 +457,17 @@ class ilAdobeConnectServer
 		else
 			return $server . ':' . $port;
 	}
-	
+
 	public static function getRoleMap()
 	{
 		global $DIC;
 		$ilDB = $DIC->database();
-		
+
 		$keywords = array('crs_owner', 'crs_admin', 'crs_tutor', 'crs_member', 'grp_owner', 'grp_admin', 'grp_member');
-		
+
 		$res = $ilDB->query('SELECT * FROM rep_robj_xavc_settings WHERE '.
 		$ilDB->in('keyword', $keywords, false, 'text'));
-		
+
 		$map = array();
 		while($row = $ilDB->fetchAssoc($res))
 		{
@@ -487,7 +487,7 @@ class ilAdobeConnectServer
 	public static function useSwitchaaiAuthMode($auth_mode_key)
 	{
 		require_once './Services/Authentication/classes/class.ilAuthUtils.php';
-		
+
 		global $DIC;
 		$ilDB = $DIC->database();
 

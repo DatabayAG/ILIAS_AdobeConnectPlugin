@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -9,60 +9,60 @@
  *
  * @author Felix Paulano
  */
-class ilAdobeConnectContentAttributes 
+class ilAdobeConnectContentAttributes
 {
 
-    /**
-     *  array of attributes
-     *
-     * @var array
-     */
-    private $attributes;
+	/**
+	 *  array of attributes
+	 *
+	 * @var array
+	 */
+	private $attributes;
 
-    /**
-     *  Constructor
-     *
-     * @param array $attributes
-     */
-    public function __construct($attributes) 
+	/**
+	 *  Constructor
+	 *
+	 * @param array $attributes
+	 */
+	public function __construct($attributes)
 	{
-        $this->attributes = $attributes;
-    }
+		$this->attributes = $attributes;
+	}
 
-    /**
-     *  Return $attributes attribute
-     *
-     * @return array
-     */
+	/**
+	 *  Return $attributes attribute
+	 *
+	 * @return array
+	 */
 	public function getAttributes()
-    {
-        return $this->attributes;
-    }
+	{
+		return $this->attributes;
+	}
 
-    /**
-     *  Returns an attribute specified by $name
-     *
-     * @param String $name
-     * @return String
-     */
+	/**
+	 *  Returns an attribute specified by $name
+	 *
+	 * @param String $name
+	 * @return String
+	 */
 	public function getAttribute($name)
-    {
-        return $this->attributes[$name];
-    }
+	{
+		return $this->attributes[$name];
+	}
 
-    /**
-     *  Check if all attributes matching all search criteria
-     *
-     * @param array $search_criteria
-     * @return boolean
-     */
+	/**
+	 *  Check if all attributes matching all search criteria
+	 *
+	 * @param array $search_criteria
+	 * @return boolean
+	 */
 	public function match($search_criteria)
-    {
-        foreach ($search_criteria as $key => $attribute)
-        {
-            if ($attribute != $this->attributes[$key])
-                return false;
-        }
-        return true;
-    }
+	{
+		foreach ($search_criteria as $key => $attribute)
+		{
+			if ($attribute != $this->attributes[$key])
+				return false;
+		}
+		return true;
+	}
 }

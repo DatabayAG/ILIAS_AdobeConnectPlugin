@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -12,7 +12,7 @@ include_once './Services/Repository/classes/class.ilObjectPluginListGUI.php';
  * @author Felix
  */
 class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
-    /**
+	/**
 	* Init type
 	*/
 	function initType()
@@ -22,8 +22,8 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 
 	/**
 	* Get name of gui class handling the commands
-    *
-    *   @return String
+	*
+	*   @return String
 	*/
 
 	function getGuiClass()
@@ -33,19 +33,19 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 
 	/**
 	* Get commands
-        *
-        * this function is called at least twice as we use the result
-        * in the overwritten 'insertCommands' method below.
-        *
+		*
+		* this function is called at least twice as we use the result
+		* in the overwritten 'insertCommands' method below.
+		*
 	*/
 	function initCommands()
 	{
 		$this->link_enabled = false;
 		$this->copy_enabled = false;
-		
+
 		$command_array = array();
 		$command_array[] = array("permission" => "read", "cmd" => "showContent", "lang_var" => "content");
-		
+
 		$command_array[] = array(
 			'permission'	=> 'read',
 			'cmd'			=> 'showContent',
@@ -62,7 +62,7 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 
 		return $command_array;
 	}
-	
+
 	/**
 	 * @param bool   $a_use_asynch
 	 * @param bool   $a_get_asynch_commands
@@ -79,7 +79,7 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 		 *@var  $this->plugin ilPlugin
 		 */
 		$this->plugin->includeClass('class.ilObjAdobeConnectAccess.php');
-		
+
 		if(
 			!ilObjAdobeConnectAccess::_hasMemberRole($ilUser->getId(), $this->ref_id) &&
 			!ilObjAdobeConnectAccess::_hasAdminRole($ilUser->getId(), $this->ref_id)
@@ -110,9 +110,9 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 			$this->info_screen_enabled = false;
 		}
 		else {
-		    $this->commands =   $this->initCommands();
+			$this->commands =   $this->initCommands();
 		}
-        return parent::insertCommands($a_use_asynch, $a_get_asynch_commands, $a_asynch_url);
+		return parent::insertCommands($a_use_asynch, $a_get_asynch_commands, $a_asynch_url);
 
 	}
 
@@ -133,7 +133,7 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 
 		if($objectData->permanent_room == 1)
 		{
-			$props[] = array('alert' => false, 
+			$props[] = array('alert' => false,
 							 'value' => $this->plugin->txt('permanent_room'));
 		}
 		else
@@ -144,10 +144,10 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI{
 								 'value' => $this->plugin->txt('meeting_not_available'));
 			}
 			else
-			{	
+			{
 				$props[] = array('alert' => false, 'property' => $this->txt('start_date'),
 						'value' => ilDatePresentation::formatDate(new ilDateTime( $objectData->start_date, IL_CAL_UNIX)));
-				
+
 				$props[] = array('alert' => false, 'property' => $this->txt('duration'),
 						'value' => ilDatePresentation::formatPeriod(new ilDateTime( $objectData->start_date, IL_CAL_UNIX ),
 																	new ilDateTime( $objectData->end_date, IL_CAL_UNIX )));

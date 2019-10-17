@@ -102,7 +102,7 @@ class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
 		$this->addColumn($this->parent_obj->pluginObj->txt('content_date_created'), 'date_created');
 		if($this->viewMode == self::MODE_EDIT)
 		{
-			$this->addColumn($this->parent_obj->lng->txt('actions'), 'actions', '1%');	
+			$this->addColumn($this->parent_obj->lng->txt('actions'), 'actions', '1%');
 		}
 
 		$this->setRowTemplate('tpl.meeting_record_row.html', $this->parent_obj->pluginObj->getDirectory());

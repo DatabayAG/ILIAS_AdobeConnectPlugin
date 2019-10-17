@@ -19,10 +19,10 @@ class ilXAVCTableGUI extends ilTable2GUI
 	{
 		global $DIC;
 
-	 	$this->lng = $DIC->language();
-	 	$this->ctrl = $DIC->ctrl();
+		$this->lng = $DIC->language();
+		$this->ctrl = $DIC->ctrl();
 
-	 	parent::__construct($a_parent_obj, $a_parent_cmd);
+		parent::__construct($a_parent_obj, $a_parent_cmd);
 
 
 		$this->setFormAction($this->ctrl->getFormAction($a_parent_obj));
@@ -40,5 +40,5 @@ class ilXAVCTableGUI extends ilTable2GUI
 		{
 			$this->tpl->setVariable("VAL_".strtoupper($key), $value);
 		}
-	}	
+	}
 }
