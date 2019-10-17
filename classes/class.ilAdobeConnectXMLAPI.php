@@ -57,7 +57,6 @@ class ilAdobeConnectXMLAPI
 		$this->x_user_id = $this->adcInfo->getXUserId();
 		$this->auth_mode = $this->adcInfo->getAuthMode();
 		$this->api_version = $this->adcInfo->getApiVersion();
-		$this->proxy();
 	}
 
 	/**
@@ -2190,52 +2189,5 @@ class ilAdobeConnectXMLAPI
 		}
 		asort($templates);
 		return $templates;
-	}
-
-	/**
-	 * @param $ctx
-	 * @return stream context || null
-	 */
-	protected function proxy($ctx = null)
-	{
-		require_once('Services/Http/classes/class.ilProxySettings.php');
-
-		if(ilProxySettings::_getInstance()->isActive())
-		{
-			$proxyHost = ilProxySettings::_getInstance()->getHost();
-			$proxyPort = ilProxySettings::_getInstance()->getPort();
-			$proxyURL  = 'tcp://' . $proxyPort != '' ? $proxyHost . ':' . $proxyPort : $proxyHost;
-
-			$proxySingleContext = array(
-				'proxy'           => $proxyURL,
-				'request_fulluri' => true,
-			);
-
-			$proxyContext = array(
-				'http'  => $proxySingleContext,
-				'https' => $proxySingleContext
-			);
-
-			if($ctx == null)
-			{
-				$proxyStreamContext = stream_context_get_default($proxyContext);
-				libxml_set_streams_context($proxyStreamContext);
-			}
-			elseif(is_array($ctx))
-			{
-				$mergedProxyContext = array_merge_recursive(
-					$proxyContext,
-					$ctx
-				);
-
-				return stream_context_create($mergedProxyContext);
-			}
-		}
-		elseif(is_array($ctx) && count($ctx))
-		{
-			return stream_context_create($ctx);
-		}
-
-		return null;
 	}
 }
