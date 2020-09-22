@@ -181,6 +181,9 @@ class ilAdobeConnectUserUtil
 			if ($session != NULL && $xmlAPI->login($login, $pass, $session))
 			{
 				$folder_id = $xmlAPI->getShortcuts('my-meetings', $session);
+                if(!$folder_id) {
+                    $folder_id = $xmlAPI->getShortcuts('meetings', $session);
+                }
 				return $folder_id;
 			}
 			else
