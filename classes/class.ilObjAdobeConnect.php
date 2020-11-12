@@ -885,6 +885,18 @@ class ilObjAdobeConnect extends ilObjectPlugin
 		{
 			#$this->ilias->raiseError($this->lng->txt("err_no_valid_sco_id_given"),$this->ilias->error_obj->MESSAGE);
 		}
+
+        // TODO: Try-Error-Fast-Fix for run trash cron job without redirect
+        try {
+            throw new Error("");
+        } catch (Throwable $e) {
+            foreach ($e->getTrace() as $trace) {
+                if ($trace["class"] === ilCronManager::class) {
+                    $_SESSION['breezesession'] = true;
+                    break;
+                }
+            }
+        }
 		
 		$session = $this->xmlApi->getBreezeSession();
 		
