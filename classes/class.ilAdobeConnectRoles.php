@@ -3,18 +3,18 @@
 /**
 * Class ilAdobeConnectRoles
 * Local Roles : Administrator, Member
- * 
+ *
 * @author Nadia Matuschek <nmatuschek@databay.de>
 */
 class ilAdobeConnectRoles
 {
 	private $db = null;
 	private $ref_id = 0;
-	
+
 	public function __construct($a_ref_id)
 	{
 		global $DIC;
-		
+
 		$this->db = $DIC->database();
 		$this->ref_id = $a_ref_id;
 	}
@@ -33,11 +33,11 @@ class ilAdobeConnectRoles
 	public function addAdministratorRole($a_usr_id)
 	{
 		global $DIC;
-		
+
 		$rbacreview = $DIC->rbac()->review();
-		$rbacadmin = $DIC->rbac()->admin(); 
+		$rbacadmin = $DIC->rbac()->admin();
 		$lng= $DIC->language();
-		
+
 		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		if(!$role_list)
 		{
@@ -54,25 +54,25 @@ class ilAdobeConnectRoles
 				break;
 			}
 		}
-		
+
 		if((int)$a_rol_id)
-		{		
+		{
 			$rbacadmin->assignUser($a_rol_id, $a_usr_id);
 			return true;
 		}
 		else
-		return false;	
+		return false;
 	}
-	
+
 	public function detachAdministratorRole($a_usr_id)
 	{
 		global $DIC;
 		$rbacreview = $DIC->rbac()->review();
 		$rbacadmin = $DIC->rbac()->admin();
-		
+
 		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
 		$a_rol_id = null;
-		
+
 		foreach ($role_list as $role)
 		{
 			if(strpos($role['title'], 'il_xavc_admin') !== false)
@@ -81,15 +81,15 @@ class ilAdobeConnectRoles
 				break;
 			}
 		}
-		
+
 		if((int)$a_rol_id)
-		{		
+		{
 			$rbacadmin->deassignUser($a_rol_id, $a_usr_id);
 			return true;
-		}		
+		}
 		return false;
 	}
-	
+
 	public function isAdministrator($a_user_id)
 	{
 		global $DIC;
@@ -105,11 +105,11 @@ class ilAdobeConnectRoles
 				break;
 			}
 		}
-		if(in_array($a_user_id,$assigned_users))		
+		if(in_array($a_user_id,$assigned_users))
 			return true;
 		else return false;
 	}
-	
+
 	public function getCurrentAdministrators()
 	{
 		global $DIC;
@@ -142,9 +142,9 @@ class ilAdobeConnectRoles
 		$rbacadmin = $DIC->rbac()->admin();
 
 		$role_list = $rbacreview->getRoleListByObject($this->getRefId());
-		
+
 		$a_rol_id = null;
-		
+
 		foreach ($role_list as $role)
 		{
 			if(strpos($role['title'], 'il_xavc_member') !== false)
@@ -195,7 +195,7 @@ class ilAdobeConnectRoles
 
 		$roles = $rbacreview->getRoleListByObject($this->getRefId());
 		$assigned_users = array();
-		
+
 		foreach($roles as $role)
 		{
 			if(strpos($role['title'], 'il_xavc_member') !== false)
@@ -225,7 +225,7 @@ class ilAdobeConnectRoles
 			if(strpos($role['title'], 'il_xavc_admin') !== false)
 			{
 				$admins = $rbacreview->assignedUsers($role['rol_id']);
-				
+
 			}
 			if(strpos($role['title'], 'il_xavc_member') !== false)
 			{
@@ -235,5 +235,5 @@ class ilAdobeConnectRoles
 		$assigned_users = array_unique(array_merge($admins, $members));
 		return $assigned_users;
 	}
-	
+
 }

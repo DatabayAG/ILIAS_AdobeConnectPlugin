@@ -32,10 +32,10 @@ require_once './Services/User/Gallery/classes/class.ilUsersGalleryGUI.php';
 class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPermissions
 {
 	const CONTENT_MOD_EDIT = 1;
-    const CONTENT_MOD_ADD = 2;
+	const CONTENT_MOD_ADD = 2;
 
-    const CREATION_FORM_TA_COLS = 60;
-    const CREATION_FORM_TA_ROWS = 5;
+	const CREATION_FORM_TA_COLS = 60;
+	const CREATION_FORM_TA_ROWS = 5;
 
 	/** @var $tabs ilTabsGUI */
 	public $tabs;
@@ -58,7 +58,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	public $cform;
 	/** @var $csform ilPropertyFormGUI */
 	public $csform;
-	
+
 	/** @var bool is_record  for initEditForm hide/show file upload form  */
 	public $is_record = false;
 
@@ -67,17 +67,17 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	*/
 	protected function afterConstructor()
 	{
-        global $DIC; 
+		global $DIC;
 
 		$this->pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
-        $this->form = new ilPropertyFormGUI();
+		$this->form = new ilPropertyFormGUI();
 
-        $this->tabs = $DIC->tabs();
-        $this->ctrl = $DIC->ctrl();
-        $this->access = $DIC->access();
+		$this->tabs = $DIC->tabs();
+		$this->ctrl = $DIC->ctrl();
+		$this->access = $DIC->access();
 		$this->lng = $DIC->language();
 		$this->user = $DIC->user();
-        $this->tpl = $DIC->ui()->mainTemplate();
+		$this->tpl = $DIC->ui()->mainTemplate();
 		if(is_object($this->object))
 		{
 			$this->tpl->setDescription($this->object->getLongDescription());
@@ -92,11 +92,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		return "xavc";
 	}
 
-    /**
-     *  Handles all commmands of this class, centralizes permission checks
-     *
-     * @param String $cmd
-     */
+	/**
+	 *  Handles all commmands of this class, centralizes permission checks
+	 *
+	 * @param String $cmd
+	 */
 	public function performCommand($cmd)
 	{
 		$next_class = $this->ctrl->getNextClass($this);
@@ -143,7 +143,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 						$this->checkPermission("write");
 						$this->$cmd();
-		                break;
+						break;
 
 					// list all commands that need read permission here
 					case "addParticipant":
@@ -172,7 +172,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					case 'performSso':
 					case 'requestAdobeConnectContent':
 					case "viewContents":
-		            case "viewRecords":
+					case "viewRecords":
 					case "showMembersGallery":
 					case "performCrsGrpTrigger":
 						$this->checkPermission("read");
@@ -183,8 +183,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 						$this->checkPermission("visible");
 						$this->$cmd();
 						break;
-						
-					default:  
+
+					default:
 						$this->showContent();
 						break;
 				}
@@ -194,7 +194,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 	public function assignRolesAfterCreate()
 	{
-		global $DIC; 
+		global $DIC;
 		$ilUser = $DIC->user();
 
 		$this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
@@ -241,9 +241,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	*/
 	public function setTabs()
 	{
-		global $DIC; 
+		global $DIC;
 		$ilUser = $DIC->user();
-		
+
 		$user_id = $ilUser->getId();
 		$ref_id = $this->object->getRefId();
 
@@ -256,7 +256,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		if ($this->access->checkAccess("read", "", $this->object->getRefId()) || $is_member)
 		{
 			$this->tabs->addTab("contents", $this->txt("adobe_meeting_room"), $this->ctrl->getLinkTarget($this, "showContent"));
-        }
+		}
 
 		// standard info screen tab
 		$this->addInfoTab();
@@ -270,7 +270,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$xavc_access = ilXAVCPermissions::hasAccess($user_id, $ref_id, AdobeConnectPermissions::PERM_EDIT_PARTICIPANTS);
 
 		// tab for the "edit participants" command
-        if ($xavc_access || $is_admin || ilObject::_lookupOwner(ilObject::_lookupObjectId($ref_id)) == $ilUser->getId() )
+		if ($xavc_access || $is_admin || ilObject::_lookupOwner(ilObject::_lookupObjectId($ref_id)) == $ilUser->getId() )
 		{
 			$this->tabs->addTab("participants", $this->txt("participants"), $this->ctrl->getLinkTarget($this, "editParticipants"));
 		}
@@ -289,15 +289,15 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->addPermissionTab();
 	}
 
-    /**
-     *  Sets subtabs
-     *
-     * @param String $a_tab       Parent tab
-     */
-    protected function __setSubTabs($a_tab)
-    {
+	/**
+	 *  Sets subtabs
+	 *
+	 * @param String $a_tab       Parent tab
+	 */
+	protected function __setSubTabs($a_tab)
+	{
 		global $DIC;
-		$lng = $DIC->language(); 
+		$lng = $DIC->language();
 		$ilUser = $DIC->user();
 
 		$lng->loadLanguageModule('crs');
@@ -314,7 +314,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			case 'participants':
 				$xavc_access = ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_EDIT_PARTICIPANTS);
 				$is_owner = $ilUser->getId() == $this->object->getOwner();
-				
+
 				if($is_owner || $xavc_access )
 				{
 					$this->tabs->addSubTab("editParticipants",$lng->txt("crs_member_administration"),$this->ctrl->getLinkTarget($this,'editParticipants'));
@@ -327,7 +327,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				$this->tabs->addSubTab("showMembersGallery",$this->pluginObj->txt('members_gallery'),$this->ctrl->getLinkTarget($this,'showMembersGallery'));
 			break;
 		}
-    }
+	}
 
 	/**
 	* Edits Properties. This commands uses the form class to display an input form.
@@ -336,7 +336,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	{
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
 
-        $this->object->doRead();
+		$this->object->doRead();
 		$this->tabs->activateTab("properties");
 
 		$this->initPropertiesForm();
@@ -352,9 +352,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		}
 	}
 
-    /**
-     *  Inits form
-     */
+	/**
+	 *  Inits form
+	 */
 	public function initPropertiesForm()
 	{
 		$this->form = new ilPropertyFormGUI();
@@ -400,14 +400,14 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		// option: date selection
 		$opt_date = new ilRadioOption( $this->pluginObj->txt('start_date'), 'date_selection');
 		// start date
-        $sd = new ilDateTimeInputGUI($this->txt("start_date"), "start_date");
+		$sd = new ilDateTimeInputGUI($this->txt("start_date"), "start_date");
 		$sd->setShowTime(true);
-        $sd->setInfo($this->txt("info_start_date"));
-        $sd->setRequired(true);
+		$sd->setInfo($this->txt("info_start_date"));
+		$sd->setRequired(true);
 		$opt_date->addSubItem($sd);
 
-        $duration = new ilDurationInputGUI($this->pluginObj->txt("duration"),"duration");
-        $duration->setRequired(true);
+		$duration = new ilDurationInputGUI($this->pluginObj->txt("duration"),"duration");
+		$duration->setRequired(true);
 
 		$opt_date->addSubItem($duration);
 
@@ -419,7 +419,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$this->form->addItem($cb_uploads);
 		$this->form->addItem($cb_records);
-		
+
 		$lang_selector = new ilSelectInputGUI($this->lng->txt('language'), 'ac_language');
 		$adobe_langs = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'tr', 'ru', 'ja', 'zh', 'ko'];
 		$this->lng->loadLanguageModule('meta');
@@ -427,14 +427,14 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		{
 			$lang_options[$lang] = $this->lng->txt('meta_l_'.$lang);
 		}
-		
+
 		$lang_selector->setOptions($lang_options);
 		$this->form->addItem($lang_selector);
 
 		$html_client = new ilCheckboxInputGUI($this->pluginObj->txt('html_client'), 'html_client');
 		$html_client->setInfo($this->pluginObj->txt('html_client_info'));
 		$this->form->addItem($html_client);
-		
+
 		$this->form->addCommandButton("updateProperties", $this->txt("save"));
 		$this->form->addCommandButton("editProperties", $this->txt("cancel"));
 
@@ -442,7 +442,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->form->setFormAction($this->ctrl->getFormAction($this));
 	}
 
-    /**
+	/**
 	* Gets values for edit properties form
 	*/
 	public function getPropertiesValues()
@@ -460,7 +460,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		{
 			$values['time_type_selection'] = 'date_selection';
 		}
-        $duration = $this->object->getDuration();
+		$duration = $this->object->getDuration();
 		if(version_compare(ILIAS_VERSION_NUMERIC, '5.2.0', '>='))
 		{
 			$values["start_date"] = $this->object->getStartDate();
@@ -472,19 +472,19 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				'time' => date('H:i:s', $this->object->getStartDate()->get(IL_CAL_UNIX))
 			);
 		}
-		
-        $values["duration"] = array("hh"=>$duration["hours"],"mm"=>$duration["minutes"]);
+
+		$values["duration"] = array("hh"=>$duration["hours"],"mm"=>$duration["minutes"]);
 		$values['instructions'] = $this->object->getInstructions();
 
 		$values['contact_info'] = $this->object->getContactInfo();
 
 		$values['read_contents'] = $this->object->getReadContents();
 		$values['read_records'] = $this->object->getReadRecords();
-		
+
 		global $DIC;
 		$default_lang = $DIC->language()->getDefaultLanguage();
 		$adobe_langs = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'tr', 'ru', 'ja', 'zh', 'ko'];
-		
+
 		if(in_array($this->object->getAcLanguage(), $adobe_langs))
 		{
 			$values['ac_language'] = $this->object->getAcLanguage();
@@ -497,7 +497,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		{
 			$values['ac_language'] = 'de';
 		}
-		
+
 		$values['html_client'] = $this->object->isHtmlClientEnabled();
 
 		$this->form->setValuesByArray($values);
@@ -508,7 +508,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	 */
 	public function updateProperties()
 	{
-		global $DIC; 
+		global $DIC;
 		$ilCtrl = $DIC->ctrl();
 
 		$this->initPropertiesForm();
@@ -558,7 +558,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->object->setContactInfo($this->form->getInput('contact_info'));
 			$this->object->setAcLanguage($this->form->getInput('ac_language'));
 			$this->object->setUseHtmlClient((int)$this->form->getInput('html_client'));
-			
+
 			$enable_perm_room = (ilAdobeConnectServer::getSetting('enable_perm_room','1') && $this->form->getInput('time_type_selection') == 'permanent_room') ? true: false;
 			$this->object->setPermanentRoom( $enable_perm_room ?  1 : 0 );
 
@@ -616,13 +616,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	}
 
 	/**
-    * Shows access link
-    */
+	* Shows access link
+	*/
 	public function showAccessLink()
 	{
-        $this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
-        $this->pluginObj->includeClass('class.ilAdobeConnectQuota.php');
-        $this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
+		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
+		$this->pluginObj->includeClass('class.ilAdobeConnectQuota.php');
+		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
 
 		$presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
@@ -631,7 +631,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$form = new ilPropertyFormGUI();
 		$form->setTitle($this->pluginObj->txt('access_meeting_title'));
 
-        $this->object->doRead();
+		$this->object->doRead();
 
 		if($this->object->getStartDate() != NULL)
 		{
@@ -694,7 +694,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	public function performSso()
 	{
 		global $DIC;
-		
+
 		$ilSetting = $DIC->settings();
 
 		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
@@ -704,12 +704,12 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		if(null !== $this->object->getStartDate())
 		{
-            //SWITCH
-            if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI)
-            {
-                //@Todo MST check this IF-Statement
-                if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink()))
-                {
+			//SWITCH
+			if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI)
+			{
+				//@Todo MST check this IF-Statement
+				if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink()))
+				{
 					if ($ilSetting->get('short_inst_name') != "")
 					{
 						$title_prefix = $ilSetting->get('short_inst_name');
@@ -720,71 +720,71 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					}
 
 					$presentation_url = ilAdobeConnectServer::getPresentationUrl();
-                    $url = ilAdobeConnectServer::getSetting('cave')."?back=".$presentation_url.$this->object->getURL();
-                    $sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
+					$url = ilAdobeConnectServer::getSetting('cave')."?back=".$presentation_url.$this->object->getURL();
+					$sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
 					$sso_tpl->setVariable('SPINNER_SRC', $this->pluginObj->getDirectory().'/templates/js/spin.js');
-                    $sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
-                    $sso_tpl->setVariable('LOGOUT_URL', "");
-                    $sso_tpl->setVariable('URL', $url);
-                    $sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
-                    $sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
-                    $sso_tpl->show();
+					$sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
+					$sso_tpl->setVariable('LOGOUT_URL', "");
+					$sso_tpl->setVariable('URL', $url);
+					$sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
+					$sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
+					$sso_tpl->show();
 					exit;
-                }
-            }
-            else
-            {
-                $ilAdobeConnectUser = new ilAdobeConnectUserUtil( $this->user->getId() );
-                $ilAdobeConnectUser->ensureAccountExistance();
+				}
+			}
+			else
+			{
+				$ilAdobeConnectUser = new ilAdobeConnectUserUtil( $this->user->getId() );
+				$ilAdobeConnectUser->ensureAccountExistance();
 
-                $xavc_login = $ilAdobeConnectUser->getXAVCLogin();
+				$xavc_login = $ilAdobeConnectUser->getXAVCLogin();
 
-                if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink())
-                    && $this->object->isParticipant( $xavc_login ))
-                {
-                    $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
+				if (($this->object->getPermanentRoom() == 1 || $this->doProvideAccessLink())
+					&& $this->object->isParticipant( $xavc_login ))
+				{
+					$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
 
-                    $presentation_url = ilAdobeConnectServer::getPresentationUrl();
+					$presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
-                    $xmlAPI->logout( $_SESSION['xavc_last_sso_sessid'] );
-                    //login current user session
-                    $session = $ilAdobeConnectUser->loginUser();
-                    $_SESSION['xavc_last_sso_sessid'] = $session;
-                    if($settings->isHtmlClientEnabled() == 1 && $this->object->isHtmlClientEnabled() == 1)
+					$xmlAPI->logout( $_SESSION['xavc_last_sso_sessid'] );
+					//login current user session
+					$session = $ilAdobeConnectUser->loginUser();
+					$_SESSION['xavc_last_sso_sessid'] = $session;
+					if($settings->isHtmlClientEnabled() == 1 && $this->object->isHtmlClientEnabled() == 1)
 					{
 						$html_client = '&html-view=true';
 					}
-                    $url = $presentation_url.$this->object->getURL().'?session='.$session.$html_client;
-                    
-                    $GLOBALS['ilLog']->write(sprintf("Generated URL %s for user '%s'", $url, $xavc_login));
+					$url = $presentation_url.$this->object->getURL().'?session='.$session.$html_client;
 
-                    $presentation_url = ilAdobeConnectServer::getPresentationUrl(true);
-                    $logout_url = $presentation_url.'/api/xml?action=logout';
+					$GLOBALS['ilLog']->write(sprintf("Generated URL %s for user '%s'", $url, $xavc_login));
 
-                    if ($ilSetting->get('short_inst_name') != "")
-                    {
-                        $title_prefix = $ilSetting->get('short_inst_name');
-                    }
-                    else
-                    {
-                        $title_prefix = 'ILIAS';
-                    }
-                    $sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
+					$presentation_url = ilAdobeConnectServer::getPresentationUrl(true);
+					$logout_url = $presentation_url.'/api/xml?action=logout';
+
+					if ($ilSetting->get('short_inst_name') != "")
+					{
+						$title_prefix = $ilSetting->get('short_inst_name');
+					}
+					else
+					{
+						$title_prefix = 'ILIAS';
+					}
+					$sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
 					$sso_tpl->setVariable('SPINNER_SRC', $this->pluginObj->getDirectory().'/templates/js/spin.js');
-                    $sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
-	                $sso_tpl->setVariable('LOGOUT_URL', str_replace(['http://', 'https://'], '//', $logout_url));
-                    $sso_tpl->setVariable('URL', $url);
-                    $sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
-                    $sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
-                    $sso_tpl->show();
-                    exit;
-                }
-            }
+					$sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
+					$sso_tpl->setVariable('LOGOUT_URL', str_replace(['http://', 'https://'], '//', $logout_url));
+					$sso_tpl->setVariable('URL', $url);
+					$sso_tpl->setVariable('INFO_TXT',$this->pluginObj->txt('redirect_in_progress'));
+					$sso_tpl->setVariable('OBJECT_TITLE',$this->object->getTitle());
+					$sso_tpl->show();
+					exit;
+				}
+			}
 		}
 		// Fallback action
 		$this->showContent();
 	}
-	
+
 		/**
 	 * Shows meeting contents
 	 *
@@ -795,10 +795,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	public function viewContents($has_access = false, $by_type = 'content')
 	{
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
-        $this->pluginObj->includeClass('class.ilAdobeConnectContentTableGUI.php');
-        $this->pluginObj->includeClass('class.ilXAVCPermissions.php');
+		$this->pluginObj->includeClass('class.ilAdobeConnectContentTableGUI.php');
+		$this->pluginObj->includeClass('class.ilXAVCPermissions.php');
 
-        $server = ilAdobeConnectServer::getPresentationUrl();
+		$server = ilAdobeConnectServer::getPresentationUrl();
 		$this->tabs->activateTab('contents');
 
 		$my_tpl = new ilTemplate($this->pluginObj->getDirectory().'/templates/tpl.meeting_content.html', true, true);
@@ -829,13 +829,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				}
 
 				$icon = $this->object->getContentIconAttribute($content->getAttributes()->getAttribute('sco-id'));
-				
+
 				if($icon[0] == 'archive' && $content->getAttributes()->getAttribute('date-end') == '' && $by_type == 'content')
 				{
 					// in this case, the content is a 'running' recording!!
 					continue;
 				}
-				
+
 				$data[$i]['title'] = $content->getAttributes()->getAttribute('name');
 				$data[$i]['type']  = $content->getAttributes()->getAttribute('type') == 'record' ? $this->pluginObj->txt('record') : $this->pluginObj->txt('content');
 
@@ -881,13 +881,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		return $my_tpl->get();
 	}
 
-    /**
-     * Shows meeting records
-     *
-     * @access public
-     */
-    public function viewRecords($has_access = false, $by_type = 'record')
-    {
+	/**
+	 * Shows meeting records
+	 *
+	 * @access public
+	 */
+	public function viewRecords($has_access = false, $by_type = 'record')
+	{
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
 		$this->pluginObj->includeClass('class.ilAdobeConnectRecordsTableGUI.php');
 		$this->pluginObj->includeClass('class.ilAdobeConnectContentTableGUI.php');
@@ -968,17 +968,17 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		return $my_tpl->get();
 
 
-    }
+	}
 
 	// CRS-GRP-MEMBER ADMINITRATION
 	public function addCrsGrpMembers()
 	{
-		global $DIC;  
-		$ilCtrl = $DIC->ctrl(); 
+		global $DIC;
+		$ilCtrl = $DIC->ctrl();
 		$lng = $DIC->language();
 
 		$this->pluginObj->includeClass('class.ilXAVCTableGUI.php');
-		
+
 		$this->tabs->activateTab('participants');
 		$this->__setSubTabs('participants');
 		$this->tabs->activateSubTab("addCrsGrpMembers");
@@ -986,9 +986,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$lng->loadLanguageModule('crs');
 
 		$my_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.meeting_participant_table.html", true, true);
-		
+
 		$oParticipants = $this->object->getParticipantsObject();
-		
+
 		/** @var $oParticipants  ilGroupParticipants */
 		$admins = $oParticipants->getAdmins();
 		$tutors = $oParticipants->getTutors();
@@ -1048,7 +1048,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	{
 		global $DIC;
 		$lng = $DIC->language();
-		
+
 		if(!is_array($_POST['usr_id']) || !$_POST['usr_id'])
 		{
 		   ilUtil::sendFailure($this->txt('participants_select_one'));
@@ -1065,7 +1065,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 	public function updateParticipants()
 	{
-		global $DIC;		
+		global $DIC;
 
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 
@@ -1074,7 +1074,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			ilUtil::sendFailure($this->txt('participants_select_one'));
 			return $this->editParticipants();
 		}
-		
+
 		$xavc_options = array(
 			$this->txt("presenter")	=> "host",
 			$this->txt("moderator") => "mini-host",
@@ -1083,7 +1083,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		);
 
 		$local_roles = $DIC->rbac()->review()->getLocalRoles($this->object->getRefId());
-		
+
 		if(isset($_POST['usr_id']))
 		{
 			foreach ($_POST['usr_id'] as $selected_user)
@@ -1097,7 +1097,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 					$this->object->updateParticipant(ilXAVCMembers::_lookupXAVCLogin($selected_user),$memberObj->getStatus());
 				}
-				
+
 				if(isset($_POST['roles'][$selected_user]))
 				{
 					$deassign_roles = array_diff($local_roles, $_POST['roles'][$selected_user]);
@@ -1108,7 +1108,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 							$DIC->rbac()->admin()->deassignUser($deassign_role_id, $selected_user);
 						}
 					}
-					
+
 					foreach($_POST['roles'][$selected_user] as $role_id)
 					{
 						$DIC->rbac()->admin()->assignUser($role_id, $selected_user);
@@ -1129,7 +1129,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	{
 		global $DIC;
 		$tpl = $DIC->ui()->mainTemplate();
-		
+
 		$this->pluginObj->includeClass('class.ilAdobeConnectUsersGalleryCollectionProvider.php');
 		$this->tabs->activateTab('participants');
 		$this->__setSubTabs('participants');
@@ -1139,17 +1139,17 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$gallery_gui = new ilUsersGalleryGUI($provider);
 		$this->ctrl->setCmd('view');
 		$gallery_gui->executeCommand();
-		
+
 		$tpl->getStandardTemplate();
-		
+
 		return;
 	}
-	
+
 	public function requestAdobeConnectContent()
 	{
 		global $DIC;
 		$ilSetting = $DIC->settings();
-		
+
 		if(!isset($_GET['record_url']) || !strlen($_GET['record_url']))
 		{
 			$this->showContent();
@@ -1182,7 +1182,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		{
 			$title_prefix = 'ILIAS';
 		}
-		
+
 		$sso_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.perform_sso.html", true, true);
 		$sso_tpl->setVariable('SPINNER_SRC', $this->pluginObj->getDirectory().'/templates/js/spin.js');
 		$sso_tpl->setVariable('TITLE_PREFIX', $title_prefix);
@@ -1224,14 +1224,14 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			{
 				case 'add_admin':
 					$xavcRoles->addAdministratorRole($usr_id);
-                    break;
-                case 'add_member':
-                default:
-                    $xavcRoles->addMemberRole($usr_id);
-                    break;
-            }
-            $this->addParticipant($usr_id);
-            ++$added_users;
+					break;
+				case 'add_member':
+				default:
+					$xavcRoles->addMemberRole($usr_id);
+					break;
+			}
+			$this->addParticipant($usr_id);
+			++$added_users;
 		}
 		ilUtil::sendSuccess($this->plugin->txt('assigned_users' . (count($added_users) == 1 ? '_s' : '_p')), true);
 		$this->ctrl->redirectByClass('ilObjAdobeConnectGUI', 'editParticipants');
@@ -1313,7 +1313,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			}
 		}
 
-       	$is_member = ilXAVCMembers::_isMember($user_id, $this->object->getRefId());
+		$is_member = ilXAVCMembers::_isMember($user_id, $this->object->getRefId());
 		// local member table
 
 		$xavcMemberObj = new ilXAVCMembers($this->object->getRefId(), $user_id);
@@ -1356,7 +1356,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		ilXAVCMembers::deleteXAVCMember($user_id, $ref_id);
 
 		$xavc_login = ilXAVCMembers::_lookupXAVCLogin($user_id);
-        $this->object->deleteParticipant($xavc_login);
+		$this->object->deleteParticipant($xavc_login);
 
 		ilUtil::sendInfo($this->txt('participants_detached_successfully'));
 		return $this->showContent();
@@ -1367,7 +1367,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	{
 		global $DIC;
 		$tpl = $DIC->ui()->mainTemplate();
-		
+
 		$this->tabs->activateTab('participants');
 		$this->__setSubTabs('participants');
 		$this->tabs->activateSubTab("editParticipants");
@@ -1417,9 +1417,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$xavcRoles->detachMemberRole($usr_id);
 			if($xavcRoles->isAdministrator($usr_id))
 			{
-				$xavcRoles->detachAdministratorRole($usr_id);	
-			}	
-			
+				$xavcRoles->detachAdministratorRole($usr_id);
+			}
+
 			$xavc_login = ilXAVCMembers::_lookupXAVCLogin($usr_id);
 			ilXAVCMembers::deleteXAVCMember($usr_id, $this->object->getRefId());
 			$this->object->deleteParticipant($xavc_login);
@@ -1431,21 +1431,21 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		return $this->editParticipants();
 	}
 
-    /**
-     *  Add user to the Adobe Connect server
+	/**
+	 *  Add user to the Adobe Connect server
 
 	 * @param integer $a_user_id
 	 */
 	public function addParticipant($a_user_id)
-    {
-        $this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
-        $this->pluginObj->includeClass('class.ilXAVCMembers.php');
+	{
+		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
+		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 
-        $this->tabs->activateTab("participants");
+		$this->tabs->activateTab("participants");
 
-        //check if there is an adobe connect account at the ac-server
-        $ilAdobeConnectUser = new ilAdobeConnectUserUtil($a_user_id);
-        $ilAdobeConnectUser->ensureAccountExistance();
+		//check if there is an adobe connect account at the ac-server
+		$ilAdobeConnectUser = new ilAdobeConnectUserUtil($a_user_id);
+		$ilAdobeConnectUser->ensureAccountExistance();
 
 
 		// add to desktop
@@ -1459,11 +1459,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		if(! $is_member )
 		{
 			$xavcMemberObj = new ilXAVCMembers($this->object->getRefId(), $a_user_id);
-            $xavcMemberObj->setParticipantStatus();
-            $xavcMemberObj->setScoId($this->object->getScoId());
-            $xavcMemberObj->insertXAVCMember();
+			$xavcMemberObj->setParticipantStatus();
+			$xavcMemberObj->setScoId($this->object->getScoId());
+			$xavcMemberObj->insertXAVCMember();
 
-            $this->object->updateParticipant(ilXAVCMembers::_lookupXAVCLogin($a_user_id),$xavcMemberObj->getStatus());
+			$this->object->updateParticipant(ilXAVCMembers::_lookupXAVCLogin($a_user_id),$xavcMemberObj->getStatus());
 			ilUtil::sendInfo($this->txt('participant_added_successfully'));
 		}
 		else if($is_member)
@@ -1474,57 +1474,57 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		}
 	}
 
-    /**
-     *
-     * Inits a ilPropertyFormGUI for content search
-     *
-     * @access private
-     *
-     */
-    private function initContentSearchForm()
-    {
-    	if($this->csform instanceof ilPropertyFormGUI)
-    		return;
+	/**
+	 *
+	 * Inits a ilPropertyFormGUI for content search
+	 *
+	 * @access private
+	 *
+	 */
+	private function initContentSearchForm()
+	{
+		if($this->csform instanceof ilPropertyFormGUI)
+			return;
 
-    	include_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
+		include_once 'Services/Form/classes/class.ilPropertyFormGUI.php';
 
-    	$this->csform = new ilPropertyFormGUI();
-        $this->csform->setFormAction($this->ctrl->getFormAction($this, 'searchContentFile'));
+		$this->csform = new ilPropertyFormGUI();
+		$this->csform->setFormAction($this->ctrl->getFormAction($this, 'searchContentFile'));
 		$this->csform->setTitle($this->txt('add_content_from_ilias'));
 
-        $textField = new ilTextInputGUI($this->txt('search_term'), 'search_query');
+		$textField = new ilTextInputGUI($this->txt('search_term'), 'search_query');
 		$textField->setRequired(true);
 		$this->csform->addItem($textField);
 
 		$this->csform->addCommandButton('searchContentFile', $this->lng->txt('search'));
 		$this->csform->addCommandButton('showContent', $this->txt('cancel'));
-    }
+	}
 
-    /**
-     *
-     * Shows add content form
-     *
-     * @access public
-     *
-     */
-    public function showAddContent()
-    {
-        $this->tabs->activateTab('contents');
+	/**
+	 *
+	 * Shows add content form
+	 *
+	 * @access public
+	 *
+	 */
+	public function showAddContent()
+	{
+		$this->tabs->activateTab('contents');
 		/**
 		 * @var $my_tpl $tpl
- 		 */
+		 */
 		$my_tpl = new ilTemplate($this->pluginObj->getDirectory().'/templates/tpl.add_content.html', true, true);
 
-        //Add content
+		//Add content
 		$this->initFormContent(self::CONTENT_MOD_ADD);
-        $my_tpl->setVariable('FORM_ADD_CONTENT', $this->cform->getHTML());
+		$my_tpl->setVariable('FORM_ADD_CONTENT', $this->cform->getHTML());
 
-        //Add content from ILIAS
-        $this->initContentSearchForm();
+		//Add content from ILIAS
+		$this->initContentSearchForm();
 		$my_tpl->setVariable('FORM_ADD_CONTENT_FROM_ILIAS', $this->csform->getHTML());
 
 		$this->tpl->setContent($my_tpl->get());
-    }
+	}
 
 	/**
 	 *  Adds a content to the Adobe Connect server
@@ -1574,39 +1574,39 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->showContent();
 	}
 
-    /**
-     *
-     * Called if the user clicked the cancel button of the content search result table
-     *
-     * @access public
-     *
-     */
-    public function cancelSearchContentFile()
-    {
-    	unset($_SESSION['contents']['search_result']);
-    	return $this->showAddContent();
-    }
+	/**
+	 *
+	 * Called if the user clicked the cancel button of the content search result table
+	 *
+	 * @access public
+	 *
+	 */
+	public function cancelSearchContentFile()
+	{
+		unset($_SESSION['contents']['search_result']);
+		return $this->showAddContent();
+	}
 
-    /**
-     *  Search content that belongs to the current user and that meet the search criteria
-     *
-     */
-    public function searchContentFile()
-    {
-		global $DIC; 
+	/**
+	 *  Search content that belongs to the current user and that meet the search criteria
+	 *
+	 */
+	public function searchContentFile()
+	{
+		global $DIC;
 		$ilAccess = $DIC->access();
 
-    	$this->initContentSearchForm();
-    	if($this->csform->checkInput())
-    	{
-    		$allowedExt = array(
-	        	'ppt', 'pptx', 'flv', 'swf', 'pdf', 'gif',
-	        	'jpg', 'png', 'mp3', 'html'
-	        );
+		$this->initContentSearchForm();
+		if($this->csform->checkInput())
+		{
+			$allowedExt = array(
+				'ppt', 'pptx', 'flv', 'swf', 'pdf', 'gif',
+				'jpg', 'png', 'mp3', 'html'
+			);
 
-	        $result = array();
+			$result = array();
 
-    		include_once './Services/Search/classes/class.ilSearchSettings.php';
+			include_once './Services/Search/classes/class.ilSearchSettings.php';
 			if(ilSearchSettings::getInstance()->enabledLucene())
 			{
 				include_once './Services/Search/classes/Lucene/class.ilLuceneSearcher.php';
@@ -1624,8 +1624,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				$filter->filter();
 
 				foreach($filter->getResultIds() as $refId => $objId)
-	            {
-	            	$obj = ilObjectFactory::getInstanceByRefId($refId);
+				{
+					$obj = ilObjectFactory::getInstanceByRefId($refId);
 
 					if(!in_array(strtolower($obj->getFileExtension()), $allowedExt))
 					{
@@ -1638,11 +1638,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					}
 
 					$result[$obj->getId()] = $obj->getId();
-	            }
+				}
 			}
 			else
 			{
-		    	include_once 'Services/Search/classes/class.ilQueryParser.php';
+				include_once 'Services/Search/classes/class.ilQueryParser.php';
 
 				$query_parser = new ilQueryParser( $this->csform->getInput('search_query') );
 				$query_parser->setCombination( QP_COMBINATION_OR );
@@ -1676,63 +1676,63 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				}
 			}
 
-	        if(count($result) > 0)
-	        {
-	            $this->showFileSearchResult($result);
-	            $_SESSION['contents']['search_result'] = $result;
-	        }
-	        else
-	        {
-	            ilUtil::sendInfo($this->txt('files_matches_in_no_results'));
-	            $this->csform->setValuesByPost();
+			if(count($result) > 0)
+			{
+				$this->showFileSearchResult($result);
+				$_SESSION['contents']['search_result'] = $result;
+			}
+			else
+			{
+				ilUtil::sendInfo($this->txt('files_matches_in_no_results'));
+				$this->csform->setValuesByPost();
 				$this->showAddContent();
-	        }
-    	}
-    	else
-    	{
-    		$this->csform->setValuesByPost();
-        	return $this->showAddContent();
-    	}
-    }
+			}
+		}
+		else
+		{
+			$this->csform->setValuesByPost();
+			return $this->showAddContent();
+		}
+	}
 
-    /**
-     * Shows $results in a table
-     *
-     * @param array $results
-     * @access public
-     */
-    public function showFileSearchResult($results = null)
-    {
+	/**
+	 * Shows $results in a table
+	 *
+	 * @param array $results
+	 * @access public
+	 */
+	public function showFileSearchResult($results = null)
+	{
 		global $DIC;
 		$tree = $DIC->repositoryTree();
-		
+
 		if(!$results && isset($_SESSION['contents']['search_result']))
 		{
-			// this is for table sorting  
+			// this is for table sorting
 			$results = $_SESSION['contents']['search_result'];
 		}
-    	if(!$results)
-    		return $this->showAddContent();
+		if(!$results)
+			return $this->showAddContent();
 
-        include_once 'Services/Table/classes/class.ilTable2GUI.php';
+		include_once 'Services/Table/classes/class.ilTable2GUI.php';
 
-        $this->tabs->activateTab('contents');
+		$this->tabs->activateTab('contents');
 
-        $table = new ilTable2GUI($this, 'showFileSearchResult');
+		$table = new ilTable2GUI($this, 'showFileSearchResult');
 
-        $table->setLimit( 2147483647 );
+		$table->setLimit( 2147483647 );
 
-        $table->setTitle($this->txt('files'));
+		$table->setTitle($this->txt('files'));
 
 		$table->setDefaultOrderField('path');
-		
-        $table->addColumn('', '', '1%', true);
-        $table->addColumn($this->txt('title'), 'title', '30%');
+
+		$table->addColumn('', '', '1%', true);
+		$table->addColumn($this->txt('title'), 'title', '30%');
 		$table->addColumn($this->lng->txt('path'), 'path', '70%');
 
-        $table->setFormAction($this->ctrl->getFormAction($this, 'addContentFromILIAS'));
+		$table->setFormAction($this->ctrl->getFormAction($this, 'addContentFromILIAS'));
 
-        $table->setRowTemplate('tpl.content_file_row.html', $this->pluginObj->getDirectory());
+		$table->setRowTemplate('tpl.content_file_row.html', $this->pluginObj->getDirectory());
 
 		$table->setId('xavc_cs_'.$this->object->getId());
 		$table->setPrefix('xavc_cs_'.$this->object->getId());
@@ -1740,12 +1740,12 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$table->addCommandButton('addContentFromILIAS', $this->txt('add'));
 		$table->addCommandButton('cancelSearchContentFile', $this->txt('cancel'));
 
-        $data = array();
-        $i = 0;
-		
-        foreach($results as $file_id)
-        {
-            $title = ilObject::_lookupTitle($file_id);
+		$data = array();
+		$i = 0;
+
+		foreach($results as $file_id)
+		{
+			$title = ilObject::_lookupTitle($file_id);
 
 			$file_ref = array_shift(ilObject::_getAllReferences($file_id));
 			$path_arr = $tree->getPathFull($file_ref);
@@ -1763,32 +1763,32 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					$path .= $this->lng->txt('repository');
 				}
 			}
-			
+
 			$data[$i]['check_box'] = ilUtil::formRadioButton(0, 'file_id', $file_id);
-        	$data[$i]['title'] = $title;
+			$data[$i]['title'] = $title;
 			$data[$i]['path'] = $path;
 
-            ++$i;
-        }
-        $table->setData($data);
+			++$i;
+		}
+		$table->setData($data);
 
-        $this->tpl->setContent($table->getHTML());
-    }
+		$this->tpl->setContent($table->getHTML());
+	}
 
-    /**
-     *  Add a content from ILIAS to the Adobe Connect server
-     *
-     * @return string cmd
-     */
-    public function addContentFromILIAS()
-    {
-    	require_once('Modules/File/classes/class.ilFSStorageFile.php');
+	/**
+	 *  Add a content from ILIAS to the Adobe Connect server
+	 *
+	 * @return string cmd
+	 */
+	public function addContentFromILIAS()
+	{
+		require_once('Modules/File/classes/class.ilFSStorageFile.php');
 		require_once('Modules/File/classes/class.ilObjFileAccess.php');
 
 		if(!((int)$_POST['file_id']))
 		{
-		    ilUtil::sendInfo($this->txt('content_select_one'));
-		    return $this->showFileSearchResult($_SESSION['contents']['search_result']);
+			ilUtil::sendInfo($this->txt('content_select_one'));
+			return $this->showFileSearchResult($_SESSION['contents']['search_result']);
 		}
 
 		/** @noinspection PhpUndefinedClassInspection */
@@ -1815,19 +1815,19 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			ilUtil::sendFailure($this->txt($e->getMessage()));
 			return $this->showFileSearchResult($_SESSION['contents']['search_result']);
 		}
-    }
+	}
 
-    /**
-     * Shows edit content form
-     *
-     * @access public
-     */
-    public function editItem()
-    {
-		global $DIC; 
+	/**
+	 * Shows edit content form
+	 *
+	 * @access public
+	 */
+	public function editItem()
+	{
+		global $DIC;
 		$ilCtrl = $DIC->ctrl();
 
-        $this->tabs->activateTab('contents');
+		$this->tabs->activateTab('contents');
 
 		$this->initFormContent(self::CONTENT_MOD_EDIT, (int)$_GET['content_id']);
 
@@ -1836,7 +1836,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$this->setValuesFromContent((int)$_GET['content_id']);
 		}
 		$this->tpl->setContent($this->cform->getHTML());
-    }
+	}
 
 	public function editRecord()
 	{
@@ -1845,7 +1845,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	protected function updateRecord()
 	{
@@ -1853,11 +1853,11 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->updateContent();
 	}
 
-    /**
-     * Updates a content on the Adobe Connect server
+	/**
+	 * Updates a content on the Adobe Connect server
 	 *
-     * @access public
-     */
+	 * @access public
+	 */
 	public function updateContent()
 	{
 		$this->initFormContent(self::CONTENT_MOD_EDIT, (int)$_GET['content_id']);
@@ -1905,13 +1905,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		}
 	}
 
-    /**
-     * Shows a message giving user confirmation to delete contents
+	/**
+	 * Shows a message giving user confirmation to delete contents
 	 *
-     * @access public
-     */
-    public function askDeleteContents()
-    {
+	 * @access public
+	 */
+	public function askDeleteContents()
+	{
 		$content_ids = array();
 		if(is_array($_POST['content_id']) && count($_POST['content_id']) > 0)
 		{
@@ -1922,7 +1922,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$content_ids[] = $_GET['content_id'];
 		}
 
-        if(count($content_ids) == 0)
+		if(count($content_ids) == 0)
 		{
 			ilUtil::sendFailure($this->txt('content_select_one'));
 			$this->showContent();
@@ -1930,9 +1930,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			return true;
 		}
 
-        $this->tabs->activateTab('contents');
+		$this->tabs->activateTab('contents');
 
-        include_once 'Services/Utilities/classes/class.ilConfirmationGUI.php';
+		include_once 'Services/Utilities/classes/class.ilConfirmationGUI.php';
 		$confirm = new ilConfirmationGUI();
 		$confirm->setFormAction($this->ctrl->getFormAction($this, 'showContent'));
 		$confirm->setHeaderText($this->txt('sure_delete_contents'));
@@ -1942,17 +1942,17 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$this->object->readContents();
 
 		$contents_found = false;
-        foreach($content_ids as $content_id)
+		foreach($content_ids as $content_id)
 		{
-            $content = $this->object->getContent($content_id);
+			$content = $this->object->getContent($content_id);
 			if(!$content)
 			{
 				continue;
 			}
 			$contents_found = true;
-            $confirm->addItem('content_id[]', $content_id, $content->getAttributes()->getAttribute('name'));
+			$confirm->addItem('content_id[]', $content_id, $content->getAttributes()->getAttribute('name'));
 		}
-		
+
 		if($contents_found)
 		{
 			$this->tpl->setContent($confirm->getHTML());
@@ -1961,24 +1961,24 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		{
 			return $this->showContent();
 		}
-    }
+	}
 
-    /**
-     * Deletes a content from Adobe Connect server
-     *
-     * @access public
-     */
-    public function deleteContents()
-    {
-    	$content_ids = $_POST['content_id'];
-        if(!$content_ids)
+	/**
+	 * Deletes a content from Adobe Connect server
+	 *
+	 * @access public
+	 */
+	public function deleteContents()
+	{
+		$content_ids = $_POST['content_id'];
+		if(!$content_ids)
 		{
 			ilUtil::sendFailure($this->txt('content_select_one'));
 			$this->showContent();
 			return true;
 		}
 
-        foreach($content_ids as $content_id)
+		foreach($content_ids as $content_id)
 		{
 			$this->object->deleteContent($content_id);
 		}
@@ -1986,26 +1986,26 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		ilUtil::sendSuccess($this->txt('virtualClassroom_content_deleted'), true);
 		$this->showContent();
 		return true;
-    }
+	}
 
-    /**
-     * Shows a form to add or edit content
-     *
-     * @param int $a_mode
-     * @param int $a_content_id optional content id
-     * @access protected
-     */
-    protected function initFormContent($a_mode, $a_content_id = 0)
-    {
-    	if($this->cform instanceof ilPropertyFormGUI)
-    		return;
+	/**
+	 * Shows a form to add or edit content
+	 *
+	 * @param int $a_mode
+	 * @param int $a_content_id optional content id
+	 * @access protected
+	 */
+	protected function initFormContent($a_mode, $a_content_id = 0)
+	{
+		if($this->cform instanceof ilPropertyFormGUI)
+			return;
 
-        include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
+		include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
 		$this->cform = new ilPropertyFormGUI();
 
-        switch ($a_mode)
-        {
-            case self::CONTENT_MOD_EDIT:
+		switch ($a_mode)
+		{
+			case self::CONTENT_MOD_EDIT:
 				$positive_cmd = ($this->is_record ? 'updateRecord' : 'updateContent');
 
 				// Header
@@ -2018,28 +2018,28 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				// Form action
 				if($a_content_id)
 					$this->ctrl->setParameter($this, 'content_id', $a_content_id);
-        		$this->cform->setFormAction($this->ctrl->getFormAction($this, $positive_cmd));
+				$this->cform->setFormAction($this->ctrl->getFormAction($this, $positive_cmd));
 				break;
-            case self::CONTENT_MOD_ADD:
-                // Header
+			case self::CONTENT_MOD_ADD:
+				// Header
 				$this->cform->setTitle($this->txt('add_new_content'));
 				// Buttons
 				$this->cform->addCommandButton('addContent', $this->txt('save'));
 				$this->cform->addCommandButton('showContent', $this->txt('cancel'));
 
 				// Form action
-        		$this->cform->setFormAction($this->ctrl->getFormAction($this, 'addContent'));
+				$this->cform->setFormAction($this->ctrl->getFormAction($this, 'addContent'));
 				break;
-        }
+		}
 
-        // Title
+		// Title
 		$tit = new ilTextInputGUI($this->txt('title'), 'tit');
 //		$tit->setRequired(true);
 		$tit->setSize(40);
 		$tit->setMaxLength(127);
 		$this->cform->addItem($tit);
 
-        // Description
+		// Description
 		$des = new ilTextAreaInputGUI($this->txt('description'), 'des');
 		$des->setRows(3);
 		$this->cform->addItem($des);
@@ -2050,24 +2050,24 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$fil = new ilFileInputGUI($this->txt('file'), 'file');
 			if($a_mode == self::CONTENT_MOD_ADD)
 				$fil->setRequired(true);
-	
+
 			$content_file_types = strlen(ilAdobeConnectServer::getSetting('content_file_types')) > 1 ? ilAdobeConnectServer::getSetting('content_file_types'): 'ppt, pptx, flv, swf, pdf, gif, jpg, png, mp3, html';
 			$fil->setSuffixes(explode(',', str_replace(' ', '', $content_file_types)));
 			$this->cform->addItem($fil);
 		}
-    }
+	}
 
-    /**
-     *  Initializes the form
-     *
-     * @param String $a_content_id
-     */
-    protected function setValuesFromContent($a_content_id)
+	/**
+	 *  Initializes the form
+	 *
+	 * @param String $a_content_id
+	 */
+	protected function setValuesFromContent($a_content_id)
 	{
-        $this->object->readContents();
+		$this->object->readContents();
 		$contents = $this->object->searchContent(array('sco-id' => $a_content_id));
 		/** @var $content ilAdobeConnectContent */
-        $content = $contents[0];
+		$content = $contents[0];
 
 		$this->cform->setValuesByArray(
 			array(
@@ -2118,8 +2118,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	{
 		global $DIC;
 		$ilUser = $DIC->user();
-		
-		
+
+
 		$settings = ilAdobeConnectServer::_getInstance();
 		//Login User - this creates a user if he not exists.
 		if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI)
@@ -2146,7 +2146,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$form = new ilPropertyFormGUI();
 		$form->setTitle($this->pluginObj->txt($item['title']));
-//        login to ac-server
+//		login to ac-server
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
 
 		// title
@@ -2189,7 +2189,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$owner->setValue(ilObjUser::_lookupLogin($ilUser->getId()));
 
 		$radio_time_type = new ilRadioGroupInputGUI($this->pluginObj->txt('time_type_selection'), 'time_type_selection');
-		
+
 		// option: permanent room
 		if(ilAdobeConnectServer::getSetting('enable_perm_room','1'))
 		{
@@ -2240,13 +2240,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		$radio_access_level->addOption($opt_protected);
 		$radio_access_level->addOption($opt_public);
 		$radio_access_level->setValue( ilObjAdobeConnect::ACCESS_LEVEL_PROTECTED);
-		
+
 		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
 		$ilAdobeConnectUser = new ilAdobeConnectUserUtil($this->user->getId());
 		$ilAdobeConnectUser->ensureAccountExistance();
 		$xavc_login = $ilAdobeConnectUser->getXAVCLogin();
 		$folder_id  =  $ilAdobeConnectUser->ensureUserFolderExistance($xavc_login);
-		
+
 		if($template_settings['reuse_existing_rooms']['hide'] == '0')
 		{
 			$all_scos   = (array)ilObjAdobeConnect::getScosByFolderId($folder_id);
@@ -2372,7 +2372,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			$use_meeting_template->setChecked(true);
 			$form->addItem($use_meeting_template);
 		}
-		
+
 		// language selector
 		$lang_selector = new ilSelectInputGUI($this->lng->txt('language'), 'ac_language');
 		$adobe_langs = ['de', 'en', 'es', 'fr', 'it', 'nl', 'pt', 'tr', 'ru', 'ja', 'zh', 'ko'];
@@ -2383,7 +2383,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 		}
 		$lang_selector->setOptions($lang_options);
 		$form->addItem($lang_selector);
-		
+
 		$html_client = new ilCheckboxInputGUI($this->pluginObj->txt('html_client'), 'html_client');
 		$html_client->setInfo($this->pluginObj->txt('html_client_info'));
 		$form->addItem($html_client);
@@ -2467,8 +2467,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 	public function save()
 	{
 		global $DIC;
-		$rbacsystem = $DIC->rbac()->system(); 
-		$objDefinition = $DIC['objDefinition']; 
+		$rbacsystem = $DIC->rbac()->system();
+		$objDefinition = $DIC['objDefinition'];
 		$lng = $DIC->language();
 
 		$new_type = $_POST["new_type"] ? $_POST["new_type"] : $_GET["new_type"];
@@ -2520,7 +2520,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 					$xavc_login = $ilAdobeConnectUser->getXAVCLogin();
 					$folder_id =  $ilAdobeConnectUser->ensureUserFolderExistance($xavc_login);
-                    $sco_ids  =  ilObjAdobeConnect::getScosByFolderId($folder_id);
+					$sco_ids  =  ilObjAdobeConnect::getScosByFolderId($folder_id);
 
 					$title       = $sco_ids[$form->getInput('available_rooms')]['sco_name'];
 					$description = $sco_ids[$form->getInput('available_rooms')]['description'];
@@ -2549,9 +2549,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 			}
 			else // create new object
 			{
-				global $DIC; 
+				global $DIC;
 				$ilUser = $DIC->user();
-				
+
 				$owner = $ilUser->getId();
 
 				if(strlen($form->getInput('owner')) > 1)
@@ -2626,7 +2626,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					{
 						if($durationValid)
 						{
-                            $location = $objDefinition->getLocation($new_type);
+							$location = $objDefinition->getLocation($new_type);
 
 							// create and insert object in objecttree
 							$class_name = "ilObj" . $objDefinition->getClassName($new_type);
@@ -2766,12 +2766,12 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 	public function editParticipants()
 	{
-		global $DIC; 
-		$ilCtrl = $DIC->ctrl(); 
-		$lng = $DIC->language(); 
+		global $DIC;
+		$ilCtrl = $DIC->ctrl();
+		$lng = $DIC->language();
 		$ilUser = $DIC->user();
 		$ilToolbar = $DIC->toolbar();
-		
+
 		$this->pluginObj->includeClass('class.ilXAVCMembers.php');
 		$this->pluginObj->includeClass('class.ilXAVCTableGUI.php');
 
@@ -2820,7 +2820,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$this->tpl->setContent($my_tpl->get());
 	}
-	
+
 	public function performCrsGrpTrigger()
 	{
 		ignore_user_abort(true);
@@ -2951,9 +2951,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 				$button_tpl = new ilTemplate($this->pluginObj->getDirectory()."/templates/default/tpl.bigbutton.html", true, true);
 				$button_tpl->setVariable('BUTTON_TARGET', $button_target);
 				$button_tpl->setVariable('BUTTON_TEXT', $button_txt);
-				
+
 				$big_button = $button_tpl->get();
-				$info->addProperty('',$big_button."<br />");	
+				$info->addProperty('',$big_button."<br />");
 			}
 		}
 		else
@@ -2963,18 +2963,18 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		$info->addProperty($this->pluginObj->txt('duration'), $duration_text);
 		$info->addProperty($this->pluginObj->txt('meeting_url'), $href);
-		
+
 		$tpl->setContent($info->getHTML().$this->getPerformTriggerHtml());
 	}
 
 	public function showContent()
 	{
-		global $DIC; 
+		global $DIC;
 		$ilUser = $DIC->user();
-		$tpl = $DIC->ui()->mainTemplate(); 
+		$tpl = $DIC->ui()->mainTemplate();
 		$ilAccess = $DIC->access();
 
-        $this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
+		$this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
 		$this->pluginObj->includeClass('class.ilAdobeConnectServer.php');
 
 		$has_write_permission =  $ilAccess->checkAccess("write", "", $this->object->getRefId());
@@ -2983,13 +2983,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 		if($settings->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI AND ilAdobeConnectServer::useSwitchaaiAuthMode($ilUser->getAuthMode(true)))
 		{
-            //Login User - this creates a user if he not exists.
-            $ilAdobeConnectUser = new ilAdobeConnectUserUtil($this->user->getId());
-            $ilAdobeConnectUser->loginUser();
+			//Login User - this creates a user if he not exists.
+			$ilAdobeConnectUser = new ilAdobeConnectUserUtil($this->user->getId());
+			$ilAdobeConnectUser->loginUser();
 
-            //Add the user as Participant @adobe switch
-            $status = ilXAVCMembers::_lookupStatus($ilUser->getId(), $this->object->getRefId());
-            $this->object->addSwitchParticipant($ilUser->getEmail(),$status);
+			//Add the user as Participant @adobe switch
+			$status = ilXAVCMembers::_lookupStatus($ilUser->getId(), $this->object->getRefId());
+			$this->object->addSwitchParticipant($ilUser->getEmail(),$status);
 		}
 
 		$this->tabs->setTabActive('contents');
@@ -3100,7 +3100,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
 				//show contents
 				if(
-					ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_READ_CONTENTS) 
+					ilXAVCPermissions::hasAccess($ilUser->getId(), $this->object->getRefId(), AdobeConnectPermissions::PERM_READ_CONTENTS)
 					&& $this->object->getReadContents('content')
 				)
 				{
@@ -3108,7 +3108,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					$info->setFormAction($this->ctrl->getFormAction($this, 'showContent'));
 					$has_access = false;
 					if(
-						ilXAVCPermissions::hasAccess($ilUser->getId(), $this->ref_id, AdobeConnectPermissions::PERM_UPLOAD_CONTENT) 
+						ilXAVCPermissions::hasAccess($ilUser->getId(), $this->ref_id, AdobeConnectPermissions::PERM_UPLOAD_CONTENT)
 						|| $has_write_permission
 					)
 					{
@@ -3138,7 +3138,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 					{
 						$has_access = true;
 					}
-					
+
 					$info->addSection($this->pluginObj->txt('records'));
 					$info->addProperty('', $this->viewRecords($has_access, 'record'));
 				}

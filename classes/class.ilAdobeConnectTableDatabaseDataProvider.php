@@ -87,7 +87,7 @@ abstract class ilAdobeConnectTableDatabaseDataProvider implements ilAdobeConnect
 		$group  = $this->getGroupByPart();
 		$having = $this->getHavingPart($filter);
 
-		
+
 
 		if(isset($params['group']))
 		{
@@ -143,7 +143,7 @@ abstract class ilAdobeConnectTableDatabaseDataProvider implements ilAdobeConnect
 		}
 		$data = $this->getAdditionalItems($data);
 
-		
+
 		if(isset($params['limit']))
 		{
 			$cnt_sql     = "SELECT COUNT(*) cnt FROM ({$query}) subquery";

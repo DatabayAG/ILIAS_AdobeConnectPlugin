@@ -27,8 +27,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 	 */
 	public function _checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id = "")
 	{
-		global $DIC; 
-		$ilUser = $DIC->user(); 
+		global $DIC;
+		$ilUser = $DIC->user();
 		$ilObjDataCache = $DIC['ilObjDataCache'];
 
 		if(!$a_user_id)
@@ -172,7 +172,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 	private static function initLocalAdminRoleTemplate()
 	{
 		$xavc_typ_id = self::checkObjectOperationPermissionsInitialized();
-		
+
 		global $DIC;
 		$ilDB = $DIC->database();
 
@@ -244,7 +244,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 		// checks for surely initialized extra permissions for xavc
 		// (and also returns obj_id of xavc type definition)
 		$xavc_typ_id = self::checkObjectOperationPermissionsInitialized();
-		
+
 		global $DIC;
 		$ilDB = $DIC->database();
 
@@ -297,7 +297,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
 	private static function checkObjectOperationPermissionsInitialized()
 	{
-		
+
 		global $DIC;
 		$ilDB = $DIC->database();
 

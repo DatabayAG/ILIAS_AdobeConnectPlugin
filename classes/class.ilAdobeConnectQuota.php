@@ -39,7 +39,7 @@ class ilAdobeConnectQuota
 	{
 		global $DIC;
 		$ilDB = $DIC->database();
- 		
+
 		$ids = array();
 		$currentMeetings = array();
 		foreach($data as $sco)
@@ -100,7 +100,7 @@ class ilAdobeConnectQuota
 		}
 		$bufferSlots = (int)$this->adcInfo->getSetting('ac_interface_objects_buffer');
 		$this->getCurrentMeetings();
-		
+
 		return ($bufferSlots + $scheduledSlots) > $this->currentState->scheduled_meetings || array_key_exists($sco_id, $this->currentMeetings);
 	}
 

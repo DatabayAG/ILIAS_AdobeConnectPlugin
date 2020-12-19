@@ -54,10 +54,8 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'last-name' 	=> $last_name,
 			'session' 		=> $session
 		));
-
 		$ilLog->write("addUser URL: ". $url);
-
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -89,12 +87,12 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'action' 	=> 'lms-user-exists',
 			'session' 	=> $session
 		));
-		$xml = simplexml_load_file($url);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{
 			$list = $xml->{'principal-list'};
-			
+
 			$id = (string)$list->principal['principal-id'];
 
 			return $id;
@@ -110,7 +108,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			return false;
 		}
 	}
-	
+
 	/**
 	 * @param null $user
 	 * @param null $pass
@@ -120,7 +118,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 	public function externalLogin($user = null, $pass = null, $session = null )
 	{
 		global  $DIC;
-		$ilLog = $DIC->logger()->root(); 
+		$ilLog = $DIC->logger()->root();
 		$lng = $DIC->language();
 
 		$url = $this->getApiUrl(array(
@@ -128,15 +126,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'login' 	=> $user,
 			'session' 	=> $session
 		));
-
-		$context = array(
-			'http' => array('timeout' => 4),
-			'https' => array('timeout' => 4)
-		);
-
-		$ctx = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{
@@ -172,19 +162,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 			'password' 		=> $pass,
 			'session' 		=> $session
 		));
-
-		$context = array(
-			'http' => array(
-				'timeout' => 4
-			),
-			'https' => array(
-				'timeout' => 4
-			)
-		);
-
-		$ctx = $this->proxy($context);
-		$xml_string = file_get_contents($url, false, $ctx);
-		$xml = simplexml_load_string($xml_string);
+		$xml = $this->adcInfo->getRemoteXML($url);
 
 		if($xml->status['code'] == 'ok')
 		{

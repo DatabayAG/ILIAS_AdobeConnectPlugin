@@ -140,8 +140,8 @@ already_member#:#You already have been added as member
 xavc_lead_time_mismatch#:#The start date or expected duration can only be changed if it is scheduled after %s. Other modifications (e.g. title or description) has been applied.
 xavc_lead_time_mismatch_create#:#The start date has to be after %s.
 user_status#:#Status at Adobe Connect
-no_active_pool#:#There is no private meeting active 
-no_active_vcpool#:#There is no Adobe Meeting active 
+no_active_pool#:#There is no private meeting active
+no_active_vcpool#:#There is no Adobe Meeting active
 no_read_access#:#No visibility and read access
 adobe_settings#:#Adobe Connect-Settings
 adobe_plugin_must_be_installed_first#:#To make settings for the Adobe Connect server, you first need to install the Adobe Connect plugin.
@@ -164,13 +164,13 @@ check_input#:#Please check your input
 err_invalid_num_max_vc#:#The maximum number is invalid
 err_invalid_server#:#The registered server is unreachable.
 err_authentication_failed#:#The authentication on the registered server failed with the specified credentials.
-err_num_of_required_rooms_gt_max_vc#:#The number of required connections is not sufficient, for the sum of the defined rooms. 
+err_num_of_required_rooms_gt_max_vc#:#The number of required connections is not sufficient, for the sum of the defined rooms.
 sco_id#:#Meeting-Id
 sco_title#:#Meeting-Name
 sco_url#:#Meeting-URL
 access_type#:#Meeting-Type
 online_status#:#Status
-update_online_status#:#Change status 
+update_online_status#:#Change status
 create_privatevc_info#:#When enabled, it will automatically create a private classroom
 enter_number_of_scos#:#Please indicate the maximum number of concurrent meetings which are allowed to be scheduled at a time.<br>Please note the necessary buffer of 30 minutes to start and end of the new schedule.<br>If you insert "0" there will be no limitation.
 add_privatevc#:#Create private Classroom
@@ -201,11 +201,11 @@ editRoomAllocation#:#Allocation Settings
 showAllocationPool#:#Allocation Pool
 auth_mode#:#Authentification-Mode
 auth_mode_password#:#Use Password Authentification
-auth_mode_header#:#HTTP Header Authentification 
+auth_mode_header#:#HTTP Header Authentification
 auth_mode_dfn#:#Session Cookie based Authentication with DFN Server
 xavc_x_user_id_info#:#Please note that you need to change the configuration file (web.xml) of your Adobe Connect installation accordingly. For more detailed information, see the Adobe Connect documentation.
-authentification_mode_info#:#Please choose which authentification method you want to use. 
-x_user_id_header_var#:#Header-Variable for the HTTP Header-Authentification 
+authentification_mode_info#:#Please choose which authentification method you want to use.
+x_user_id_header_var#:#Header-Variable for the HTTP Header-Authentification
 assigned_users_s#:#The user has been added successfully
 assigned_users_p#:#The users were added successfully
 choose_creation_type#:#Type of object creation
@@ -251,8 +251,8 @@ with_limitation#:#With a time limit
 content#:#Content
 record#:#Record
 content_type#:#Type
-add_to_desktop#:#Add to personal desktop 
-add_to_desktop_info#:#If enabled, a link to the Adobe Connect room, will be added to the personal desktop of new Adobe Connect participants.  
+add_to_desktop#:#Add to personal desktop
+add_to_desktop_info#:#If enabled, a link to the Adobe Connect room, will be added to the personal desktop of new Adobe Connect participants.
 template_info#:#The setting templates that you select, will be available for the lecturers when they create new meeting rooms. Choose 'Basic Settings',  if only a minimum set of technical options should be visible. Choose 'Advanced Settings',  if you want to provide more options to people and backgrounds.
 perm_read_records#:#Show Records
 login_failed#:#The Login failed
@@ -265,7 +265,7 @@ private_room#:#Nur registrierte Benutzer haben Zugang zum Raum (Gastzugriff gesp
 protected_room#:#Only registered users and accepted guests may enter the room
 public_room#:#Anyone who has the URL for the meeting can enter the room
 content_file_types#:#Allowed file types for content uploads
-content_file_types_info#:#Please enter the allowed file types, which can be uploaded into an Adobe Connect Meeting.   
+content_file_types_info#:#Please enter the allowed file types, which can be uploaded into an Adobe Connect Meeting.
 contact_information#:#Contact information
 office#:#Office
 mobile#:#Mobile
@@ -301,6 +301,6 @@ use_meeting_templates_info#:#If aktivated, an existing meeting template can be s
 shared_meeting_templates#:#Shared Templates
 my_meeting_templates#:#My Templates
 api_version#:#Adobe Connect API-Version
-html_client#:#Enable HTML-Client 
+html_client#:#Enable HTML-Client
 html_client_info#:#When enabled, users can enter meetings using the HTML client. Attention! This functionality requires Adobe Connect 10
 local_roles#:#Local Roles

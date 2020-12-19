@@ -32,12 +32,12 @@
 				'default'=> 0
 			)
 		);
-		
+
 		$ilDB->createTable("rep_robj_xavc_data", $fields);
 		$ilDB->addPrimaryKey("rep_robj_xavc_data", array("id"));
 	}
-	
-	
+
+
 ?>
 <#2>
 <?php
@@ -77,7 +77,7 @@
 				'notnull' => false
 			)
 		);
-	
+
 		$ilDB->createTable("rep_robj_xavc_users", $fields);
 		$ilDB->addPrimaryKey("rep_robj_xavc_users", array("user_id"));
 	}
@@ -111,7 +111,7 @@
 				'notnull' => false
 			)
 		);
-	
+
 		$ilDB->createTable("rep_robj_xavc_members", $fields);
 		$ilDB->addPrimaryKey("rep_robj_xavc_members", array("user_id","ref_id"));
 	}
@@ -179,7 +179,7 @@
 			  'value' => array('text', '2'),
 			  'hide' => array('integer', 0)
 		));
-	
+
 	$ilDB->insert('adm_set_templ_value',
 		array('template_id' => array('integer', $next_id),
 			  'setting' => array('text', 'reuse_existing_rooms'),
@@ -264,20 +264,20 @@
 				  'role' => array('text', 'mini-host'),
 				  'has_access' =>array('integer', 1)));
 	$next_id = $ilDB->nextId('rep_robj_xavc_gloperm');
-	
+
 	$ilDB->insert('rep_robj_xavc_gloperm',
 		array(	'id' => array('integer', $next_id),
 				  'permission' => array('text', 'perm_upload_content'),
 				  'role' => array('text', 'view'),
 				  'has_access' =>array('integer', 0)));
-	
+
 	$next_id = $ilDB->nextId('rep_robj_xavc_gloperm');
 	$ilDB->insert('rep_robj_xavc_gloperm',
 		array(	'id' => array('integer', $next_id),
 				  'permission' => array('text', 'perm_upload_content'),
 				  'role' => array('text', 'denied'),
 				  'has_access' =>array('integer', 0)));
-	
+
 ?>
 <#21>
 <?php
@@ -313,7 +313,7 @@
 ?>
 <#22>
 <?php
-	
+
 	$next_id = $ilDB->nextId('rep_robj_xavc_gloperm');
 	$ilDB->insert('rep_robj_xavc_gloperm',
 		array(	'id' => array('integer', $next_id),
@@ -407,14 +407,14 @@ $ilDB->insert('rep_robj_xavc_gloperm',
 				  'role' => array('text', 'denied'),
 				  'has_access' =>array('integer', 0)));
 ?>
-<#25>	
+<#25>
 <?php
 	$res = $ilDB->queryF('SELECT id FROM adm_settings_template WHERE type = %s  AND title = %s',
 		array('text', 'text'), array('xavc', 'cb_simple'));
-	
+
 	$row = $ilDB->fetchAssoc($res);
 	$id = $row['id'];
-	
+
 	$ilDB->insert('adm_set_templ_value',
 		array(
 			'template_id' => array('integer', $id),
@@ -428,10 +428,10 @@ $ilDB->insert('rep_robj_xavc_gloperm',
 <?php
 	$res = $ilDB->queryF('SELECT id FROM adm_settings_template WHERE type = %s  AND title = %s',
 		array('text', 'text'), array('xavc', 'cb_extended'));
-	
+
 	$row = $ilDB->fetchAssoc($res);
 	$id = $row['id'];
-	
+
 	$ilDB->insert('adm_set_templ_value',
 		array(
 			'template_id' => array('integer', $id),
@@ -481,7 +481,7 @@ if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'contact_info'))
 				  'permission' => array('text', 'perm_read_contents'),
 				  'role' => array('text', 'denied'),
 				  'has_access' =>array('integer', 0)));
-?>	
+?>
 <#29>
 <?php
 if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'perm_read_contents'))
@@ -512,26 +512,26 @@ if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'perm_read_records'))
 <?php
 	// migration-step
 	$res = $ilDB->queryF('
-		SELECT permission, has_access 
-		FROM rep_robj_xavc_gloperm 
+		SELECT permission, has_access
+		FROM rep_robj_xavc_gloperm
 		WHERE (permission = %s
 		OR permission = %s)
 		AND role = %s',
-	array('text', 'text', 'text'), 
+	array('text', 'text', 'text'),
 	array('perm_read_records', 'perm_read_contents', 'view'));
-	
+
 	while($row = $ilDB->fetchAssoc($res))
 	{
-		$permissions[$row['permission']] = $row['has_access']; 
+		$permissions[$row['permission']] = $row['has_access'];
 	}
 
 	$ilDB->manipulateF('
-	UPDATE rep_robj_xavc_data 
+	UPDATE rep_robj_xavc_data
 	SET perm_read_contents = %s,
 		perm_read_records = %s',
-	array('integer', 'integer'), 
+	array('integer', 'integer'),
 	array((int)$permissions['perm_read_contents'],(int)$permissions['perm_read_records']));
-?>	
+?>
 <#32>
 <?php
 	if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'folder_id'))
@@ -544,8 +544,8 @@ if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'perm_read_records'))
 				'default'=> 0
 			));
 	}
-?>	
-<#33>	
+?>
+<#33>
 <?php
 	// migration step
 	$res = $ilDB->query('SELECT * FROM rep_robj_xavc_settings');
@@ -560,11 +560,11 @@ if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'perm_read_records'))
 		//check connection
 		$xmlAPI = ilXMLApiFactory::getApiByAuthMode();
 		$session = $xmlAPI->getBreezeSession();
-		
+
 		if($session && $xmlAPI->login($settings['login'], $settings['password'], $session))
 		{
 			$folder_id = $xmlAPI->getShortcuts("my-meetings", $session);
-	
+
 			$ilDB->update('rep_robj_xavc_data',
 				array('folder_id' => array('integer', (int)$folder_id)),
 				array('folder_id' => array('integer', 0)));
@@ -621,9 +621,9 @@ if(!$ilDB->tableColumnExists('rep_robj_xavc_data', 'language'))
 {
 	$ilDB->addTableColumn('rep_robj_xavc_data', 'language',
 			array('type' => 'text',
-			      'length' => 2,
-			      'notnull' => false,
-			      'default' => 'de'));
+				  'length' => 2,
+				  'notnull' => false,
+				  'default' => 'de'));
 }
 ?>
 <#37>

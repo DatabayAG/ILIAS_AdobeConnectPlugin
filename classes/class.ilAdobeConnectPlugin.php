@@ -35,11 +35,11 @@ class ilAdobeConnectPlugin extends ilRepositoryObjectPlugin
 	}
 
 	/**
-	 * 
+	 *
 	 */
 	protected function uninstallCustom()
 	{
-		global $DIC; 
+		global $DIC;
 		$ilDB = $DIC->database();
 
 		if($ilDB->tableExists('rep_robj_xavc_data'))

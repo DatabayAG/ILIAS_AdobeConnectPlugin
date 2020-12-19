@@ -1,5 +1,5 @@
 <?php
-/* 
+/*
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
@@ -12,20 +12,20 @@
  */
 class ilAdobeConnectContent
 {
-    /**
-     *  Content attributes
-     *
-     * @var ilAdobeConnectContentAttributes
-     */
-    private $attributes;
+	/**
+	 *  Content attributes
+	 *
+	 * @var ilAdobeConnectContentAttributes
+	 */
+	private $attributes;
 
-    /**
-     *  Constructor
-     *
-     * @param array $attributes
-     */
-    public function __construct($attributes)
-    {
+	/**
+	 *  Constructor
+	 *
+	 * @param array $attributes
+	 */
+	public function __construct($attributes)
+	{
 		/**
 		 * @var $pluginObj ilPlugin
 		 *
@@ -33,17 +33,17 @@ class ilAdobeConnectContent
 		$pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
 		$pluginObj->includeClass('class.ilAdobeConnectContentAttributes.php');
 
-        $this->attributes = new ilAdobeConnectContentAttributes($attributes);
-    }
+		$this->attributes = new ilAdobeConnectContentAttributes($attributes);
+	}
 
-    /**
-     *  Return $attributes attribute
-     *
-     * @return  ilAdobeConnectContentAttributes
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
-    }
+	/**
+	 *  Return $attributes attribute
+	 *
+	 * @return  ilAdobeConnectContentAttributes
+	 */
+	public function getAttributes()
+	{
+		return $this->attributes;
+	}
 
 }

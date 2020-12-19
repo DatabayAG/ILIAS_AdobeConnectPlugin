@@ -4,12 +4,12 @@
 require_once 'Services/Table/classes/class.ilTable2GUI.php';
 require_once 'Services/Calendar/classes/class.ilDatePresentation.php';
 
-/** 
- * 
+/**
+ *
  * Inherited Table2GUI
- * 
+ *
  * @author Michael Jansen <mjansen@databay.de>
- * 
+ *
  */
 class ilAdobeConnectContentTableGUI extends ilTable2GUI
 {
@@ -18,28 +18,28 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 	protected $visibleOptionalColumns = array();
 	protected $optionalColumns = array();
 	/**
-	 * 
+	 *
 	 * View mode
-	 * 
+	 *
 	 * @var integer
-	 * 
+	 *
 	 */
 	private $viewMode = self::MODE_VIEW;
 	/**
 	 * @var string
 	 */
 	private $template_context = '';
-	
+
 	/**
-	 * 
+	 *
 	 * Constructor
-	 * 
+	 *
 	 * @param ilObjectGUI $a_parent_obj
 	 * @param string $a_parent_cmd
 	 * @param string $a_template_context
-	 * 
+	 *
 	 * @access public
-	 * 
+	 *
 	 */
 	public function __construct($a_parent_obj, $a_parent_cmd = '', $a_template_context = '', $view_mode)
 	{
@@ -47,47 +47,47 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 		$this->setPrefix('xavc_cnt_'.$a_parent_obj->object->getId().'_'.$view_mode);
 		$this->viewMode = $view_mode;
 		$this->template_context = $a_template_context;
-		
+
 		parent::__construct($a_parent_obj, $a_parent_cmd, $a_template_context);
 
 		// Add general table configuration here
 	}
-	
+
 	/**
-	 * 
-	 * Set the view mode of this table, either <code>ilAdobeConnectContentTableGUI::MODE_VIEW</code> 
-	 * or <code>ilAdobeConnectContentTableGUI::MODE_EDIT</code> 
-	 * 
+	 *
+	 * Set the view mode of this table, either <code>ilAdobeConnectContentTableGUI::MODE_VIEW</code>
+	 * or <code>ilAdobeConnectContentTableGUI::MODE_EDIT</code>
+	 *
 	 * @param integer $mode
 	 * @return ilAdobeConnectContentTableGUI
 	 * @access public
-	 * 
+	 *
 	 */
 	public function setViewMode($mode)
 	{
 		$this->viewMode = $mode;
 		return $this;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Get the view mode of this table
-	 * 
+	 *
 	 * @return integer
-	 * 
+	 *
 	 */
 	public function getViewMode()
 	{
 		return $this->viewMode;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * Init the table with some configuration
-	 * 
+	 *
 	 * @return ilAdobeConnectContentTableGUI
 	 * @access public
-	 * 
+	 *
 	 */
 	public function init()
 	{
@@ -98,18 +98,18 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 		$this->setFormAction($this->parent_obj->ctrl->getFormAction($this->parent_obj, 'showContent'));
 
 		$this->addColumn($this->parent_obj->pluginObj->txt('content_name'), 'title', '50%');
-		
+
 		$this->optionalColumns        = (array)$this->getSelectableColumns();
 		$this->visibleOptionalColumns = (array)$this->getSelectedColumns();
 		foreach($this->visibleOptionalColumns as $column)
 		{
 				$this->addColumn($this->optionalColumns[$column]['txt'], $column);
-		}			
-		if($this->viewMode == self::MODE_EDIT) 
+		}
+		if($this->viewMode == self::MODE_EDIT)
 		{
 			$this->addColumn($this->parent_obj->lng->txt('actions'), 'actions', '1%');
-		}	
-		
+		}
+
 		$this->setRowTemplate('tpl.meeting_content_row.html', $this->parent_obj->pluginObj->getDirectory());
 
 		$this->setDefaultOrderField('type');
@@ -139,7 +139,7 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 	 */
 	protected function formatCellValue($column, array $row)
 	{
-		
+
 		if($column == 'date_created')
 		{
 			return ilDatePresentation::formatDate(new ilDateTime($row['date_created'], IL_CAL_UNIX));
@@ -147,14 +147,14 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 		return $row[$column];
 	}
 	/**
-	 * 
+	 *
 	 * @see ilTable2GUI::fillRow()
-	 * 
+	 *
 	 */
 	public function fillRow($a_set)
 	{
 		foreach($a_set as $key => $value)
-		{			
+		{
 			$value = $this->formatCellValue($key, array($key => $value));
 			if(array_key_exists($key, $this->optionalColumns))
 			{
@@ -163,9 +163,9 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 				{
 					continue;
 				}
-		
+
 				$this->tpl->setCurrentBlock('optional_column');
-		
+
 				if((string)$value === '')
 				{
 					$this->tpl->touchBlock('optional_column');
@@ -185,14 +185,14 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 	}
 
 	/**
-	 * 
+	 *
 	 * Formats a field and returns it
-	 * 
+	 *
 	 * @param string $field
 	 * @param string $content
 	 * @return string
 	 * @access public
-	 * 
+	 *
 	 */
 	protected function formatField($field, $content)
 	{
@@ -202,14 +202,14 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 				$content = ilDatePresentation::formatDate(new ilDateTime($content, IL_CAL_UNIX));
 				break;
 		}
-		
+
 		return $content;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * @see ilTable2GUI::numericOrdering()
-	 * 
+	 *
 	 */
 	public function numericOrdering($field)
 	{

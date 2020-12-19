@@ -110,8 +110,8 @@ with_limitation#:#With a time limit
 content#:#Content
 record#:#Record
 content_type#:#Type
-add_to_desktop#:#Add to personal desktop 
-add_to_desktop_info#:#If enabled, a link to the Adobe Connect room, will be added to the personal desktop of new Adobe Connect participants.  
+add_to_desktop#:#Add to personal desktop
+add_to_desktop_info#:#If enabled, a link to the Adobe Connect room, will be added to the personal desktop of new Adobe Connect participants.
 template_info#:#The setting templates that you select, will be available for the lecturers when they create new meeting rooms. Choose 'Basic Settings',  if only a minimum set of technical options should be visible. Choose 'Advanced Settings',  if you want to provide more options to people and backgrounds.
 perm_read_records#:#Show Records
 login_failed#:#The Login failed
@@ -124,7 +124,7 @@ private_room#:#Nur registrierte Benutzer haben Zugang zum Raum (Gastzugriff gesp
 protected_room#:#Only registered users and accepted guests may enter the room
 public_room#:#Anyone who has the URL for the meeting can enter the room
 content_file_types#:#Allowed file types for content uploads
-content_file_types_info#:#Please enter the allowed file types, which can be uploaded into an Adobe Connect Meeting.   
+content_file_types_info#:#Please enter the allowed file types, which can be uploaded into an Adobe Connect Meeting.
 contact_information#:#Contact information
 office#:#Office
 mobile#:#Mobile
