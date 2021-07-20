@@ -1,49 +1,37 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
 /**
- * A meeting content
- *
+ * Class ilAdobeConnectContent
  * @author Nadia Matuschek <nmatuschek@databay.de>
- * @author Felix Paulano
  */
 class ilAdobeConnectContent
 {
     /**
-     *  Content attributes
-     *
      * @var ilAdobeConnectContentAttributes
      */
     private $attributes;
-
+    
     /**
-     *  Constructor
-     *
-     * @param array $attributes
+     * ilAdobeConnectContent constructor.
+     * @param $attributes
+     * @throws ilPluginException
      */
     public function __construct($attributes)
     {
-		/**
-		 * @var $pluginObj ilPlugin
-		 *
-		 */
-		$pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
-		$pluginObj->includeClass('class.ilAdobeConnectContentAttributes.php');
-
+        /**
+         * @var $pluginObj ilPlugin
+         */
+        $pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
+        $pluginObj->includeClass('class.ilAdobeConnectContentAttributes.php');
+        
         $this->attributes = new ilAdobeConnectContentAttributes($attributes);
     }
-
+    
     /**
-     *  Return $attributes attribute
-     *
-     * @return  ilAdobeConnectContentAttributes
+     * @return ilAdobeConnectContentAttributes
      */
     public function getAttributes()
     {
         return $this->attributes;
     }
-
 }
