@@ -1075,9 +1075,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $gallery_gui = new ilUsersGalleryGUI($provider);
         $this->ctrl->setCmd('view');
         $gallery_gui->executeCommand();
-        
-        $tpl->getStandardTemplate();
-        
         return;
     }
     
@@ -1162,7 +1159,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
             $this->addParticipant($usr_id);
             ++$added_users;
         }
-        ilUtil::sendSuccess($this->plugin->txt('assigned_users' . (count($added_users) == 1 ? '_s' : '_p')), true);
+        ilUtil::sendSuccess($this->plugin->txt('assigned_users' . ($added_users == 1 ? '_s' : '_p')), true);
         $this->ctrl->redirectByClass('ilObjAdobeConnectGUI', 'editParticipants');
     }
     
@@ -2920,6 +2917,5 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $tpl->setContent($info->getHTML() . $this->getPerformTriggerHtml());
         
         $tpl->setPermanentLink('xavc', $this->object->getRefId());
-        $tpl->addILIASFooter();
     }
 }
