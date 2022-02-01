@@ -32,14 +32,19 @@ class ilAdobeConnectXMLAPI
      */
     protected static $breeze_session = null;
     
-    /**
-     * @var null
-     */
-    protected $auth_mode = null;
+    protected string $auth_mode = '';
     /**
      * @var array
      */
     protected static $loginsession_cache = array();
+
+    /**
+     * @return string
+     */
+    public function getAuthMode() : string
+    {
+        return $this->auth_mode;
+    }
     /**
      * @var array
      */
@@ -187,12 +192,11 @@ class ilAdobeConnectXMLAPI
     {
         if ($this->adcInfo->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_HEADER) {
             $auth_result = $this->useHTTPHeaderAuthentification($user);
-            return $auth_result;
         } else // default: auth_mode_password
         {
             $auth_result = $this->usePasswordAuthentication($user);
-            return $auth_result;
         }
+        return $auth_result;
     }
     
     /**

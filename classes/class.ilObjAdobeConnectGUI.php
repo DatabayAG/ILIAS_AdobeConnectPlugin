@@ -61,7 +61,19 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
     
     /** @var bool is_record  for initEditForm hide/show file upload form */
     public $is_record = false;
-    
+
+    private function addToFavourites($usr_id) : void
+    {
+        $favourites = new ilFavouritesManager();
+        $favourites->add($usr_id->getId(), $this->object->getRefId());
+    }
+
+    private function removeFromFavourites($user_id) : void
+    {
+        $favourites = new ilFavouritesManager();
+        $favourites->remove($user_id, $this->object->getRefId());
+    }
+
     /**
      * Initialisation
      */
@@ -206,7 +218,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $xavc_role->addAdministratorRole($ilUser->getId());
         
         if (ilAdobeConnectServer::getSetting('add_to_desktop') == 1) {
-            ilObjUser::_addDesktopItem($ilUser->getId(), $this->object->getRefId(), 'xavc');
+            $this->addToFavourites($ilUser->getId());
         }
         
         if (ilAdobeConnectServer::getSetting('allow_crs_grp_trigger')) {
@@ -286,10 +298,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
     
     /**
      *  Sets subtabs
-     *
      * @param String $a_tab Parent tab
      */
-    protected function __setSubTabs($a_tab)
+    protected function __setSubTabs(string $a_tab)
     {
         global $DIC;
         $lng = $DIC->language();
@@ -1245,7 +1256,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $this->object->updateParticipant(ilXAVCMembers::_lookupXAVCLogin($user_id), $status);
         
         if (ilAdobeConnectServer::getSetting('add_to_desktop') == 1) {
-            ilObjUser::_addDesktopItem($user_id, $this->object->getRefId(), 'xavc');
+            $this->addToFavourites($user_id);
         }
         
         $ilCtrl->setParameter($this, 'cmd', 'showContent');
@@ -1332,7 +1343,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
             $this->object->deleteParticipant($xavc_login);
             
             //remove from pd
-            ilObjUser::_dropDesktopItem($usr_id, $this->object->getRefId(), 'xavc');
+            $this->removeFromFavourites($usr_id);
         }
         ilUtil::sendInfo($this->txt('participants_detached_successfully'));
         return $this->editParticipants();
@@ -1356,7 +1367,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         
         // add to desktop
         if (ilAdobeConnectServer::getSetting('add_to_desktop') == 1) {
-            ilObjUser::_addDesktopItem($a_user_id, $this->object->getRefId(), 'xavc');
+            $this->addToFavourites($a_user_id);
         }
         $is_member = ilXAVCMembers::_isMember($a_user_id, $this->object->getRefId());
         
@@ -1639,8 +1650,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         
         foreach ($results as $file_id) {
             $title = ilObject::_lookupTitle($file_id);
-            
-            $file_ref = array_shift(ilObject::_getAllReferences($file_id));
+            $reference_ids = ilObject::_getAllReferences($file_id);
+            $file_ref = array_shift($reference_ids);
             $path_arr = $tree->getPathFull($file_ref);
             $counter = 0;
             $path = '';

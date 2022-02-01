@@ -85,7 +85,7 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
      *
      * @return string $technical_user_session
      */
-    public function login()
+    public function login($user, $pass, $session)
     {
         if (null !== self::$technical_user_session) {
             return self::$technical_user_session;
@@ -127,20 +127,20 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
      * @param String $type Used for SWITCHaai meeting|content|...
      * @return String                 Meeting or content URL, or NULL if something is wrong
      */
-    public function getURL($sco_id, $folder_id, $session, $type)
+    public function getURLByType($sco_id, $folder_id, $session, $type)
     {
         global $DIC;
         $ilLog = $DIC->logger()->root();
-        
+
         switch ($type) {
             case 'meeting':
                 $url = $this->getApiUrl(array(
                     'action' => 'report-my-meetings',
                     'session' => $session
                 ));
-                
+
                 $xml = $this->getCachedSessionCall($url);
-                
+
                 if ($xml->status['code'] == "ok") {
                     foreach ($xml->{'my-meetings'}->meeting as $meeting) {
                         if ($meeting['sco-id'] == $sco_id) {
@@ -150,7 +150,7 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
                 }
                 $ilLog->write('AdobeConnect getURL Request: ' . $url);
                 $ilLog->write('AdobeConnect getURL Response: ' . $xml->asXML());
-                
+
                 return null;
                 break;
             default:
@@ -158,7 +158,8 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
                 break;
         }
     }
-    
+
+
     /**
      *  Gets meeting start date
      *
@@ -241,7 +242,7 @@ class ilSwitchAaiXMLAPI extends ilAdobeConnectXMLAPI
     {
         $principal_id = $this->getPrincipalId($login, $session);
         
-        $technical_user_session = $this->login();
+        $technical_user_session = $this->login('user', 'pass,', $session);
         
         $url = $this->getApiUrl(array(
             'action' => 'permissions-update',
