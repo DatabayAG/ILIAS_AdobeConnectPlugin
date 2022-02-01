@@ -227,9 +227,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
         
         if (!$tmp_xavc_login) {
             $this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
-            $xavc_login = ilAdobeConnectUserUtil::generateXavcLoginName($user_id);
-            
-            $externalLogin = ilXAVCMembers::addXAVCUser($user_id, $xavc_login);
+            $externalLogin = ilAdobeConnectUserUtil::generateXavcLoginName($user_id);
+            ilXAVCMembers::addXAVCUser($user_id, $externalLogin);
         } else {
             // get saved login-data
             $externalLogin = $tmp_xavc_login;
@@ -820,8 +819,13 @@ class ilObjAdobeConnect extends ilObjectPlugin
         if ($session != null && $this->xmlApi->login($this->adminLogin, $this->adminPass, $session)) {
             //only read url via api, if url in database is empty
             if (!$this->url) {
-                //the parameter meeting is used for the switchaai-case
-                $this->url = substr($this->xmlApi->getURL($this->sco_id, $this->folder_id, $session, 'meeting'), 0, -1);
+                if($this->xmlApi->getAuthMode() == ilAdobeConnectServer::AUTH_MODE_SWITCHAAI) {
+                    //the parameter meeting is used for the switchaai-case
+                    $this->url = substr($this->xmlApi->getURLByType($this->sco_id, $this->folder_id, $session,
+                        'meeting'), 0, -1);
+                } else {
+                    $this->url = substr($this->xmlApi->getURL($this->sco_id, $this->folder_id, $session), 0, -1);
+                }
             }
             
             $date_begin = $this->xmlApi->getStartDate($this->sco_id, $this->folder_id, $session);

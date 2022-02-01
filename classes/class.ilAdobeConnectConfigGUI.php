@@ -64,7 +64,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
         require_once './Services/Authentication/classes/class.ilAuthUtils.php';
         
-        $this->tabs->setTabActive('editAdobeSettings');
+        $this->tabs->activateTab('editAdobeSettings');
         $this->form = new ilPropertyFormGUI();
         
         $this->form->setFormAction($ilCtrl->getFormAction($this, 'saveAdobeSettings'));
@@ -408,7 +408,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         if ($this->form->checkInput()) {
             $max_num_vc = (int) $this->form->getInput('num_max_vc');
             $num_ac_obj = (int) $this->form->getInput('ac_interface_objects');
-            $num_ac_obj_buffer = $this->form->getInput('ac_interface_objects_buffer');
+            $num_ac_obj_buffer = (int) $this->form->getInput('ac_interface_objects_buffer');
             
             $sum = $num_ac_obj + $num_ac_obj_buffer;
             /*if((int)$num_ac_obj > 0 && $sum > $max_num_vc)
@@ -636,8 +636,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
     public function getIliasSettingsValues()
     {
         $values = array();
-        $values['use_meeting_template'] = ilAdobeConnectServer::getSetting('use_meeting_template') ? ilAdobeConnectServer::getSetting('use_meeting_template') : 0;;
-        $values['template_sco_id'] = ilAdobeConnectServer::getSetting('template_sco_id') ? ilAdobeConnectServer::getSetting('template_sco_id') : 0;;
+        $values['use_meeting_template'] = ilAdobeConnectServer::getSetting('use_meeting_template') ? ilAdobeConnectServer::getSetting('use_meeting_template') : 0;
+        $values['template_sco_id'] = ilAdobeConnectServer::getSetting('template_sco_id') ? ilAdobeConnectServer::getSetting('template_sco_id') : 0;
         
         $values['obj_creation_settings'] = unserialize(ilAdobeConnectServer::getSetting('obj_creation_settings')) ? unserialize(ilAdobeConnectServer::getSetting('obj_creation_settings')) : '0';
         $values['obj_title_suffix'] = ilAdobeConnectServer::getSetting('obj_title_suffix') ? ilAdobeConnectServer::getSetting('obj_title_suffix') : 0;

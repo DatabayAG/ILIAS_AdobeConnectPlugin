@@ -2,8 +2,6 @@
 
 class ilXAVCPermissions
 {
-    private $permissions = array();
-    
     public function __construct()
     {
     }
@@ -79,7 +77,7 @@ class ilXAVCPermissions
     
     /**
      * @param $permission  AdobeConnectPermissions
-     * @param $role   host | mini-host | view | denied
+     * @param string $role   host | mini-host | view | denied
      * @return int
      */
     public static function lookupPermission($permission, $role)
