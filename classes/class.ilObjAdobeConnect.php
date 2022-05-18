@@ -1531,7 +1531,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
     {
         global $DIC;
         $ilDB = $DIC->database();
-
+        $local_scos = array();
         $res = $ilDB->query('SELECT sco_id FROM rep_robj_xavc_data');
         while ($row = $ilDB->fetchAssoc($res)) {
             $local_scos[] = $row['sco_id'];

@@ -32,7 +32,7 @@ class ilAdobeConnectXMLAPI
      */
     protected static $breeze_session = null;
     
-    protected string $auth_mode = '';
+    protected $auth_mode = '';
     /**
      * @var array
      */
