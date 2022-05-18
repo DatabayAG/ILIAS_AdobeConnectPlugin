@@ -34,7 +34,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
      *  Meeting id
      * @var String
      */
-    private string $sco_id;
+    private $sco_id;
     /**
      *  Meeting start date
      * @var ilDateTime
