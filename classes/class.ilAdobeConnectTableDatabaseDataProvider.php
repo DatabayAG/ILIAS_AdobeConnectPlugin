@@ -3,77 +3,30 @@
 
 require_once dirname(__FILE__) . '/../interfaces/interface.ilAdobeConnectTableDataProvider.php';
 
-/**
- * @version $Id$
- * @abstract
- */
 abstract class ilAdobeConnectTableDatabaseDataProvider implements ilAdobeConnectTableDataProvider
 {
-    /**
-     * @var ilDB
-     */
-    protected $db;
     
-    /**
-     * @param ilDB $db
-     */
-    public function __construct($db, $parent_obj)
+    protected ilDBInterface $db;
+    protected $parent_obj;
+    
+    public function __construct(ilDBInterface $db, $parent_obj)
     {
         $this->db = $db;
         $this->parent_obj = $parent_obj;
     }
     
-    /**
-     * @return string
-     * @abstract
-     */
-    abstract protected function getSelectPart(array $filter);
+    abstract protected function getSelectPart(array $filter): string;
+    abstract protected function getFromPart(array $filter): string;
+    abstract protected function getWherePart(array $filter): string;
+    abstract protected function getGroupByPart(): string;
+    abstract protected function getHavingPart(array $filter): string;
+    abstract protected function getOrderByPart(array $params): string;
+    abstract protected function getAdditionalItems($data): array;
     
     /**
-     * @return string
-     * @abstract
-     */
-    abstract protected function getFromPart(array $filter);
-    
-    /**
-     * @param array $filter
-     * @return string
-     * @abstract
-     */
-    abstract protected function getWherePart(array $filter);
-    
-    /**
-     * @return string
-     * @abstract
-     */
-    abstract protected function getGroupByPart();
-    
-    /**
-     * @param array $filter
-     * @return string
-     * @abstract
-     */
-    abstract protected function getHavingPart(array $filter);
-    
-    /**
-     * @param array $params
-     * @return string
-     * @abstract
-     */
-    abstract protected function getOrderByPart(array $params);
-    
-    /**
-     * @return array
-     */
-    abstract protected function getAdditionalItems($data);
-    
-    /**
-     * @param array $params
-     * @param array $filter
-     * @return array
      * @throws InvalidArgumentException
      */
-    public function getList(array $params, array $filter)
+    public function getList(array $params, array $filter): array
     {
         $data = array(
             'items' => array(),

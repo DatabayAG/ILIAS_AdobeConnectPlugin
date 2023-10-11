@@ -1,81 +1,28 @@
 <?php
 
-/**
- * Class ilAdobeConnectUserUtil
- * @author  Nadia Matuschek <nmatuschek@databay.de>
- */
 class ilAdobeConnectUserUtil
 {
-    /**
-     *  User id
-     *
-     * @var String
-     */
-    private $id;
-    /**
-     *  User email address
-     *
-     * @var String
-     */
-    private $email;
-    /**
-     *  User login
-     *
-     * @var String
-     */
-    private $login;
-    /**
-     *  User password
-     *
-     * @var String
-     */
-    private $pass;
-    /**
-     *  User first name
-     *
-     * @var String
-     */
-    private $first_name;
-    /**
-     *  User second name
-     *
-     * @var String
-     */
-    private $last_name;
+    private int $id = 0;
+    private string $email = '';
+    private string $login = '';
+    private string $pass = '';
+    private string $first_name = '';
+    private string $last_name = '';
+    private string $xavc_login = '';
     
-    /**
-     *  Adobe Connect Login
-     *
-     * @var String
-     */
-    private $xavc_login;
-    
-    /**
-     *  Constructor
-     *
-     * @param String $user_id
-     */
-    public function __construct($user_id)
+    public function __construct(int $user_id)
     {
         $this->id = $user_id;
         $this->readAdobeConnectUserData();
     }
     
-    public function ensureAccountExistance()
+    public function ensureAccountExistence(): void
     {
-//		$auth_mode = ilAdobeConnectServer::getSetting('auth_mode');
-//		 here we can decide in future if it is needed to check and/or create accounts at an AC-Server or not
-        
-        $this->ensureLocalAccountExistance();
-        
-        //In the SWITCH aai case, we don't have enough permissions to search for users
-        //Therefore, we just try to add the user to the meeting, regardless of whether the account exists already or not
-        if (ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH) {
-            $this->ensureAdobeConnectAccountExistance();
-        }
+        $this->ensureLocalAccountExistence();
+        $this->ensureAdobeConnectAccountExistence();
     }
     
-    private function readAdobeConnectUserData()
+    private function readAdobeConnectUserData(): void
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -97,11 +44,11 @@ class ilAdobeConnectUserUtil
         
         while ($row = $ilDB->fetchAssoc($login_res)) {
             $this->xavc_login = $row['xavc_login'];
-            $this->ensureAccountExistance();
+            $this->ensureAccountExistence();
         }
     }
     
-    private function ensureLocalAccountExistance()
+    private function ensureLocalAccountExistence(): void
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -113,11 +60,7 @@ class ilAdobeConnectUserUtil
         if (!$this->xavc_login && $expected_login_name) //|| $this->xavc_login != $expected_login_name)
         {
             $this->xavc_login = $expected_login_name;
-            // replace possible existing login_name
-//			$ilDB->manipulateF('DELETE FROM rep_robj_xavc_users WHERE user_id = %s', 
-//				array('integer'), array($this->getId()));
-            
-            // insert generated login-name into xavc_users
+
             $ilDB->replace(
                 'rep_robj_xavc_users',
                 array(
@@ -130,7 +73,7 @@ class ilAdobeConnectUserUtil
         }
     }
     
-    private function ensureAdobeConnectAccountExistance()
+    private function ensureAdobeConnectAccountExistence(): void
     {
         // check if this login exists at ac-server
         $search = $this->searchUser($this->xavc_login);
@@ -141,7 +84,7 @@ class ilAdobeConnectUserUtil
         }
     }
     
-    public function ensureUserFolderExistance($a_xavc_login = "")
+    public function ensureUserFolderExistence($a_xavc_login = "")
     {
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
         $session = $xmlAPI->getBreezeSession();
@@ -150,7 +93,7 @@ class ilAdobeConnectUserUtil
         $login = $instance->getLogin();
         $pass = $instance->getPasswd();
         
-        if (ilAdobeConnectServer::getSetting('use_user_folders') == 1) {
+        if ((string) ilAdobeConnectServer::getSetting('use_user_folders') == '1') {
             if ($a_xavc_login) {
                 $xavc_login = $a_xavc_login;
             } else {
@@ -339,33 +282,29 @@ class ilAdobeConnectUserUtil
     }
     
     /** Generates the login name for a user depending on assignment_mode setting
-     *
-     * @param integer $user_id user_id
      */
-    public static function generateXavcLoginName($user_id)
+    public static function generateXavcLoginName(int $user_id): string
     {
         // set default when there is no setting set: assign_user_email
         $assignment_mode = ilAdobeConnectServer::getSetting('user_assignment_mode')
             ? ilAdobeConnectServer::getSetting('user_assignment_mode')
             : 'assign_user_email';
         
-        
         switch ($assignment_mode) {
             case 'assign_user_email':
-                $xavc_login = IL_INST_ID . '_' . $user_id . '_' . ilObjUser::_lookupEmail($user_id);
+                $xavc_login = IL_INST_ID . '_' . $user_id . '_' . ilObjUser::_lookupEmail((int)$user_id);
                 break;
             
             case 'assign_ilias_login':
-                $xavc_login = IL_INST_ID . '_' . $user_id . '_' . ilObjUser::_lookupLogin($user_id);
+                $xavc_login = IL_INST_ID . '_' . $user_id . '_' . ilObjUser::_lookupLogin((int)$user_id);
                 break;
             
-            //The SWITCH aai/DFN case, only return e-mail address
             case 'assign_dfn_email':
             case 'assign_breezeSession':
-                $xavc_login = ilObjUser::_lookupEmail($user_id);
+                $xavc_login = ilObjUser::_lookupEmail((int)$user_id);
                 break;
         }
         
-        return $xavc_login;
+        return (string) $xavc_login;
     }
 }

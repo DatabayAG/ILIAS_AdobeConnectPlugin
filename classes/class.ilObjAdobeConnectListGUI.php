@@ -6,40 +6,19 @@
 
 include_once './Services/Repository/classes/class.ilObjectPluginListGUI.php';
 
-/**
- * List GUI class for Adobe Connect repository object
- *
- * @author Felix
- */
 class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI
 {
-    /**
-     * Init type
-     */
-    function initType()
+    public function initType()
     {
         $this->setType('xavc');
     }
     
-    /**
-     * Get name of gui class handling the commands
-     *
-     * @return String
-     */
-    
-    function getGuiClass()
+    public function getGuiClass()
     {
         return 'ilObjAdobeConnectGUI';
     }
     
-    /**
-     * Get commands
-     *
-     * this function is called at least twice as we use the result
-     * in the overwritten 'insertCommands' method below.
-     *
-     */
-    function initCommands()
+    public function initCommands()
     {
         $this->link_enabled = false;
         $this->copy_enabled = false;
@@ -64,13 +43,6 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI
         return $command_array;
     }
     
-    /**
-     * @param bool $a_use_asynch
-     * @param bool $a_get_asynch_commands
-     * @param string $a_asynch_url
-     * @param bool $a_header_actions
-     * @return string|void
-     */
     public function insertCommands(
         $a_use_asynch = false,
         $a_get_asynch_commands = false,
@@ -80,9 +52,6 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI
         global $DIC;
         $ilUser = $DIC->user();
         
-        /**
-         * @var  $this- >plugin ilPlugin
-         */
         $this->plugin->includeClass('class.ilObjAdobeConnectAccess.php');
         
         if (
@@ -118,17 +87,8 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI
             $this->commands = $this->initCommands();
         }
         return parent::insertCommands($a_use_asynch, $a_get_asynch_commands, $a_asynch_url);
-        
     }
     
-    /**
-     * Get item properties
-     *
-     * @return    array        array of property arrays:
-     *                        'alert' (boolean) => display as an alert property (usually in red)
-     *                        'property' (string) => property name
-     *                        'value' (string) => property value
-     */
     public function getProperties()
     {
         $props = array();

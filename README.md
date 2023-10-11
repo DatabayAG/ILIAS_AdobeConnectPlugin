@@ -1,9 +1,41 @@
 # ILIAS_AdobeConnectPlugin
 ILIAS Plugin for Adobe Connect Virtual Classrooms
-* For ILIAS versions: 6.0 - 7.999
-* Tested with Adobe Connect API-Version 11.2.2
+* For ILIAS versions: 7.0 - 7.999
+* Tested with Adobe Connect API-Version 12.5
 
-## Installation Instructions
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",
+"SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL"
+in this document are to be interpreted as described in
+[RFC 2119](https://www.ietf.org/rfc/rfc2119.txt).
+
+**Table of Contents**
+
+* [Requirements](#requirements)
+* [Install](#install)
+* [General](#general)
+* [Own Server Mode](#own-server-mode)
+* [DFN MODE](#dfn-mode)
+
+## Requirements
+
+* PHP: [![Minimum PHP Version](https://img.shields.io/badge/Minimum_PHP-7.4.x-blue.svg)](https://php.net/) [![Maximum PHP Version](https://img.shields.io/badge/Maximum_PHP-7.4.x-blue.svg)](https://php.net/)
+* ILIAS: [![Minimum ILIAS Version](https://img.shields.io/badge/Minimum_ILIAS-7.x-orange.svg)](https://ilias.de/) [![Maximum ILIAS Version](https://img.shields.io/badge/Maximum_ILIAS-7.x-orange.svg)](https://ilias.de/)
+
+## Install
+
+This plugin MUST be installed as a
+[Repository Plugin](https://docu.ilias.de/goto_docu_pg_29962_42.html).
+
+The files MUST be saved in the following directory:
+
+	<ILIAS>/Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect
+
+Correct file and folder permissions MUST be
+ensured by the responsible system administrator.
+
+The plugin's files and folder SHOULD NOT be created,
+as root.
+
 1. Clone this repository 
    `$ git clone https://github.com/DatabayAG/ILIAS_AdobeConnectPlugin`
 2. Move the project to the ILIAS-plugin-directory
@@ -13,14 +45,13 @@ ILIAS Plugin for Adobe Connect Virtual Classrooms
 5. Search the **AdobeConnect** plugin in the list of plugin and choose **Activate** from the **Actions** drop down.
 6. Choose **Configure** from the **Actions** drop down and enter the required data.
 
-## Known Issues
-
-### General
+## General
 * Please keep in mind that the *Adobe Connect-Registration-Mode* cannot be changed (only by direct database access) after it is selected once.
 
 ![Login Policy](https://mjansendatabay.github.io/ILIAS/Plugins/AdobeConnect/loginpolicy.png)
 
 * An API connection by a proxy is currently not implemented.
+* SWITCH AAI-Mode is not maintained anymore
 
 ### Own Server Mode
 * Authentication: Please ensure that the setting "Email-Adresse für Anmeldung verwenden" is disabled (Administration » Benutzer und Gruppen » Anmelde- und Kennwortrichtlinien).

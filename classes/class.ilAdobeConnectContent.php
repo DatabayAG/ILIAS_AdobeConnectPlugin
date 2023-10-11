@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Class ilAdobeConnectContent
- * @author Nadia Matuschek <nmatuschek@databay.de>
- */
 class ilAdobeConnectContent
 {
     /**

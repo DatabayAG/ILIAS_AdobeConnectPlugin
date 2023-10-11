@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Description of class
- * @author jposselt
- */
 class ilAdobeConnectSlotCollisionDetection
 {
     

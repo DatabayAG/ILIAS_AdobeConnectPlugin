@@ -1,62 +1,28 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/**
- * Meeting content attributes
- *
- * @author Felix Paulano
- */
 class ilAdobeConnectContentAttributes
 {
+    private array $attributes = [];
     
-    /**
-     *  array of attributes
-     *
-     * @var array
-     */
-    private $attributes;
-    
-    /**
-     *  Constructor
-     *
-     * @param array $attributes
-     */
     public function __construct($attributes)
     {
-        $this->attributes = $attributes;
+        $this->attributes = (array) $attributes;
     }
     
-    /**
-     *  Return $attributes attribute
-     *
-     * @return array
-     */
-    public function getAttributes()
+    public function getAttributes(): array
     {
         return $this->attributes;
     }
     
-    /**
-     *  Returns an attribute specified by $name
-     *
-     * @param String $name
-     * @return String
-     */
-    public function getAttribute($name)
+    public function getAttribute(string $name): string
     {
-        return $this->attributes[$name];
+        return (string) $this->attributes[$name];
     }
     
     /**
      *  Check if all attributes matching all search criteria
-     *
-     * @param array $search_criteria
-     * @return boolean
      */
-    public function match($search_criteria)
+    public function match(array $search_criteria): bool
     {
         foreach ($search_criteria as $key => $attribute) {
             if ($attribute != $this->attributes[$key]) {

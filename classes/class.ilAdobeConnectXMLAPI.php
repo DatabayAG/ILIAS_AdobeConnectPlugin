@@ -2,58 +2,27 @@
 
 include_once("./Customizing/global/plugins/Services/Repository/RepositoryObject/AdobeConnect/classes/class.ilAdobeConnectServer.php");
 
-/**
- * Connect to Adobe Connect API
- * @author Nadia Matuschek <nmatuschek@databay.de>
- */
 class ilAdobeConnectXMLAPI
 {
-    /**
-     *  Adobe Connect server
-     * @var String
-     */
-    protected $server;
-    /**
-     * @var String
-     */
-    protected $port;
     
-    /**
-     * @var null
-     */
-    protected $x_user_id;
+    protected string $server;
+    protected string $port;
+    protected ?string $x_user_id = null;
     /**
      * @var ilAdobeConnectServer
      */
     protected $adcInfo;
-    
-    /**
-     * @var null
-     */
-    protected static $breeze_session = null;
-    
+    protected static ?string $breeze_session = null;
     protected string $auth_mode = '';
-    /**
-     * @var array
-     */
-    protected static $loginsession_cache = array();
-
-    /**
-     * @return string
-     */
-    public function getAuthMode() : string
+    protected static array $loginsession_cache = array();
+    
+    public function getAuthMode(): string
     {
         return $this->auth_mode;
     }
-    /**
-     * @var array
-     */
-    protected static $scocontent_cache = array();
     
+    protected static array $scocontent_cache = array();
     
-    /**
-     * ilAdobeConnectXMLAPI constructor.
-     */
     public function __construct()
     {
         $this->adcInfo = ilAdobeConnectServer::_getInstance();
@@ -65,18 +34,12 @@ class ilAdobeConnectXMLAPI
         $this->proxy();
     }
     
-    /**
-     * @return null|string
-     */
-    public function getXUserId()
+    public function getXUserId(): ?string
     {
         return $this->x_user_id;
     }
     
-    /**
-     * @return null|string
-     */
-    public function getAdminSession()
+    public function getAdminSession(): ?string
     {
         $session = $this->getBreezeSession();
         
@@ -157,11 +120,8 @@ class ilAdobeConnectXMLAPI
     
     /**
      * Changes the password of the user, identified by username
-     * @param string $username
-     * @param string $newPassword
-     * @return boolean true on success
      */
-    public function changeUserPassword($username, $newPassword)
+    public function changeUserPassword(string $username, string $newPassword): bool
     {
         $user_id = $this->searchUser($username, $this->getAdminSession());
         
@@ -234,10 +194,7 @@ class ilAdobeConnectXMLAPI
         }
     }
     
-    /**
-     * @return null|string
-     */
-    public function getApiVersion()
+    public function getApiVersion(): ?string
     {
         global $DIC;
         $ilLog = $DIC->logger()->root();
@@ -268,7 +225,7 @@ class ilAdobeConnectXMLAPI
      * @param bool $useCache
      * @return null|string
      */
-    public function getBreezeSession($useCache = true)
+    public function getBreezeSession($useCache = true): ?string
     {
         global $DIC;
         $ilLog = $DIC->logger()->root();
@@ -682,10 +639,9 @@ class ilAdobeConnectXMLAPI
      * @param String $sco_id Meeting or content id
      * @param String $folder_id Parent folder id
      * @param String $session Session id
-     * @param String $type Used for SWITCHaai meeting|content|...
      * @return String                 Meeting or content URL, or NULL if something is wrong
      */
-    public function getURL($sco_id, $folder_id, $session)
+    public function getURL(string $sco_id, string $folder_id, string $session)
     {
         global $DIC;
         $ilLog = $DIC->logger()->root();

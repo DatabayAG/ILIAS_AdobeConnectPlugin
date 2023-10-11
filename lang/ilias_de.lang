@@ -240,8 +240,6 @@ default_perm_room#:#Default-Wert für permanent offene Räume
 default_perm_room_info#:#Wenn dies aktiviert ist, wird beim Erstellen eines neuen Objektes die Checkbox "Permanent offener Raum" per Default angehakt  
 perm_edit_participants#:#Teilnehmer Liste anzeigen
 perm_add_participants#:#Mitglieder hinzufügen und löschen
-assign_users_with_switch_aai_login#:#SWITCH AAI Login
-auth_mode_switchaai#:#SWITCH AAI-Authentifizierung
 choose_existing_room#:#Wählen Sie ein bestehendes Adobe-Connect Meeting aus, um ein neues ILIAS Objekt zu erstellen.
 sure_delete_participant_p#:#Sind Sie sicher, dass Sie die folgenden Teilnehmer löschen möchten?
 sure_delete_participant_s#:#Sind Sie sicher, dass Sie den folgenden Teilnehmer löschen möchten?
@@ -282,9 +280,6 @@ perm_read_contents#:#Materialien ansehen
 use_user_folders#:#Individuelle Benutzerordner verwenden
 use_user_folders_info#:#Wenn dies aktiviert ist, wird beim Erstellen eines Adobe Connect Meetings, auf dem Adobe Connect-Server ein persönlicher Ordner für den anlegenden Benutzer angelegt.
 owner_info#:#Besitzer erhalten auf dem Adobe Connect Server erweiterte Verwaltungsmöglichkeiten für die eigenen Meetings. Diese Zuständigkeit wird beim Anlegen des Raums festglegt und kann nachträglich nicht mehr geändert werden.
-auth_mode_switchaai_accounts#:#Wählen Sie die Account-Typen (neben SWITCH AAI), die eine SWITCH AAI-Authentifizierung auf den Adobe-Connect-Server durchführen sollen.
-auth_mode_switchaai_local#:#Local
-auth_mode_switchaai_ldap#:#LDAP
 assign_users_with_email_dfn#:#DFN: Adobe Connect-User anhand der E-Mail-Adresse anlegen
 il_xavc_member#:#Mitglied
 il_xavc_admin#:#Administrator
