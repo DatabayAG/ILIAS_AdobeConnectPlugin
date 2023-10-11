@@ -3,41 +3,22 @@
 
 require_once 'Services/Table/classes/class.ilTable2GUI.php';
 
-/**
- * @version $Id$
- * @abstract
- */
 abstract class ilAdobeConnectTableGUI extends ilTable2GUI
 {
-    /**
-     * @var ilCtrl
-     */
-    protected $ctrl;
+    protected ilCtrl $ctrl;
     
-    /**
-     * @var array
-     */
-    protected $visibleOptionalColumns = array();
+    protected array $visibleOptionalColumns = array();
     
     /**
      * @var ilAdobeConnectTableDataProvider
      */
     protected $provider;
     
-    /**
-     * @var array
-     */
-    protected $optionalColumns = array();
+    protected array $optionalColumns = array();
     
-    /**
-     * @var array
-     */
-    protected $filter = array();
+    protected array $filter = array();
     
-    /**
-     * @var array
-     */
-    protected $optional_filter = array();
+    protected array $optional_filter = array();
     
     /**
      * Set the provider to be used for data retrieval.
@@ -57,11 +38,7 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
         return $this->provider;
     }
     
-    /**
-     * @param string $column
-     * @return bool
-     */
-    protected function isColumnVisible($column)
+    protected function isColumnVisible(string $column): bool
     {
         if (array_key_exists($column, $this->optionalColumns) && !isset($this->visibleOptionalColumns[$column])) {
             return false;
@@ -100,9 +77,6 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
         return $row[$column];
     }
     
-    /**
-     * @param array $row
-     */
     final protected function fillRow($row)
     {
         $this->prepareRow($row);

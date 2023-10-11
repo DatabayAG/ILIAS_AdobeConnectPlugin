@@ -1,51 +1,23 @@
 <?php
 
-/**
- * Meeting contents
- *
- * @author Felix Paulano
- */
 class ilAdobeConnectContents
 {
-    /**
-     * array of contents
-     *
-     * @var  array $contents ilAdobeConnectContent
-     */
-    private $contents;
+    private array $contents = [];
     
-    /**
-     * Default constructor
-     *
-     */
     public function __construct()
     {
         $this->contents = array();
     }
     
-    /**
-     *  Add a content to the container
-     *
-     * @param array $attributes
-     */
-    public function addContent($attributes)
+    public function addContent($attributes): void
     {
-        /**
-         * @var $pluginObj ilPlugin
-         *
-         */
         $pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
         $pluginObj->includeClass('class.ilAdobeConnectContent.php');
         
         $this->contents[] = new ilAdobeConnectContent($attributes);
     }
     
-    /**
-     *
-     * @param array $search_criteria
-     * @return array
-     */
-    public function search($search_criteria = null)
+    public function search($search_criteria = null): array
     {
         $results = array();
         /**
@@ -63,11 +35,7 @@ class ilAdobeConnectContents
         return $results;
     }
     
-    /**
-     *
-     * @return array
-     */
-    public function getContents()
+    public function getContents(): array
     {
         return $this->contents;
     }

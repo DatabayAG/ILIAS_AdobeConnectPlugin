@@ -2,16 +2,13 @@
 
 require_once 'class.ilAdobeConnectXMLAPI.php';
 
-/**
- * Class ilAdobeConnectDfnXMLAPI
- */
 class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 {
     /**
      * @param array $params
      * @return string
      */
-    protected function getApiUrl($params)
+    protected function getApiUrl($params): string
     {
         $server = $this->server;
         if (substr($server, -1) == '/') {

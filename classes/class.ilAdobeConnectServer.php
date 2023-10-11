@@ -1,106 +1,54 @@
 <?php
-/* 
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 
-/**
- * Adobe Connect server attributes
- * @author  Nadia Matuschek <nmatuschek@databay.de>
- * @version $Id:$
- */
-
-// class should be renamed to ilAdobeConnectSettings 
-//@Todo RENAME class to ilAdobeConnectSettings !!!
+// class should be renamed to ilAdobeConnectSettings
 class ilAdobeConnectServer
 {
     // User-Assignment-Mode
-    const ASSIGN_USER_EMAIL = 'assign_user_email';
-    const ASSIGN_USER_ILIAS = 'assign_ilias_login';
-    const ASSIGN_USER_SWITCH = 'assign_breezeSession';
-    const ASSIGN_USER_DFN_EMAIL = 'assign_dfn_email';
+    public const ASSIGN_USER_EMAIL = 'assign_user_email';
+    public const ASSIGN_USER_ILIAS = 'assign_ilias_login';
+    public const ASSIGN_USER_DFN_EMAIL = 'assign_dfn_email';
     
     // Auth-Mode
-    const AUTH_MODE_PASSWORD = 'auth_mode_password';
-    const AUTH_MODE_HEADER = 'auth_mode_header';
-    const AUTH_MODE_SWITCHAAI = 'auth_mode_switchaai';
-    const AUTH_MODE_DFN = 'auth_mode_dfn';
+    public const AUTH_MODE_PASSWORD = 'auth_mode_password';
+    public const AUTH_MODE_HEADER = 'auth_mode_header';
+    public const AUTH_MODE_DFN = 'auth_mode_dfn';
     
-    
-    /**
-     *  Server address
-     * @var String
-     */
-    private $server;
-    /**
-     *  Server Port
-     * @var String
-     */
-    private $port = null;
-    /**
-     *  Presentation Server address
-     * @var String
-     */
-    private $presentation_server;
-    /**
-     *  Presentation Server Port
-     * @var String
-     */
-    private $presentation_port = null;
-    /**
-     *  Admin login
-     * @var String
-     */
-    private $login;
+    private string $server = '';
+    private ?string $port = null;
+    private string $presentation_server = '';
+    private ?string $presentation_port = null;
+    private string $login = '';
     /**
      *  Admin pass. Must belongs to the next groups: hosts, authors and administrators
-     * @var String
      */
-    private $pass;
+    private string $pass = '';
     /**
      *  Maximum number of concurrent sessions on the server
-     * @var Integer
      */
-    private $num_max_vc;
+    private string $num_max_vc = '0';
+    private bool $public_vc_enabled = false;
     
-    /**
-     * @var Boolean
-     */
-    private $public_vc_enabled = false;
+    private ?int $num_public_vc = null;
     
-    /**
-     * @var Integer
-     */
-    private $num_public_vc = null;
+    private int $buffer_seconds_before = 1800; // 30 minutes
+    private int $buffer_seconds_after = 1800; // 30 minutes
     
-    private $buffer_seconds_before = 1800; // 30 minutes
-    private $buffer_seconds_after = 1800; // 30 minutes
+    private int $schedule_lead_time = 172800; // 48 hours
     
-    private $schedule_lead_time = 172800; // 48 hours
-    
-    /**
-     * @var null
-     */
-    private $user_assignment_mode = null;
+    private ?string $user_assignment_mode = null;
     
     /**
      * @var string $auth_mode Authentification mode
      */
-    private $auth_mode = null;
+    private ?string $auth_mode = null;
     
     /**
      * @var string $x_user_id Header-Variable needed for HTTP-Header-Auth.
      */
-    private $x_user_id = null;
+    private ?string $x_user_id = null;
     
-    /**
-     * @var bool
-     */
-    private $html_client = false;
-    /**
-     * @var  string
-     */
-    private $api_version = 0;
+    private bool $html_client = false;
+    private string $api_version = '0';
     
     /**
      *  Singleton instance
@@ -108,18 +56,11 @@ class ilAdobeConnectServer
      */
     private static $instance;
     
-    /**
-     * Default constructor
-     */
     private function __construct()
     {
     }
     
-    /**
-     *  Return an instance of the class itself
-     * @return ilAdobeConnectServer
-     */
-    public static function _getInstance()
+    public static function _getInstance(): ilAdobeConnectServer
     {
         if (!self::$instance instanceof self) {
             self::$instance = new self;
@@ -129,10 +70,7 @@ class ilAdobeConnectServer
         return self::$instance;
     }
     
-    /**
-     *  Reads attributes from the setup.xml file
-     */
-    public function doRead()
+    public function doRead(): void
     {
         $this->server = self::getSetting('server');
         $this->port = self::getSetting('port');
@@ -151,129 +89,76 @@ class ilAdobeConnectServer
         $this->api_version = self::getSetting('api_version');
     }
     
-    /**
-     * Commits the current server settings
-     */
-    public function commitSettings()
+    public function commitSettings(): void
     {
         if (self::$instance instanceof self) {
             self::$instance->doRead();
         }
     }
     
-    /**
-     * Sets the server name.
-     * @param String $a_adobe_server
-     */
-    public function setServer($a_adobe_server)
+    public function setServer(string $a_adobe_server): void
     {
         $this->server = $a_adobe_server;
     }
     
-    /**
-     *  Returns the server name. Previously, it calls doRead method
-     * @return String
-     */
-    public function getServer()
+    public function getServer(): string
     {
         return $this->server;
     }
     
-    /**
-     * Sets the server port.
-     * @param String $server_port
-     */
-    public function setPort($a_port)
+    public function setPort(string $a_port): void
     {
         $this->port = $a_port;
     }
     
-    /**
-     *  Returns the server Porte.
-     * @return String
-     */
-    public function getPort()
+    public function getPort(): ?string
     {
         return $this->port;
     }
     
-    /**
-     * Sets the presentation server name.
-     * @param String $adobe_server
-     */
-    public function setPresentationServer($a_adobe_server)
+    public function setPresentationServer(string $a_adobe_server): void
     {
         $this->presentation_server = $a_adobe_server;
     }
     
-    /**
-     *  Returns the presentation server name.
-     * @return String
-     */
-    public function getPresentationServer()
+    public function getPresentationServer(): string
     {
         return $this->presentation_server;
     }
     
-    /**
-     * Sets the presentation server port.
-     * @param String $server_port
-     */
-    public function setPresentationPort($a_port)
+    public function setPresentationPort(string $a_port): void
     {
         $this->presentation_port = $a_port;
     }
     
-    /**
-     *  Returns the presentation server Port.
-     * @return String
-     */
-    public function getPresentationPort()
+    public function getPresentationPort(): ?string
     {
         return $this->presentation_port;
     }
     
-    /**
-     *  Sets the admin login.
-     * @param String $login
-     */
-    public function setLogin($a_login)
+    public function setLogin(string $a_login): void
     {
         $this->login = $a_login;
     }
     
-    /**
-     *  Returns the admin login. Previously, it calls doRead method
-     * @return String
-     */
-    public function getLogin()
+    public function getLogin(): string
     {
         return $this->login;
     }
     
-    /**
-     *  Sets the admin password.
-     * @param String $a_password
-     */
-    public function setPasswd($a_password)
+    public function setPasswd(string $a_password): void
     {
         $this->pass = $a_password;
     }
     
-    /**
-     *  Returns the admin password. Previously, it calls doRead method
-     * @return String
-     */
-    public function getPasswd()
+    public function getPasswd(): string
     {
         return $this->pass;
     }
     
     /**
      *  Sets the number of max. VirtualClassrooms running at the server.
-     * @param String $num_max_vc
      */
-    
     public function setNumMaxVirtualClassrooms($a_num_max_vc)
     {
         $this->num_max_vc = $a_num_max_vc;
@@ -304,36 +189,36 @@ class ilAdobeConnectServer
         return $this->num_public_vc;
     }
     
-    public function getBufferBefore()
+    public function getBufferBefore(): int
     {
         return $this->buffer_seconds_before;
     }
     
-    public function getBufferAfter()
+    public function getBufferAfter(): int
     {
         return $this->buffer_seconds_after;
     }
     
     public function getScheduleLeadTime()
     {
-        if (!is_null($tmp = $this->getSetting('schedule_lead_time'))) {
+        if (!is_null($tmp = self::getSetting('schedule_lead_time'))) {
             $this->schedule_lead_time = $tmp;
         }
         return $this->schedule_lead_time;
     }
     
-    public function setScheduleLeadTime($time)
+    public function setScheduleLeadTime($time): void
     {
         $this->schedule_lead_time = $time;
         $this->setSetting('schedule_lead_time', $time);
     }
     
-    public function setAuthMode($auth_mode)
+    public function setAuthMode($auth_mode): void
     {
         $this->auth_mode = $auth_mode;
     }
     
-    public function getAuthMode()
+    public function getAuthMode(): ?string
     {
         return $this->auth_mode;
     }
@@ -343,60 +228,43 @@ class ilAdobeConnectServer
         $this->x_user_id = $x_user_id;
     }
     
-    public function getXUserId()
+    public function getXUserId(): ?string
     {
         return $this->x_user_id;
     }
     
-    /**
-     * @return null
-     */
-    public function getApiVersion()
+    public function getApiVersion(): string
     {
         return $this->api_version;
     }
     
-    /**
-     * @param null $api_version
-     */
-    public function setApiVersion($api_version)
+    public function setApiVersion(string $api_version = '0'): void
     {
         $this->api_version = $api_version;
     }
     
-    /**
-     * @return bool
-     */
-    public function isHtmlClientEnabled()
+    
+    public function isHtmlClientEnabled(): bool
     {
         return $this->html_client;
     }
     
-    /**
-     * @param bool $html_client
-     */
-    public function setUseHtmlClient($html_client)
+    public function setUseHtmlClient(bool $html_client): void
     {
         $this->html_client = $html_client;
     }
     
-    /**
-     * @param null $user_assignment_mode
-     */
-    public function setUserAssignmentMode($user_assignment_mode)
+    public function setUserAssignmentMode($user_assignment_mode): void
     {
         $this->user_assignment_mode = $user_assignment_mode;
     }
     
-    /**
-     * @return null
-     */
-    public function getUserAssignmentMode()
+    public function getUserAssignmentMode(): ?string
     {
         return $this->user_assignment_mode;
     }
     
-    public static function getSetting($a_keyword, $default_value = null)
+    public static function getSetting(string $a_keyword, string $default_value = ''): string
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -406,14 +274,14 @@ class ilAdobeConnectServer
                 array('text'), array($a_keyword));
             
             if ($row = $ilDB->fetchAssoc($res)) {
-                return $row['value'];
+                return (string) $row['value'];
             }
         }
         
         return $default_value;
     }
     
-    public static function setSetting($a_keyword, $a_value)
+    public static function setSetting(string $a_keyword, string $a_value): void
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -427,11 +295,9 @@ class ilAdobeConnectServer
                 "value" => array("text", $a_value)
             ));
         }
-        return true;
     }
     
-    
-    public static function getPresentationUrl($api_call = false)
+    public static function getPresentationUrl(bool $api_call = false): string
     {
         if ($api_call) {
             $server = self::getSetting('server');
@@ -448,7 +314,7 @@ class ilAdobeConnectServer
         }
     }
     
-    public static function getRoleMap()
+    public static function getRoleMap(): array
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -468,31 +334,5 @@ class ilAdobeConnectServer
         $map['grp_owner'] = 'host';
         
         return $map;
-    }
-    
-    /*
-     * @param int $auth_mode_key
-     */
-    public static function useSwitchaaiAuthMode($auth_mode_key)
-    {
-        require_once './Services/Authentication/classes/class.ilAuthUtils.php';
-        
-        global $DIC;
-        $ilDB = $DIC->database();
-        
-        if ($auth_mode_key == AUTH_SHIBBOLETH) {
-            return true;
-        }
-        
-        $res = $ilDB->queryF('SELECT value FROM rep_robj_xavc_settings WHERE keyword = %s',
-            array('text'), array('auth_mode_switchaai_account_type'));
-        
-        $row = $ilDB->fetchAssoc($res);
-        $arr_switch_auth_modes = unserialize($row['value']);
-        $result = false;
-        if (is_array($arr_switch_auth_modes)) {
-            $result = in_array($auth_mode_key, $arr_switch_auth_modes);
-        }
-        return $result;
     }
 }

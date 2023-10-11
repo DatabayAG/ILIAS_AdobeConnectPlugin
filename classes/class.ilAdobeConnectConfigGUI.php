@@ -2,27 +2,16 @@
 include_once("./Services/Component/classes/class.ilPluginConfigGUI.php");
 require_once dirname(__FILE__) . '/../interfaces/interface.AdobeConnectPermissions.php';
 
-/**
- * Class ilAdobeConnectConfigGUI
- * @author    Nadia Matuschek <nmatuschek@databay.de>
- */
 class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectPermissions
 {
-    public static $template_cache = array();
+    public static array $template_cache = array();
     
     /**
      * @var $pluginObj ilPlugin
      */
     public $pluginObj = null;
-    /**
-     * @var $form ilPropertyFormGUI
-     */
-    public $form = null;
-    
-    /**
-     * @var $tabs ilTabsGUI
-     */
-    public $tabs = null;
+    public ?ilPropertyFormGUI $form = null;
+    public ?ilTabsGUI $tabs = null;
     
     public function performCommand($cmd)
     {
@@ -42,20 +31,19 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         }
     }
     
-    public function configure()
+    public function configure(): void
     {
         $this->editAdobeSettings();
     }
     
     // ADOBE-SETTINGS
-    
-    public function cancelAdobeSettings()
+    public function cancelAdobeSettings(): void
     {
         ilUtil::sendInfo($this->getPluginObject()->txt('canceled_update_settings'));
         $this->editAdobeSettings();
     }
     
-    private function initAdobeSettingsForm()
+    private function initAdobeSettingsForm(): void
     {
         global $DIC;
         $lng = $DIC->language();
@@ -94,10 +82,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $form_passwd->setRetype(false);
         $this->form->addItem($form_passwd);
         
-        //Address to SWITCH Cave Server
-        $form_cave = new ilTextInputGUI($this->getPluginObject()->txt('cave'), 'cave');
-        $form_cave->setRequired(true);
-        
         // you can choose the mode for the creation of user-accounts at AdobeServer: the AC-Loginname could be the users-email-address or the ilias-loginname
         $radio_group = new ilRadioGroupInputGUI($this->getPluginObject()->txt('user_assignment_mode'),
             'user_assignment_mode');
@@ -107,12 +91,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $radio_option_2 = new ilRadioOption($this->getPluginObject()->txt('assign_users_with_ilias_login'),
             'assign_ilias_login');
         $radio_group->addOption($radio_option_2);
-        $radio_option_3 = new ilRadioOption($this->getPluginObject()->txt('assign_users_with_switch_aai_login'),
-            'assign_breezeSession');
         
-        $radio_option_3->addSubItem($form_cave);
-        
-        $radio_group->addOption($radio_option_3);
         $radio_group->setInfo($this->getPluginObject()->txt('assignment_info'));
         
         $radio_option_4 = new ilRadioOption($this->getPluginObject()->txt('assign_users_with_email_dfn'),
@@ -137,17 +116,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         
         $auth_radio_opt_2->addSubItem($form_x_user_id);
         $auth_radio_grp->addOption($auth_radio_opt_2);
-        
-        $auth_radio_opt_3 = new ilRadioOption($this->getPluginObject()->txt('auth_mode_switchaai'),
-            'auth_mode_switchaai');
-        $switchaai_checkbox_grp = new ilCheckboxGroupInputGUI($this->getPluginObject()->txt('auth_mode_switchaai_accounts'),
-            'auth_mode_switchaai_account_type');
-        $switchaai_checkbox_grp->addOption(new ilCheckboxOption($this->getPluginObject()->txt('auth_mode_switchaai_local'),
-            AUTH_LOCAL));
-        $switchaai_checkbox_grp->addOption(new ilCheckboxOption($this->getPluginObject()->txt('auth_mode_switchaai_ldap'),
-            AUTH_LDAP));
-        $auth_radio_opt_3->addSubItem($switchaai_checkbox_grp);
-        $auth_radio_grp->addOption($auth_radio_opt_3);
         
         $form_auth_mode_dfn = new ilRadioOption($this->getPluginObject()->txt('auth_mode_dfn'), 'auth_mode_dfn');
         $auth_radio_grp->addOption($form_auth_mode_dfn);
@@ -182,32 +150,31 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $this->form->addItem($form_fe_port);
     }
     
-    private function getAdobeSettingsValues()
+    private function getAdobeSettingsValues(): void
     {
         $values = array();
         
-        $values['server'] = ilAdobeConnectServer::getSetting('server') ? ilAdobeConnectServer::getSetting('server') : '';
-        $values['port'] = ilAdobeConnectServer::getSetting('port') ? ilAdobeConnectServer::getSetting('port') : '';
-        $values['login'] = ilAdobeConnectServer::getSetting('login') ? ilAdobeConnectServer::getSetting('login') : '';
-        $values['password'] = ilAdobeConnectServer::getSetting('password') ? ilAdobeConnectServer::getSetting('password') : '';
-        $values['cave'] = ilAdobeConnectServer::getSetting('cave') ? ilAdobeConnectServer::getSetting('cave') : '';
-        $values['schedule_lead_time'] = ilAdobeConnectServer::getSetting('schedule_lead_time') ? ilAdobeConnectServer::getSetting('schedule_lead_time') : 0;
+        $values['server'] = ilAdobeConnectServer::getSetting('server') ?: '';
+        $values['port'] = ilAdobeConnectServer::getSetting('port') ?: '';
+        $values['login'] = ilAdobeConnectServer::getSetting('login') ?: '';
+        $values['password'] = ilAdobeConnectServer::getSetting('password') ?: '';
+        $values['cave'] = ilAdobeConnectServer::getSetting('cave') ?: '';
+        $values['schedule_lead_time'] = ilAdobeConnectServer::getSetting('schedule_lead_time') ?: 0;
         
         ilAdobeConnectServer::getSetting('user_assignment_mode')
             ? $values['user_assignment_mode'] = ilAdobeConnectServer::getSetting('user_assignment_mode')
             : $values['user_assignment_mode'] = 'assign_user_email';
         
-        $values['presentation_server'] = ilAdobeConnectServer::getSetting('presentation_server') ? ilAdobeConnectServer::getSetting('presentation_server') : '';
-        $values['presentation_port'] = ilAdobeConnectServer::getSetting('presentation_port') ? ilAdobeConnectServer::getSetting('presentation_port') : '';
-        $values['auth_mode'] = ilAdobeConnectServer::getSetting('auth_mode') ? ilAdobeConnectServer::getSetting('auth_mode') : 'auth_mode_password';
-        $values['auth_mode_switchaai_account_type'] = unserialize(ilAdobeConnectServer::getSetting('auth_mode_switchaai_account_type')) ? unserialize(ilAdobeConnectServer::getSetting('auth_mode_switchaai_account_type')) : '0';
+        $values['presentation_server'] = ilAdobeConnectServer::getSetting('presentation_server') ?: '';
+        $values['presentation_port'] = ilAdobeConnectServer::getSetting('presentation_port') ?: '';
+        $values['auth_mode'] = ilAdobeConnectServer::getSetting('auth_mode') ?: 'auth_mode_password';
         
-        $values['x_user_id'] = ilAdobeConnectServer::getSetting('x_user_id') ? ilAdobeConnectServer::getSetting('x_user_id') : 'x_user_id';
+        $values['x_user_id'] = ilAdobeConnectServer::getSetting('x_user_id') ?: 'x_user_id';
         
         $this->form->setValuesByArray($values);
     }
     
-    public function editAdobeSettings()
+    public function editAdobeSettings(): void
     {
         global $DIC;
         $tpl = $DIC->ui()->mainTemplate();
@@ -266,29 +233,13 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                     }
                     ilAdobeConnectServer::setSetting($key, trim($value));
                 }
-                ilAdobeConnectServer::setSetting('auth_mode_switchaai_account_type',
-                    serialize($this->form->getInput('auth_mode_switchaai_account_type')));
+                
                 ilAdobeConnectServer::_getInstance()->commitSettings();
                 
                 try {
                     //check connection;
-                    //do not check the connection in case of switchAAI. It's not possible because of the redirection to the cave-server
-                    if (ilAdobeConnectServer::getSetting('user_assignment_mode') != ilAdobeConnectServer::ASSIGN_USER_SWITCH) {
-                        $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-                        $session = $xmlAPI->getBreezeSession();
-                        
-                        if (!$session) {
-                            throw new ilException('err_invalid_server');
-                        }
-                        
-                        if (!$xmlAPI->login(trim($this->form->getInput('login')),
-                            trim($this->form->getInput('password')), $session)) {
-                            throw new ilException('err_authentication_failed');
-                        }
-                    }
-                    
                     if (ilAdobeConnectServer::getSetting('user_assignment_mode') == ilAdobeConnectServer::ASSIGN_USER_DFN_EMAIL) {
-                        ilAdobeConnectServer::setSetting('use_user_folders', 0);
+                        ilAdobeConnectServer::setSetting('use_user_folders', '0');
                     }
                     
                     $this->readApiVersion();
@@ -331,14 +282,13 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
     }
     
     // ROOM-ALLOCATION
-    
-    public function cancelRoomAllocation()
+    public function cancelRoomAllocation(): void
     {
         ilUtil::sendInfo($this->getPluginObject()->txt('canceled_update_settings'));
         $this->editRoomAllocation();
     }
     
-    private function initRoomAllocationForm()
+    private function initRoomAllocationForm(): void
     {
         global $DIC;
         $lng = $DIC->language();
@@ -353,11 +303,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $this->form->addCommandButton('saveRoomAllocation', $lng->txt('save'));
         $this->form->addCommandButton('cancelRoomAllocation', $lng->txt('cancel'));
         
-        /*$form_numVC = new ilNumberInputGUI($this->getPluginObject()->txt('adobe_num_max_vc'), 'num_max_vc');
-        $form_numVC->setRequired(true);
-        $form_numVC->setSize(5);
-        $this->form->addItem($form_numVC);*/
-        
         $form_ac_obj = new ilNumberInputGUI($this->getPluginObject()->txt('ac_interface_objects'),
             'ac_interface_objects');
         $form_ac_obj->setInfo($this->getPluginObject()->txt('enter_number_of_scos'));
@@ -370,28 +315,22 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $this->form->addItem($form_ac_buf);
     }
     
-    public function getRoomAllocationValues()
+    public function getRoomAllocationValues(): void
     {
         $values = array();
         
-        $values['num_max_vc'] = ilAdobeConnectServer::getSetting('num_max_vc')
-            ? ilAdobeConnectServer::getSetting('num_max_vc') : 1;
-        
-        $values['ac_interface_objects'] = ilAdobeConnectServer::getSetting('ac_interface_objects')
-            ? ilAdobeConnectServer::getSetting('ac_interface_objects') : 0;
-        
-        $values['ac_interface_objects_buffer'] = ilAdobeConnectServer::getSetting('ac_interface_objects_buffer')
-            ? ilAdobeConnectServer::getSetting('ac_interface_objects_buffer') : 0;
-        
+        $values['num_max_vc'] = ilAdobeConnectServer::getSetting('num_max_vc') ?: 1;
+        $values['ac_interface_objects'] = ilAdobeConnectServer::getSetting('ac_interface_objects') ?: 0;
+        $values['ac_interface_objects_buffer'] = ilAdobeConnectServer::getSetting('ac_interface_objects_buffer') ?: 0;
         $this->form->setValuesByArray($values);
     }
     
-    public function editRoomAllocation()
+    public function editRoomAllocation(): void
     {
         global $DIC;
         $tpl = $DIC->ui()->mainTemplate();
         
-        $this->tabs->setTabActive('editRoomAllocation');
+        $this->tabs->activateTab('editRoomAllocation');
         $this->initRoomAllocationForm();
         $this->getRoomAllocationValues();
         
@@ -419,9 +358,9 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                 return $tpl->setContent($this->form->getHTML());
             }*/
             
-            ilAdobeConnectServer::setSetting('num_max_vc', $this->form->getInput('num_max_vc'));
-            ilAdobeConnectServer::setSetting('ac_interface_objects', $num_ac_obj);
-            ilAdobeConnectServer::setSetting('ac_interface_objects_buffer', $num_ac_obj_buffer);
+            ilAdobeConnectServer::setSetting('num_max_vc', (string) $this->form->getInput('num_max_vc'));
+            ilAdobeConnectServer::setSetting('ac_interface_objects', (string) $num_ac_obj);
+            ilAdobeConnectServer::setSetting('ac_interface_objects_buffer', (string) $num_ac_obj_buffer);
             
             ilUtil::sendSuccess($this->getPluginObject()->txt('extt_adobe_room_allocation_saved'), true);
             $ilCtrl->redirect($this, 'editRoomAllocation');
@@ -445,19 +384,19 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
             $ilCtrl->getLinkTarget($this, 'editIliasSettings'));
     }
     
-    public function editIliasSettings()
+    public function editIliasSettings(): void
     {
         global $DIC;
         $tpl = $DIC->ui()->mainTemplate();
         
-        $this->tabs->setTabActive('editIliasSettings');
+        $this->tabs->activateTab('editIliasSettings');
         $this->initIliasSettingsForm();
         $this->getIliasSettingsValues();
         
         $tpl->setContent($this->form->getHTML());
     }
     
-    public function initIliasSettingsForm()
+    public function initIliasSettingsForm(): void
     {
         global $DIC;
         $lng = $DIC->language();
@@ -548,10 +487,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         );
         
         $mapping_crs = new ilNonEditableValueGUI($this->pluginObj->txt('default_crs_mapping'), 'default_crs_mapping');
-
-//		$crs_owner = new ilSelectInputGUI($lng->txt('owner'), 'crs_owner');
-//		$crs_owner->setOptions($xavc_options);
-//		$mapping_crs->addSubItem($crs_owner);
         
         $crs_admin = new ilSelectInputGUI($lng->txt('il_crs_admin'), 'crs_admin');
         $crs_admin->setOptions($xavc_options);
@@ -568,10 +503,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $this->form->addItem($mapping_crs);
         
         $mapping_grp = new ilNonEditableValueGUI($this->pluginObj->txt('default_grp_mapping'), 'default_grp_mapping');
-
-//		$grp_owner = new ilSelectInputGUI($lng->txt('owner'), 'grp_owner');
-//		$grp_owner->setOptions($xavc_options);
-//		$mapping_grp->addSubItem($grp_owner);
         
         $grp_admin = new ilSelectInputGUI($lng->txt('il_grp_admin'), 'grp_admin');
         $grp_admin->setOptions($xavc_options);
@@ -621,7 +552,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $this->form->addItem($html_client);
     }
     
-    private function readApiVersion()
+    private function readApiVersion(): void
     {
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
         $session = $xmlAPI->getBreezeSession();
@@ -633,34 +564,32 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         }
     }
     
-    public function getIliasSettingsValues()
+    public function getIliasSettingsValues(): void
     {
         $values = array();
-        $values['use_meeting_template'] = ilAdobeConnectServer::getSetting('use_meeting_template') ? ilAdobeConnectServer::getSetting('use_meeting_template') : 0;
-        $values['template_sco_id'] = ilAdobeConnectServer::getSetting('template_sco_id') ? ilAdobeConnectServer::getSetting('template_sco_id') : 0;
+        $values['use_meeting_template'] = ilAdobeConnectServer::getSetting('use_meeting_template') ?: 0;
+        $values['template_sco_id'] = ilAdobeConnectServer::getSetting('template_sco_id') ?: 0;
         
-        $values['obj_creation_settings'] = unserialize(ilAdobeConnectServer::getSetting('obj_creation_settings')) ? unserialize(ilAdobeConnectServer::getSetting('obj_creation_settings')) : '0';
-        $values['obj_title_suffix'] = ilAdobeConnectServer::getSetting('obj_title_suffix') ? ilAdobeConnectServer::getSetting('obj_title_suffix') : 0;
-        $values['allow_crs_grp_trigger'] = ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') ? ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') : 0;
-        $values['show_free_slots'] = ilAdobeConnectServer::getSetting('show_free_slots') ? ilAdobeConnectServer::getSetting('show_free_slots') : 0;
-        $values['enable_perm_room'] = ilAdobeConnectServer::getSetting('enable_perm_room',
-            '1') ? ilAdobeConnectServer::getSetting('enable_perm_room', '1') : 0;
-        $values['default_perm_room'] = ilAdobeConnectServer::getSetting('default_perm_room') ? ilAdobeConnectServer::getSetting('default_perm_room') : 0;
-        $values['add_to_desktop'] = ilAdobeConnectServer::getSetting('add_to_desktop') ? ilAdobeConnectServer::getSetting('add_to_desktop') : 0;
+        $values['obj_creation_settings'] = unserialize(ilAdobeConnectServer::getSetting('obj_creation_settings'),
+            ['allowed_classes' => false]) ?: '0';
+        $values['obj_title_suffix'] = ilAdobeConnectServer::getSetting('obj_title_suffix') ?: 0;
+        $values['allow_crs_grp_trigger'] = ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') ?: 0;
+        $values['show_free_slots'] = ilAdobeConnectServer::getSetting('show_free_slots') ?: 0;
+        $values['enable_perm_room'] = ilAdobeConnectServer::getSetting('enable_perm_room', '1') ?: 0;
+        $values['default_perm_room'] = ilAdobeConnectServer::getSetting('default_perm_room') ?: 0;
+        $values['add_to_desktop'] = ilAdobeConnectServer::getSetting('add_to_desktop') ?: 0;
         $values['content_file_types'] = strlen(ilAdobeConnectServer::getSetting('content_file_types')) > 1 ? ilAdobeConnectServer::getSetting('content_file_types') : 'ppt, pptx, flv, swf, pdf, gif, jpg, png, mp3, html';
-        $values['use_user_folders'] = ilAdobeConnectServer::getSetting('use_user_folders') ? ilAdobeConnectServer::getSetting('use_user_folders') : 0;
-
-//		$values['crs_owner'] = ilAdobeConnectServer::getSetting('crs_owner')? ilAdobeConnectServer::getSetting('crs_owner') : 'host';
-        $values['crs_admin'] = ilAdobeConnectServer::getSetting('crs_admin') ? ilAdobeConnectServer::getSetting('crs_admin') : 'mini-host';
-        $values['crs_tutor'] = ilAdobeConnectServer::getSetting('crs_tutor') ? ilAdobeConnectServer::getSetting('crs_tutor') : 'mini-host';
-        $values['crs_member'] = ilAdobeConnectServer::getSetting('crs_member') ? ilAdobeConnectServer::getSetting('crs_member') : 'view';
-
-//		$values['grp_owner'] = ilAdobeConnectServer::getSetting('grp_owner')? ilAdobeConnectServer::getSetting('grp_owner') : 'host';
-        $values['grp_admin'] = ilAdobeConnectServer::getSetting('grp_admin') ? ilAdobeConnectServer::getSetting('grp_admin') : 'mini-host';
-        $values['grp_member'] = ilAdobeConnectServer::getSetting('grp_member') ? ilAdobeConnectServer::getSetting('grp_member') : 'view';
+        $values['use_user_folders'] = ilAdobeConnectServer::getSetting('use_user_folders') ?: 0;
         
-        $values['api_version'] = ilAdobeConnectServer::getSetting('api_version', 0);
-        $values['html_client'] = ilAdobeConnectServer::getSetting('html_client') ? ilAdobeConnectServer::getSetting('html_client') : 0;
+        $values['crs_admin'] = ilAdobeConnectServer::getSetting('crs_admin') ?: 'mini-host';
+        $values['crs_tutor'] = ilAdobeConnectServer::getSetting('crs_tutor') ?: 'mini-host';
+        $values['crs_member'] = ilAdobeConnectServer::getSetting('crs_member') ?: 'view';
+        
+        $values['grp_admin'] = ilAdobeConnectServer::getSetting('grp_admin') ?: 'mini-host';
+        $values['grp_member'] = ilAdobeConnectServer::getSetting('grp_member') ?: 'view';
+        
+        $values['api_version'] = ilAdobeConnectServer::getSetting('api_version', '0');
+        $values['html_client'] = ilAdobeConnectServer::getSetting('html_client') ?: '0';
         
         $this->form->setValuesByArray($values);
     }
@@ -687,35 +616,33 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         if ($this->form->checkInput()) {
             if ($this->form->getItemByPostVar('use_meeting_template')) {
                 ilAdobeConnectServer::setSetting('use_meeting_template',
-                    (int) $this->form->getInput('use_meeting_template'));
-                ilAdobeConnectServer::setSetting('template_sco_id', (int) $this->form->getInput('template_sco_id'));
+                    $this->form->getInput('use_meeting_template'));
+                ilAdobeConnectServer::setSetting('template_sco_id', $this->form->getInput('template_sco_id'));
             }
             ilAdobeConnectServer::setSetting('obj_creation_settings',
                 serialize($this->form->getInput('obj_creation_settings')));
             
             ilAdobeConnectServer::setSetting('allow_crs_grp_trigger',
-                (int) $this->form->getInput('allow_crs_grp_trigger'));
-            ilAdobeConnectServer::setSetting('obj_title_suffix', (int) $this->form->getInput('obj_title_suffix'));
-            ilAdobeConnectServer::setSetting('show_free_slots', (int) $this->form->getInput('show_free_slots'));
+                (string)(bool)$this->form->getInput('allow_crs_grp_trigger'));
+            ilAdobeConnectServer::setSetting('obj_title_suffix', (string)(int)$this->form->getInput('obj_title_suffix'));
+            ilAdobeConnectServer::setSetting('show_free_slots', (string)(int) $this->form->getInput('show_free_slots'));
             
             $enable_perm_room = (int) $this->form->getInput('enable_perm_room');
-            ilAdobeConnectServer::setSetting('enable_perm_room', (int) $this->form->getInput('enable_perm_room'));
+            ilAdobeConnectServer::setSetting('enable_perm_room', (string) $enable_perm_room);
             ilAdobeConnectServer::setSetting('default_perm_room',
-                $enable_perm_room == 0 ? 0 : (int) $this->form->getInput('default_perm_room'));
-            ilAdobeConnectServer::setSetting('add_to_desktop', (int) $this->form->getInput('add_to_desktop'));
+                $enable_perm_room == 0 ? '0' : (string)(int) $this->form->getInput('default_perm_room'));
+            ilAdobeConnectServer::setSetting('add_to_desktop', (string)(int) $this->form->getInput('add_to_desktop'));
             ilAdobeConnectServer::setSetting('content_file_types',
                 (string) $this->form->getInput('content_file_types'));
-            ilAdobeConnectServer::setSetting('use_user_folders', (int) $this->form->getInput('use_user_folders'));
+            ilAdobeConnectServer::setSetting('use_user_folders', (string)(int) $this->form->getInput('use_user_folders'));
 
-//			ilAdobeConnectServer::setSetting('crs_owner', $this->form->getInput('crs_owner'));
-            ilAdobeConnectServer::setSetting('crs_admin', $this->form->getInput('crs_admin'));
-            ilAdobeConnectServer::setSetting('crs_tutor', $this->form->getInput('crs_tutor'));
-            ilAdobeConnectServer::setSetting('crs_member', $this->form->getInput('crs_member'));
+            ilAdobeConnectServer::setSetting('crs_admin', (string)(int)$this->form->getInput('crs_admin'));
+            ilAdobeConnectServer::setSetting('crs_tutor', (string)(int)$this->form->getInput('crs_tutor'));
+            ilAdobeConnectServer::setSetting('crs_member', (string)(int)$this->form->getInput('crs_member'));
 
-//			ilAdobeConnectServer::setSetting('grp_owner', $this->form->getInput('grp_owner'));
-            ilAdobeConnectServer::setSetting('grp_admin', $this->form->getInput('grp_admin'));
-            ilAdobeConnectServer::setSetting('grp_member', $this->form->getInput('grp_member'));
-            ilAdobeConnectServer::setSetting('html_client', (int) $this->form->getInput('html_client'));
+            ilAdobeConnectServer::setSetting('grp_admin', (string)(int)$this->form->getInput('grp_admin'));
+            ilAdobeConnectServer::setSetting('grp_member',(string)(int) $this->form->getInput('grp_member'));
+            ilAdobeConnectServer::setSetting('html_client', (string)(int) $this->form->getInput('html_client'));
             
             ilUtil::sendSuccess($lng->txt('settings_saved'), true);
             $ilCtrl->redirect($this, 'editIliasSettings');
@@ -726,7 +653,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         }
     }
     
-    public function cancelIliasSettings()
+    public function cancelIliasSettings(): void
     {
         ilUtil::sendInfo($this->getPluginObject()->txt('canceled_update_settings'));
         $this->editIliasSettings();

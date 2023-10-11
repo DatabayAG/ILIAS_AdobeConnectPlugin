@@ -23,7 +23,7 @@ class ilXAVCPermissions
     }
     
     
-    public function setPermissions($permissions)
+    public function setPermissions(array $permissions = []): void
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -47,13 +47,7 @@ class ilXAVCPermissions
         }
     }
     
-    /**
-     * @param integer $user_id
-     * @param integer $ref_id
-     * @param integer $permission_id
-     * @return bool
-     */
-    public static function hasAccess($user_id, $ref_id, $permission)
+    public static function hasAccess(int $user_id, int $ref_id, string $permission): bool
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -76,11 +70,9 @@ class ilXAVCPermissions
     }
     
     /**
-     * @param $permission  AdobeConnectPermissions
-     * @param string $role   host | mini-host | view | denied
-     * @return int
+     * @param string $role host | mini-host | view | denied
      */
-    public static function lookupPermission($permission, $role)
+    public static function lookupPermission(string $permission, string $role): int
     {
         global $DIC;
         $ilDB = $DIC->database();

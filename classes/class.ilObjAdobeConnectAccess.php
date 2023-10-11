@@ -3,28 +3,8 @@
 
 include_once './Services/Repository/classes/class.ilObjectPluginAccess.php';
 
-/**
- * Access/Condition checking for AdobeVC object
- * @author     Michael Jansen <mjansen@databay.de>
- * @author     Björn Heyser <bheyser@databay.de>
- * @author     Jan Posselt <jposselt@databay.de>
- * @author     Nadia Matuschek <nmatuschek@databay.de>
- * @version    $Id$
- */
 class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 {
-    /**
-     * Checks wether a user may invoke a command or not
-     * (this method is called by ilAccessHandler::checkAccess)
-     * Please do not check any preconditions handled by
-     * ilConditionHandler here. Also don't do usual RBAC checks.
-     * @param string $a_cmd command (not permission!)
-     * @param string $a_permission permission
-     * @param int $a_ref_id reference id
-     * @param int $a_obj_id object id
-     * @param int $a_user_id user id (if not provided, current user is taken)
-     * @return    boolean        true, if everything is ok
-     */
     public function _checkAccess($a_cmd, $a_permission, $a_ref_id, $a_obj_id, $a_user_id = "")
     {
         global $DIC;
@@ -49,9 +29,9 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
             case 'write':
             case 'read':
                 if (
-                    !self::_hasMemberRole($a_user_id, $a_ref_id)
+                    !self::_hasMemberRole((int) $a_user_id, (int)$a_ref_id)
                     &&
-                    !self::_hasAdminRole($a_user_id, $a_ref_id)
+                    !self::_hasAdminRole((int)$a_user_id, (int)$a_ref_id)
                 ) {
                     return false;
                 }
@@ -61,13 +41,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         }
     }
     
-    /**
-     * @static
-     * @param int $a_user_id
-     * @param int $a_ref_id
-     * @return bool
-     */
-    public static function _hasMemberRole($a_user_id, $a_ref_id)
+    public static function _hasMemberRole(int $a_user_id, int $a_ref_id): bool
     {
         global $DIC;
         $rbacreview = $DIC->rbac()->review();
@@ -85,13 +59,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         return $result;
     }
     
-    /**
-     * @static
-     * @param int $a_user_id
-     * @param int $a_ref_id
-     * @return bool
-     */
-    public static function _hasAdminRole($a_user_id, $a_ref_id)
+    public static function _hasAdminRole(int $a_user_id, int $a_ref_id): bool
     {
         global $DIC;
         $rbacreview = $DIC->rbac()->review();
@@ -110,7 +78,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         return $result;
     }
     
-    public static function getLocalAdminRoleTemplateId()
+    public static function getLocalAdminRoleTemplateId(): int
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -133,7 +101,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         return $admin_rolt_id;
     }
     
-    public static function getLocalMemberRoleTemplateId()
+    public static function getLocalMemberRoleTemplateId(): int
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -156,8 +124,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         return $participant_rolt_id;
     }
     
-    
-    private static function initLocalAdminRoleTemplate()
+    private static function initLocalAdminRoleTemplate(): int
     {
         $xavc_typ_id = self::checkObjectOperationPermissionsInitialized();
         
@@ -234,7 +201,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         return $admin_rolt_id;
     }
     
-    private static function initLocalMemberRoleTemplate()
+    private static function initLocalMemberRoleTemplate(): int
     {
         // checks for surely initialized extra permissions for xavc
         // (and also returns obj_id of xavc type definition)
@@ -297,7 +264,7 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         return $member_rolt_id;
     }
     
-    private static function checkObjectOperationPermissionsInitialized()
+    private static function checkObjectOperationPermissionsInitialized(): int
     {
         
         global $DIC;
@@ -348,6 +315,6 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
                     ));
             }
         }
-        return $xavc_typ_id;
+        return (int) $xavc_typ_id;
     }
 }

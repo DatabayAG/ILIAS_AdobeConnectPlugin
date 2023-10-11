@@ -6,17 +6,9 @@ require_once 'Services/UIComponent/AdvancedSelectionList/classes/class.ilAdvance
 class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 {
     
-    /**
-     * @var ilCtrl
-     */
-    public $ctrl;
+    public ilCtrl $ctrl;
+    protected array $local_roles = [];
     
-    protected $local_roles = [];
-    
-    /**
-     * @param        $a_parent_obj
-     * @param string $a_parent_cmd
-     */
     public function __construct($a_parent_obj, $a_parent_cmd)
     {
         global $DIC;
@@ -47,7 +39,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         
     }
     
-    private function readLocalRoles()
+    private function readLocalRoles(): void
     {
         global $DIC;
         
@@ -68,7 +60,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         }
     }
     
-    private function addMultiCommands()
+    private function addMultiCommands(): void
     {
         global $DIC;
         $ilUser = $DIC->user();
@@ -87,15 +79,11 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         }
     }
     
-    private function addCommandButtons()
+    private function addCommandButtons(): void
     {
     
     }
     
-    /**
-     * @param array $row
-     * @return array
-     */
     protected function prepareRow(array &$row)
     {
         global $DIC;
@@ -156,18 +144,11 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         }
     }
     
-    /**
-     *
-     */
     public function initFilter()
     {
-    
     }
     
-    /**
-     *
-     */
-    private function addColumns()
+    private function addColumns(): void
     {
         $this->addColumn('', '', '1px', true);
         $this->addColumn($this->lng->txt('name'), 'user_name');
@@ -181,10 +162,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         
     }
     
-    /**
-     * @return array
-     */
-    public function getSelectableColumns()
+    public function getSelectableColumns(): array
     {
         $cols = array(
             'login' => array('txt' => $this->lng->txt('login'), 'default' => true),
@@ -194,21 +172,11 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         return $cols;
     }
     
-    /**
-     * Define a final formatting for a cell value
-     * @param mixed $column
-     * @param array $row
-     * @return mixed
-     */
     protected function formatCellValue($column, array $row)
     {
         return $row[$column];
     }
     
-    /**
-     * @param string $field
-     * @return bool
-     */
     public function numericOrdering($field)
     {
         $sortables = array();
@@ -220,10 +188,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         return false;
     }
     
-    /**
-     * @return array
-     */
-    protected function getStaticData()
+    protected function getStaticData(): array
     {
         return array('checkbox', 'user_name', 'login', 'xavc_status', 'xavc_roles');
     }

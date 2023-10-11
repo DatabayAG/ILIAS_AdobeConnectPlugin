@@ -4,15 +4,9 @@
 
 require_once dirname(__FILE__) . '/class.ilAdobeConnectTableDatabaseDataProvider.php';
 
-/**
- * @version $Id$
- */
 class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProvider
 {
-    /**
-     * @return string
-     */
-    protected function getSelectPart(array $filter)
+    protected function getSelectPart(array $filter): string
     {
         
         $fields = array(
@@ -28,10 +22,7 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
         return implode(', ', $fields);
     }
     
-    /**
-     * @return string
-     */
-    protected function getFromPart(array $filter)
+    protected function getFromPart(array $filter): string
     {
         $joins = array(
             'INNER JOIN usr_data ON usr_data.usr_id = user_id',
@@ -40,11 +31,7 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
         return 'rep_robj_xavc_members ' . implode(' ', $joins);
     }
     
-    /**
-     * @param array $filter
-     * @return string
-     */
-    protected function getWherePart(array $filter)
+    protected function getWherePart(array $filter): string
     {
         $where = array();
         
@@ -53,29 +40,20 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
         return implode(' AND ', $where);
     }
     
-    /**
-     * @return string
-     */
-    protected function getGroupByPart()
+    protected function getGroupByPart(): string
+    {
+        return '';
+    }
+    
+    protected function getHavingPart(array $filter): string
     {
         return '';
     }
     
     /**
-     * @param array $filter
-     * @return mixed
-     */
-    protected function getHavingPart(array $filter)
-    {
-        return '';
-    }
-    
-    /**
-     * @param array $params
-     * @return string
      * @throws InvalidArgumentException
      */
-    protected function getOrderByPart(array $params)
+    protected function getOrderByPart(array $params): string
     {
         if (isset($params['order_field'])) {
             if (!is_string($params['order_field'])) {
@@ -109,8 +87,7 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
         return '';
     }
     
-    
-    protected function getAdditionalItems($data)
+    protected function getAdditionalItems($data): array
     {
         $xavc_participants = $this->parent_obj->object->getParticipants();
         $selected_user_ids = array();

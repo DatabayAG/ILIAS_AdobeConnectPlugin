@@ -2,32 +2,29 @@
 
 include_once('./Services/Membership/classes/class.ilParticipants.php');
 
-/**
- * Class ilAdobeConnectParticipantsNullObject
- */
 class ilAdobeConnectParticipantsNullObject extends ilParticipants
 {
     public function __construct()
     {
     }
     
-    public function getParticipants()
+    public function getParticipants(): array
     {
-        return array();
+        return [];
     }
     
-    public function getMembers()
+    public function getMembers(): array
     {
-        return array();
+        return [];
     }
     
-    public function getAdmins()
+    public function getAdmins(): array
     {
-        return array();
+        return [];
     }
     
-    public function getTutors()
+    public function getTutors(): array
     {
-        return array();
+        return [];
     }
 }

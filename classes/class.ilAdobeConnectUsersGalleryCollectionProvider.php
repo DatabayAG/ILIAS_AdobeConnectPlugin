@@ -3,10 +3,6 @@
 include_once './Services/User/Gallery/classes/class.ilAbstractUsersGalleryCollectionProvider.php';
 include_once './Services/User/classes/class.ilUserUtil.php';
 
-/**
- * ilAdobeConnectUsersGalleryCollectionProvider
- * @author Nadia Matuschek <nmatuschek@databay.de>
- */
 class ilAdobeConnectUsersGalleryCollectionProvider extends ilAbstractUsersGalleryCollectionProvider
 {
     /**
@@ -14,20 +10,14 @@ class ilAdobeConnectUsersGalleryCollectionProvider extends ilAbstractUsersGaller
      */
     protected $participants;
     
-    /**
-     * @var array
-     */
-    protected $users = array();
+    protected array $users = array();
     
-    /**
-     * @param ilParticipants $participants
-     */
     public function __construct(ilParticipants $participants)
     {
         $this->participants = $participants;
     }
     
-    public function getGroupedCollections()
+    public function getGroupedCollections(): array
     {
         $groups = [];
         $admins = $this->participants->getAdmins();
@@ -46,17 +36,14 @@ class ilAdobeConnectUsersGalleryCollectionProvider extends ilAbstractUsersGaller
         return $groups;
     }
     
-    /**
-     * @return mixed
-     */
-    public function getUsers()
+    public function getUsers(): array
     {
         $this->pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
         
         $this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
         $xavcRoles = new ilAdobeConnectRoles($_GET['ref_id']);
         $members = $xavcRoles->getUsers();
-        
+        $users = [];
         // MEMBERS
         if (count($members)) {
             foreach ($members as $member_id) {
@@ -74,14 +61,6 @@ class ilAdobeConnectUsersGalleryCollectionProvider extends ilAbstractUsersGaller
             }
         }
         return $users;
-    }
-    
-    /**
-     * @return string
-     */
-    public function getUserCssClass()
-    {
-        return 'ilBuddySystemRemoveWhenUnlinked';
     }
     
 }

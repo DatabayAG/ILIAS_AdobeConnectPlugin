@@ -1,9 +1,5 @@
 <?php
 
-/**
- * Class ilXAVCMembers
- * @author  Nadia Matuschek <nmatuschek@databay.de>
- */
 class ilXAVCMembers
 {
     public $user_id = 0;
@@ -13,10 +9,7 @@ class ilXAVCMembers
     public $xavc_login = null;
     public $principal_id = null;
     
-    /**
-     * @var ilDB
-     */
-    public $db;
+    public ilDBInterface $db;
     
     public function setScoId($a_sco_id)
     {
@@ -63,7 +56,6 @@ class ilXAVCMembers
      * participant, presenter, or host
      * (with a permission-id of view, mini-host, or host, respectively)
      */
-    
     public function setPresenterStatus()
     {
         $this->status = 'host';
@@ -203,20 +195,20 @@ class ilXAVCMembers
         return $xavc_login;
     }
     
-    public static function _lookupUserId($a_xavc_login)
+    public static function _lookupUserId(string $a_xavc_login): int
     {
         global $DIC;
         $ilDB = $DIC->database();
         
-        $user_id = null;
+        $user_id = 0;
         
         $res = $ilDB->queryf('SELECT user_id FROM rep_robj_xavc_users
 			WHERE xavc_login = %s', array('text'), array($a_xavc_login));
         
         while ($row = $ilDB->fetchAssoc($res)) {
-            $user_id = $row['user_id'];
+            $user_id = (int) $row['user_id'];
         }
-        return $user_id;
+        return (int) $user_id;
     }
     
     public static function _lookupStatus($a_user_id, $a_ref_id)
@@ -236,7 +228,7 @@ class ilXAVCMembers
         return $xavc_status;
     }
     
-    public static function _isMember($a_user_id, $a_ref_id)
+    public static function _isMember($a_user_id, $a_ref_id): bool
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -253,7 +245,7 @@ class ilXAVCMembers
         }
     }
     
-    public static function getMemberIds($ref_id)
+    public static function getMemberIds($ref_id): array
     {
         global $DIC;
         $ilDB = $DIC->database();
