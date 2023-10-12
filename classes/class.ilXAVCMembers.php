@@ -159,7 +159,7 @@ class ilXAVCMembers
         );
     }
     
-    public static function addXAVCUser($a_user_id, $a_xavc_login)
+    public static function addXAVCUser(int $a_user_id, string $a_xavc_login): void
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -179,7 +179,7 @@ class ilXAVCMembers
         }
     }
     
-    public static function _lookupXAVCLogin($a_user_id)
+    public static function _lookupXAVCLogin(int $a_user_id)
     {
         global $DIC;
         $ilDB = $DIC->database();
