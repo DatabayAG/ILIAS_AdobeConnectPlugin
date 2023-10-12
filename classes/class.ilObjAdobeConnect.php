@@ -501,7 +501,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
             $this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
             
             //check if there is an adobe connect account at the ac-server
-            $ilAdobeConnectUser = new ilAdobeConnectUserUtil((int)$user_id);
+            $ilAdobeConnectUser = new ilAdobeConnectUserUtil((int) $user_id);
             $ilAdobeConnectUser->ensureAccountExistence();
             
             // add to desktop
@@ -538,7 +538,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
                     $xavcMemberObj->insertXAVCMember();
                 }
                 
-                $this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session,
+                $this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin((int) $user_id),
+                    $session,
                     $status);
             }
             
@@ -564,7 +565,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
                     $xavcMemberObj->insertXAVCMember();
                 }
                 
-                $this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session,
+                $this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin((int) $user_id),
+                    $session,
                     $status);
             }
             
@@ -589,7 +591,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
                     $xavcMemberObj->insertXAVCMember();
                 }
                 
-                $this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($user_id), $session,
+                $this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin((int) $user_id),
+                    $session,
                     $status);
             }
             
@@ -612,7 +615,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
                 $xavcMemberObj->insertXAVCMember();
             }
             
-            $this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin($owner_id), $session,
+            $this->xmlApi->updateMeetingParticipant($sco_id, ilXAVCMembers::_lookupXAVCLogin((int) $owner_id), $session,
                 $status);
         }
     }
@@ -626,10 +629,10 @@ class ilObjAdobeConnect extends ilObjectPlugin
         
         if (is_array($delete_user_ids) && count($delete_user_ids) > 0) {
             foreach ($delete_user_ids as $usr_id) {
-                $xavcRoles->detachMemberRole($usr_id);
+                $xavcRoles->detachMemberRole((int) $usr_id);
                 
-                ilXAVCMembers::deleteXAVCMember($usr_id, $this->getRefId());
-                $xavc_login = ilXAVCMembers::_lookupXAVCLogin($usr_id);
+                ilXAVCMembers::deleteXAVCMember((int) $usr_id, $this->getRefId());
+                $xavc_login = ilXAVCMembers::_lookupXAVCLogin((int) $usr_id);
                 
                 $session = $this->xmlApi->getBreezeSession();
                 

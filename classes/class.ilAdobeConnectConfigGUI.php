@@ -623,26 +623,29 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                 serialize($this->form->getInput('obj_creation_settings')));
             
             ilAdobeConnectServer::setSetting('allow_crs_grp_trigger',
-                (string)(bool)$this->form->getInput('allow_crs_grp_trigger'));
-            ilAdobeConnectServer::setSetting('obj_title_suffix', (string)(int)$this->form->getInput('obj_title_suffix'));
-            ilAdobeConnectServer::setSetting('show_free_slots', (string)(int) $this->form->getInput('show_free_slots'));
+                (string) (bool) $this->form->getInput('allow_crs_grp_trigger'));
+            ilAdobeConnectServer::setSetting('obj_title_suffix',
+                (string) (int) $this->form->getInput('obj_title_suffix'));
+            ilAdobeConnectServer::setSetting('show_free_slots',
+                (string) (int) $this->form->getInput('show_free_slots'));
             
             $enable_perm_room = (int) $this->form->getInput('enable_perm_room');
             ilAdobeConnectServer::setSetting('enable_perm_room', (string) $enable_perm_room);
             ilAdobeConnectServer::setSetting('default_perm_room',
-                $enable_perm_room == 0 ? '0' : (string)(int) $this->form->getInput('default_perm_room'));
-            ilAdobeConnectServer::setSetting('add_to_desktop', (string)(int) $this->form->getInput('add_to_desktop'));
+                $enable_perm_room == 0 ? '0' : (string) (int) $this->form->getInput('default_perm_room'));
+            ilAdobeConnectServer::setSetting('add_to_desktop', (string) (int) $this->form->getInput('add_to_desktop'));
             ilAdobeConnectServer::setSetting('content_file_types',
                 (string) $this->form->getInput('content_file_types'));
-            ilAdobeConnectServer::setSetting('use_user_folders', (string)(int) $this->form->getInput('use_user_folders'));
-
-            ilAdobeConnectServer::setSetting('crs_admin', (string)(int)$this->form->getInput('crs_admin'));
-            ilAdobeConnectServer::setSetting('crs_tutor', (string)(int)$this->form->getInput('crs_tutor'));
-            ilAdobeConnectServer::setSetting('crs_member', (string)(int)$this->form->getInput('crs_member'));
-
-            ilAdobeConnectServer::setSetting('grp_admin', (string)(int)$this->form->getInput('grp_admin'));
-            ilAdobeConnectServer::setSetting('grp_member',(string)(int) $this->form->getInput('grp_member'));
-            ilAdobeConnectServer::setSetting('html_client', (string)(int) $this->form->getInput('html_client'));
+            ilAdobeConnectServer::setSetting('use_user_folders',
+                (string) (int) $this->form->getInput('use_user_folders'));
+            
+            ilAdobeConnectServer::setSetting('crs_admin', (string) $this->form->getInput('crs_admin'));
+            ilAdobeConnectServer::setSetting('crs_tutor', (string) $this->form->getInput('crs_tutor'));
+            ilAdobeConnectServer::setSetting('crs_member', (string) $this->form->getInput('crs_member'));
+            
+            ilAdobeConnectServer::setSetting('grp_admin', (string) $this->form->getInput('grp_admin'));
+            ilAdobeConnectServer::setSetting('grp_member', (string) $this->form->getInput('grp_member'));
+            ilAdobeConnectServer::setSetting('html_client', (string) (int) $this->form->getInput('html_client'));
             
             ilUtil::sendSuccess($lng->txt('settings_saved'), true);
             $ilCtrl->redirect($this, 'editIliasSettings');
