@@ -6,7 +6,7 @@ require_once 'Services/UIComponent/AdvancedSelectionList/classes/class.ilAdvance
 class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 {
     
-    public ilCtrl $ctrl;
+    public $ctrl;
     protected array $local_roles = [];
     
     public function __construct($a_parent_obj, $a_parent_cmd)

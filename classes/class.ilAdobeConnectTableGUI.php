@@ -5,7 +5,7 @@ require_once 'Services/Table/classes/class.ilTable2GUI.php';
 
 abstract class ilAdobeConnectTableGUI extends ilTable2GUI
 {
-    protected ilCtrl $ctrl;
+    protected $ctrl;
     
     protected array $visibleOptionalColumns = array();
     
