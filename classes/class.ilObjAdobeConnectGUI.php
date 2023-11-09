@@ -716,7 +716,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         if ($this->object->readContents($by_type)) {
             // Get contents and records
             $contents = $this->object->searchContent(null);
-            
+            $view_mode = ilAdobeConnectContentTableGUI::MODE_VIEW;
             if ($has_access) {
                 $view_mode = ilAdobeConnectContentTableGUI::MODE_EDIT;
             }

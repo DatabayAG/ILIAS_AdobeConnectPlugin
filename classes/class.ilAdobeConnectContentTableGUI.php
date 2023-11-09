@@ -11,7 +11,7 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
     protected array $visibleOptionalColumns = array();
     protected array $optionalColumns = array();
     
-    private int $viewMode = self::MODE_VIEW;
+    private int $viewMode = 1;
     private string $template_context = '';
     
     public function __construct($a_parent_obj, $a_parent_cmd = '', $a_template_context = '', $view_mode)
