@@ -25,7 +25,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
     private int $read_contents = 0;
     private int $read_records = 0;
     private int $folder_id = 0;
-    private string $url;
+    private ?string $url;
     private ?ilAdobeConnectContents $contents;
     private string $adminLogin;
     private string $adminPass;
@@ -671,7 +671,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
             $this->read_contents = $rec['perm_read_contents'];
             $this->read_records = $rec['perm_read_records'];
             $this->folder_id = $rec['folder_id'];
-            $this->url = $rec['url_path'];
+            $this->url = (string) $rec['url_path'];
             $this->ac_language = $rec['language'];
             $this->html_client = $rec['html_client'];
         }
