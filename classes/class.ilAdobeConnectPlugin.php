@@ -1,28 +1,49 @@
 <?php
 /* Copyright (c) 1998-2015 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-include_once 'Services/Repository/classes/class.ilRepositoryObjectPlugin.php';
-include_once dirname(__FILE__) . '/class.ilXMLApiFactory.php';
+//include_once 'Services/Repository/classes/class.ilRepositoryObjectPlugin.php';
+//include_once dirname(__FILE__) . '/class.ilXMLApiFactory.php';
 
 class ilAdobeConnectPlugin extends ilRepositoryObjectPlugin
 {
+    public const CTYPE = 'Services';
+    public const CNAME = 'Repository';
+    public const SLOT_ID = 'robj';
+    public const PNAME = 'AdobeConnect';
+    private static ilPlugin $instance;
+
     public function getPluginName(): string
     {
-        return "AdobeConnect";
+        return self::PNAME;
     }
-  
-    public static function _getIcon($a_type, $a_size)
-    {
-        return ilPlugin::_getImagePath(
-            IL_COMP_SERVICE, 'Repository', 'robj',
-            ilPlugin::lookupNameForId(IL_COMP_SERVICE, 'Repository', 'robj', $a_type),
-            'icon_' . $a_type . '.svg'
-        );
-    }
-    
-    protected function uninstallCustom()
+
+    public static function getInstance()
     {
         global $DIC;
+
+        if (self::$instance instanceof self) {
+            return self::$instance;
+        }
+
+        /** @var ilComponentRepository $component_repository */
+        $component_repository = $DIC['component.repository'];
+        /** @var ilComponentFactory $component_factory */
+        $component_factory = $DIC['component.factory'];
+
+        $plugin_info = $component_repository->getComponentByTypeAndName(
+            self::CTYPE,
+            self::CNAME
+        )->getPluginSlotById(self::SLOT_ID)->getPluginByName(self::PNAME);
+
+        self::$instance = $component_factory->getPlugin($plugin_info->getId());
+
+        return self::$instance;
+    }
+
+    protected function uninstallCustom(): void
+    {
+        global $DIC;
+
         $ilDB = $DIC->database();
         
         if ($ilDB->tableExists('rep_robj_xavc_data')) {
@@ -49,15 +70,15 @@ class ilAdobeConnectPlugin extends ilRepositoryObjectPlugin
             $ilDB->dropSequence('rep_robj_xavc_gloperm');
         }
         
-        foreach (array('cb_extended', 'cb_simple') as $settings_tpl) {
+        foreach (['cb_extended', 'cb_simple'] as $settings_tpl) {
             $ilDB->manipulateF(
                 'DELETE FROM adm_settings_template WHERE type = %s  AND title = %s',
-                array('text', 'text'),
-                array('xavc', $settings_tpl)
+                ['text', 'text'],
+                ['xavc', $settings_tpl]
             );
         }
         
-        foreach (array('il_xavc_admin', 'il_xavc_member') as $tpl) {
+        foreach (['il_xavc_admin', 'il_xavc_member'] as $tpl) {
             $obj_ids = ilObject::_getIdsForTitle($tpl, 'rolt');
             foreach ($obj_ids as $obj_id) {
                 $obj = ilObjectFactory::getInstanceByObjId($obj_id, false);

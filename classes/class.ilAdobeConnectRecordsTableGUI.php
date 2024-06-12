@@ -11,7 +11,7 @@ class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
     protected array $visibleOptionalColumns = array();
     protected array $optionalColumns = array();
     
-    private $viewMode = self::MODE_VIEW;
+    private int $viewMode = self::MODE_VIEW;
     
     private $template_context = '';
     
@@ -62,7 +62,7 @@ class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
         return $row[$column];
     }
     
-    public function fillRow($a_set)
+    public function fillRow($a_set): void
     {
         foreach ($a_set as $key => $value) {
             $value = $this->formatCellValue($key, array($key => $value));
@@ -81,7 +81,7 @@ class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
         return $content;
     }
     
-    public function numericOrdering($field)
+    public function numericOrdering(string $field): bool
     {
         switch ($field) {
             case 'date_created':

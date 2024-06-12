@@ -1,7 +1,7 @@
 <?php
 
-include_once './Services/User/Gallery/classes/class.ilAbstractUsersGalleryCollectionProvider.php';
-include_once './Services/User/classes/class.ilUserUtil.php';
+//include_once './Services/User/Gallery/classes/class.ilAbstractUsersGalleryCollectionProvider.php';
+//include_once './Services/User/classes/class.ilUserUtil.php';
 
 class ilAdobeConnectUsersGalleryCollectionProvider extends ilAbstractUsersGalleryCollectionProvider
 {

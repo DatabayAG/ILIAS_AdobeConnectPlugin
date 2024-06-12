@@ -1,30 +1,28 @@
 <?php
 /* Copyright (c) 1998-2013 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-require_once 'Services/Table/classes/class.ilTable2GUI.php';
-
 abstract class ilAdobeConnectTableGUI extends ilTable2GUI
 {
-    protected $ctrl;
+//    protected $ctrl;
     
-    protected array $visibleOptionalColumns = array();
+    protected array $visibleOptionalColumns = [];
     
     /**
      * @var ilAdobeConnectTableDataProvider
      */
     protected $provider;
     
-    protected array $optionalColumns = array();
+    protected array $optionalColumns = [];
     
-    protected array $filter = array();
+    protected array $filter = [];
     
-    protected array $optional_filter = array();
+    protected array $optional_filter = [];
     
     /**
      * Set the provider to be used for data retrieval.
      * @params    ilAdobeConnectTableDataProvider $mapper
      */
-    public function setProvider(ilAdobeConnectTableDataProvider $provider)
+    public function setProvider(ilAdobeConnectTableDataProvider $provider): void
     {
         $this->provider = $provider;
     }
@@ -77,7 +75,7 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
         return $row[$column];
     }
     
-    final protected function fillRow($row)
+    final protected function fillRow($row): void
     {
         $this->prepareRow($row);
         
@@ -112,12 +110,12 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
      * @return array
      * @abstract
      */
-    abstract protected function getStaticData();
+    abstract protected function getStaticData(): array;
     
     /**
      * @throws ilException
      */
-    public function populate()
+    public function populate(): void
     {
         if (!$this->getExternalSegmentation() && $this->getExternalSorting()) {
             $this->determineOffsetAndOrder(true);
@@ -127,7 +125,7 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
             }
         }
         
-        $params = array();
+        $params = [];
         if ($this->getExternalSegmentation()) {
             $params['limit'] = $this->getLimit();
             $params['offset'] = $this->getOffset();

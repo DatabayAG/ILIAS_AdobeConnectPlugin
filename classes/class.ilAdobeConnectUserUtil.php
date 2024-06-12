@@ -27,8 +27,11 @@ class ilAdobeConnectUserUtil
         global $DIC;
         $ilDB = $DIC->database();
         
-        $result = $ilDB->queryF("SELECT email,login,passwd,firstname,lastname FROM usr_data WHERE usr_id= %s",
-            array('integer'), array($this->getId()));
+        $result = $ilDB->queryF(
+            "SELECT email,login,passwd,firstname,lastname FROM usr_data WHERE usr_id= %s",
+            ['integer'],
+            [$this->getId()]
+        );
         
         while ($record = $ilDB->fetchAssoc($result)) {
             $this->email = $record['email'];
@@ -38,9 +41,12 @@ class ilAdobeConnectUserUtil
             $this->last_name = $record['lastname'];
         }
         
-        $login_res = $ilDB->queryf('
+        $login_res = $ilDB->queryf(
+            '
 			SELECT xavc_login FROM rep_robj_xavc_users WHERE user_id = %s',
-            array('integer'), array($this->getId()));
+            ['integer'],
+            array($this->getId())
+        );
         
         while ($row = $ilDB->fetchAssoc($login_res)) {
             $this->xavc_login = $row['xavc_login'];
@@ -57,18 +63,17 @@ class ilAdobeConnectUserUtil
         $expected_login_name = self::generateXavcLoginName($this->getId());
         
         //check if is valid xavc_login
-        if (!$this->xavc_login && $expected_login_name) //|| $this->xavc_login != $expected_login_name)
-        {
+        if (!$this->xavc_login && $expected_login_name) { //|| $this->xavc_login != $expected_login_name)
             $this->xavc_login = $expected_login_name;
 
             $ilDB->replace(
                 'rep_robj_xavc_users',
-                array(
-                    'user_id' => array('integer', $this->getId())
-                ),
-                array(
-                    'xavc_login' => array('text', $this->xavc_login)
-                )
+                [
+                    'user_id' => ['integer', $this->getId()]
+                ],
+                [
+                    'xavc_login' => ['text', $this->xavc_login]
+                ]
             );
         }
     }
@@ -84,7 +89,7 @@ class ilAdobeConnectUserUtil
         }
     }
     
-    public function ensureUserFolderExistence($a_xavc_login = "")
+    public function ensureUserFolderExistence($a_xavc_login = '')
     {
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
         $session = $xmlAPI->getBreezeSession();
@@ -124,70 +129,49 @@ class ilAdobeConnectUserUtil
     
     /**
      *  Returns user id
-     *
-     * @return String
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
     
-    /**
-     *  Returns user email
-     *
-     * @return String
-     */
-    public function getEmail()
+    public function getEmail(): string
     {
         return $this->email;
     }
     
     /**
      *  Returns user login
-     *
-     * @return String
      */
-    public function getLogin()
+    public function getLogin(): string
     {
         return $this->login;
     }
     
     /**
      *  Returns user password
-     *
-     * @return String
      */
-    public function getPass()
+    public function getPass(): string
     {
         return $this->pass;
     }
     
-    /**
-     *  Returns user first name
-     *
-     * @return String
-     */
-    public function getFirstName()
+    public function getFirstName(): string
     {
         return $this->first_name;
     }
     
-    /**
-     *  Returns user last name
-     *
-     * @return String
-     */
-    public function getLastName()
+    public function getLastName(): string
     {
         return $this->last_name;
     }
     
-    public function setXAVCLogin($a_xavc_login)
+    public function setXAVCLogin($a_xavc_login): void
     {
         $this->xavc_login = $a_xavc_login;
     }
     
-    public function getXAVCLogin()
+    public function getXAVCLogin(): string
     {
         return $this->xavc_login;
     }
@@ -195,7 +179,7 @@ class ilAdobeConnectUserUtil
     /**
      *  Adds user to the Adobe Connect server
      */
-    public function addUser()
+    public function addUser(): void
     {
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
         $session = $xmlAPI->getBreezeSession();
@@ -207,15 +191,19 @@ class ilAdobeConnectUserUtil
         $user_pass = $this->generatePass();
         
         if ($session != null && $xmlAPI->login($login, $pass, $session)) {
-            $xmlAPI->addUser($this->getXAVCLogin(), $this->email, $user_pass, $this->first_name, $this->last_name,
-                $session);
+            $xmlAPI->addUser(
+                $this->getXAVCLogin(),
+                $this->email,
+                $user_pass,
+                $this->first_name,
+                $this->last_name,
+                $session
+            );
             $xmlAPI->logout($session);
         }
     }
     
     /**Search user on the Adobe Connect server
-     *
-     * @param string $a_xavc_login
      * @return bool|string
      */
     public function searchUser($a_xavc_login = '')
@@ -241,7 +229,7 @@ class ilAdobeConnectUserUtil
     
     /**
      *  Log in user on the Adobe Connect server
-     * @return String     Returns NULL if user doesn't exist on the server
+     * @return string     Returns NULL if user doesn't exist on the server
      */
     public function loginUser()
     {
@@ -253,10 +241,8 @@ class ilAdobeConnectUserUtil
     
     /**
      *  Log out user on the Adobe Connect server
-     *
-     * @param String $session
      */
-    public function logoutUser($session)
+    public function logoutUser(string $session): void
     {
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
         $xmlAPI->logout($session);
@@ -264,10 +250,8 @@ class ilAdobeConnectUserUtil
     
     /**
      *  Generates a new password
-     *
-     * @return String   Generated pass
      */
-    private function generatePass()
+    private function generatePass(): string
     {
         $caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
         mt_srand(microtime() * 1000000);
@@ -275,7 +259,7 @@ class ilAdobeConnectUserUtil
         $password = '';
         for ($i = 0; $i < 8; $i++) {
             $key = mt_rand(0, strlen($caracteres) - 1);
-            $password = $password . $caracteres{$key};
+            $password = $password . $caracteres[$key];
         }
         
         return $password;

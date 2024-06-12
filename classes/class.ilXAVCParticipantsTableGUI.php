@@ -5,44 +5,44 @@ require_once 'Services/UIComponent/AdvancedSelectionList/classes/class.ilAdvance
 
 class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 {
-    
-    public $ctrl;
+    public ilCtrl $ctrl;
     protected array $local_roles = [];
-    
+
     public function __construct($a_parent_obj, $a_parent_cmd)
     {
         global $DIC;
         $this->ctrl = $DIC->ctrl();
         $this->setId('xavc_participants');
-        
+
         $this->setDefaultOrderDirection('ASC');
         $this->setDefaultOrderField('');
         $this->setExternalSorting(false);
         $this->setExternalSegmentation(false);
-        
+
         parent::__construct($a_parent_obj, $a_parent_cmd);
-        
+
         $this->readLocalRoles();
-        
+
         $this->setEnableNumInfo(true);
-        
+
         $this->setTitle($a_parent_obj->pluginObj->txt("participants"));
         $this->addColumns();
         $this->addCommandButtons();
         $this->addMultiCommands();
-        
+
         $this->setSelectAllCheckbox('usr_id[]');
         $this->setShowRowsSelector(true);
-        
+
         $this->setFormAction($this->ctrl->getFormAction($a_parent_obj));
-        $this->setRowTemplate($a_parent_obj->pluginObj->getDirectory() . '/templates/default/tpl.xavc_active_user_row.html');
-        
+        $this->setRowTemplate(
+            $a_parent_obj->pluginObj->getDirectory() . '/templates/default/tpl.xavc_active_user_row.html'
+        );
     }
-    
+
     private function readLocalRoles(): void
     {
         global $DIC;
-        
+
         $roles = $DIC->rbac()->review()->getLocalRoles($this->parent_obj->object->getRefId());
         foreach ($roles as $role_id) {
             $role_title = ilObject::_lookupTitle($role_id);
@@ -59,52 +59,57 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
             }
         }
     }
-    
+
     private function addMultiCommands(): void
     {
         global $DIC;
         $ilUser = $DIC->user();
         $lng = $DIC->language();
-        
+
         $this->parent_obj->pluginObj->includeClass('class.ilXAVCPermissions.php');
         $is_owner = $ilUser->getId() == $this->parent_obj->object->getOwner();
-        
-        if ($is_owner || ilXAVCPermissions::hasAccess($ilUser->getId(), $this->parent_obj->ref_id,
-                AdobeConnectPermissions::PERM_CHANGE_ROLE)) {
+
+        if ($is_owner || ilXAVCPermissions::hasAccess(
+                $ilUser->getId(), $this->parent_obj->ref_id,
+                AdobeConnectPermissions::PERM_CHANGE_ROLE
+            )) {
             $this->addMultiCommand('updateParticipants', $lng->txt('update'));
         }
-        if ($is_owner || ilXAVCPermissions::hasAccess($ilUser->getId(), $this->parent_obj->ref_id,
-                AdobeConnectPermissions::PERM_ADD_PARTICIPANTS)) {
+        if ($is_owner || ilXAVCPermissions::hasAccess(
+                $ilUser->getId(), $this->parent_obj->ref_id,
+                AdobeConnectPermissions::PERM_ADD_PARTICIPANTS
+            )) {
             $this->addMultiCommand('detachMember', $lng->txt('delete'));
         }
     }
-    
+
     private function addCommandButtons(): void
     {
-    
     }
-    
-    protected function prepareRow(array &$row)
+
+    protected function prepareRow(array &$row): void
     {
         global $DIC;
-        
+
         if ((int) $row['user_id']) {
             $this->ctrl->setParameter($this->parent_obj, 'usr_id', '');
             if ($row['user_id'] == $this->parent_obj->object->getOwner()) {
                 $row['checkbox'] = ilUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], false);
             } else {
-                $row['checkbox'] = ilUtil::formCheckbox(false, 'usr_id[]', $row['user_id'],
-                    (int) $row['user_id'] ? false : true);
+                $row['checkbox'] = ilUtil::formCheckbox(
+                    false, 'usr_id[]', $row['user_id'],
+                    (int) $row['user_id'] ? false : true
+                );
             }
-            
+
             $assigned_roles = $DIC->rbac()->review()->assignedRoles($row['user_id']);
             foreach ($this->local_roles as $local_role) {
                 $this->tpl->setCurrentBlock('roles');
-                
+
                 $this->tpl->setVariable('USER_ID', $row['user_id']);
                 $this->tpl->setVariable('ROLE_ID', $local_role['role_id']);
                 $this->tpl->setVariable('ROLE_NAME', $local_role['role_title']);
-                
+
                 if (in_array($local_role['role_id'], $assigned_roles)) {
                     $this->tpl->setVariable('ROLE_CHECKED', 'selected="selected"');
                 }
@@ -113,7 +118,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         } else {
             $row['checkbox'] = '';
         }
-        
+
         $user_name = '';
         if (strlen($row['lastname']) > 0) {
             $user_name .= $row['lastname'] . ', ';
@@ -122,19 +127,21 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
             $user_name .= $row['firstname'];
         }
         $row['user_name'] = $user_name;
-        
+
         if ($row['xavc_status']) {
-            $xavc_options = array(
+            $xavc_options = [
                 "host" => $this->parent_obj->pluginObj->txt("presenter"),
                 "mini-host" => $this->parent_obj->pluginObj->txt("moderator"),
                 "view" => $this->parent_obj->pluginObj->txt("participant"),
                 "denied" => $this->parent_obj->pluginObj->txt("denied")
-            );
-            
+            ];
+
             if ($row['xavc_status']) {
-                $row['xavc_status'] = ilUtil::formSelect($row['xavc_status'], 'xavc_status[' . $row['user_id'] . ']',
-                    $xavc_options);
-                
+                $row['xavc_status'] = ilUtil::formSelect(
+                    $row['xavc_status'], 'xavc_status[' . $row['user_id'] . ']',
+                    $xavc_options
+                );
+
                 if ($row['user_id'] == $this->parent_obj->object->getOwner()) {
                     $row['xavc_status'] .= ' (' . $this->lng->txt("owner") . ')  ';
                 }
@@ -143,11 +150,11 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
             }
         }
     }
-    
-    public function initFilter()
+
+    public function initFilter(): void
     {
     }
-    
+
     private function addColumns(): void
     {
         $this->addColumn('', '', '1px', true);
@@ -159,37 +166,36 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         }
         $this->addColumn($this->parent_obj->pluginObj->txt('user_status'), 'xavc_status');
         $this->addColumn($this->parent_obj->pluginObj->txt('local_roles'), 'xavc_roles');
-        
     }
-    
+
     public function getSelectableColumns(): array
     {
-        $cols = array(
-            'login' => array('txt' => $this->lng->txt('login'), 'default' => true),
-            'email' => array('txt' => $this->lng->txt('email'), 'default' => false)
-        );
-        
+        $cols = [
+            'login' => ['txt' => $this->lng->txt('login'), 'default' => true],
+            'email' => ['txt' => $this->lng->txt('email'), 'default' => false]
+        ];
+
         return $cols;
     }
-    
+
     protected function formatCellValue($column, array $row)
     {
         return $row[$column];
     }
-    
-    public function numericOrdering($field)
+
+    public function numericOrdering($field): bool
     {
-        $sortables = array();
-        
+        $sortables = [];
+
         if (in_array($field, $sortables)) {
             return true;
         }
-        
+
         return false;
     }
-    
+
     protected function getStaticData(): array
     {
-        return array('checkbox', 'user_name', 'login', 'xavc_status', 'xavc_roles');
+        return ['checkbox', 'user_name', 'login', 'xavc_status', 'xavc_roles'];
     }
 }
