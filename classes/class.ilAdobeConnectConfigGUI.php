@@ -1,8 +1,12 @@
 <?php
-//include_once("./Services/Component/classes/class.ilPluginConfigGUI.php");
-//require_once dirname(__FILE__) . '/../interfaces/interface.AdobeConnectPermissions.php';
+
 use ILIAS\Container;
 
+/**
+ * Class ilAdobeConnectConfigGUI
+ * @author Nadia Matuschek <nmatuschek@databay.de>
+ * @ilCtrl_isCalledBy ilAdobeConnectConfigGUI: ilObjComponentSettingsGUI
+ */
 class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectPermissions
 {
     public static array $template_cache = [];
@@ -48,9 +52,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         global $DIC;
         $lng = $DIC->language();
         $ilCtrl = $DIC->ctrl();
-
-        include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
-        require_once './Services/Authentication/classes/class.ilAuthUtils.php';
 
         $this->tabs->activateTab('editAdobeSettings');
         $this->form = new ilPropertyFormGUI();
@@ -254,8 +255,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                 try {
                     //check connection;
                     if (ilAdobeConnectServer::getSetting(
-                        'user_assignment_mode'
-                    ) == ilAdobeConnectServer::ASSIGN_USER_DFN_EMAIL) {
+                            'user_assignment_mode'
+                        ) == ilAdobeConnectServer::ASSIGN_USER_DFN_EMAIL) {
                         ilAdobeConnectServer::setSetting('use_user_folders', '0');
                     }
 
@@ -310,8 +311,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         global $DIC;
         $lng = $DIC->language();
         $ilCtrl = $DIC->ctrl();
-
-        include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
 
         $this->form = new ilPropertyFormGUI();
         $this->form->setFormAction($ilCtrl->getFormAction($this, 'saveRoomAllocation'));
@@ -428,14 +427,20 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $tpl->setContent($this->form->getHTML());
     }
 
+
+    private function addTemplateCheckboxes($xavc_template)
+    {
+        $cb_simple = new ilCheckboxOption($this->pluginObj->txt($item['setting']), $item['type']);
+        $cb_group->addOption($cb_simple);
+    }
+
+
     public function initIliasSettingsForm(): void
     {
         global $DIC;
 
         $lng = $DIC->language();
         $ilCtrl = $DIC->ctrl();
-
-        //        include_once './Services/Form/classes/class.ilPropertyFormGUI.php';
 
         $this->form = new ilPropertyFormGUI();
         $this->form->setFormAction($ilCtrl->getFormAction($this, 'saveIliasSettings'));
@@ -449,15 +454,10 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
             'obj_creation_settings'
         );
 
-        //@todo V9: Fix this!
-        //        include_once "Services/Administration/classes/class.ilSettingsTemplate.php";
-        $templates = ilSettingsTemplate::getAllSettingsTemplates("xavc");
-        if ($templates) {
-            foreach ($templates as $item) {
-                $cb_simple = new ilCheckboxOption($this->pluginObj->txt($item['title']), $item['id']);
-                $cb_group->addOption($cb_simple);
-            }
-        }
+        //@todo V9: Test this!
+        $this->addTemplateCheckboxes(ilXAVCTemplates::_getInstanceByType(ilXAVCTemplates::TPL_DEFAULT));
+        $this->addTemplateCheckboxes(ilXAVCTemplates::_getInstanceByType(ilXAVCTemplates::TPL_EXTENDED));
+
         $cb_group->setInfo($this->pluginObj->txt('template_info'));
         $this->form->addItem($cb_group);
 
@@ -517,12 +517,12 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         }
         $this->form->addItem($user_folders);
 
-        $xavc_options = array(
+        $xavc_options = [
             'host' => $this->pluginObj->txt('presenter'),
             'mini-host' => $this->pluginObj->txt('moderator'),
             'view' => $this->pluginObj->txt('participant'),
             'denied' => $this->pluginObj->txt('denied')
-        );
+        ];
 
         $mapping_crs = new ilNonEditableValueGUI($this->pluginObj->txt('default_crs_mapping'), 'default_crs_mapping');
 
@@ -567,7 +567,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
             foreach ($ac_roles as $ac_role => $ac_access) {
                 $tbl .= "<td>";
-                $tbl .= ilUtil::formCheckbox(
+                $tbl .= ilLegacyFormElementsUtil::formCheckbox(
                     (bool) $ac_access,
                     'permissions[' . $ac_permission . '][' . $ac_role . ']',
                     $ac_role,
@@ -609,7 +609,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     public function getIliasSettingsValues(): void
     {
-        $values = array();
+        $values = [];
         $values['use_meeting_template'] = ilAdobeConnectServer::getSetting('use_meeting_template') ?: 0;
         $values['template_sco_id'] = ilAdobeConnectServer::getSetting('template_sco_id') ?: 0;
 
@@ -653,7 +653,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
         if (is_array($_POST['permissions']) || $_POST['permissions'] == null) {
             if ($_POST['permissions'] == null) {
-                $permissions = array();
+                $permissions = [];
             } else {
                 $permissions = $_POST['permissions'];
             }
@@ -730,12 +730,14 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     public static function isDN($a_str)
     {
-        return(preg_match("/^[a-z]+([a-z0-9-]*[a-z0-9]+)?(\.([a-z]+([a-z0-9-]*[a-z0-9]+)?)+)*$/", $a_str));
+        return (preg_match("/^[a-z]+([a-z0-9-]*[a-z0-9]+)?(\.([a-z]+([a-z0-9-]*[a-z0-9]+)?)+)*$/", $a_str));
     }
 
     public static function isIPv4($a_str)
     {
-        return(preg_match("/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\." .
-            "(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/", $a_str));
+        return (preg_match(
+            "/^(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\." .
+            "(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])\.(\d{1,2}|1\d\d|2[0-4]\d|25[0-5])$/", $a_str
+        ));
     }
 }

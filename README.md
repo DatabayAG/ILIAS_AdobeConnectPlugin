@@ -1,6 +1,6 @@
 # ILIAS_AdobeConnectPlugin
 ILIAS Plugin for Adobe Connect Virtual Classrooms
-* For ILIAS versions: 7.0 - 7.999
+* For ILIAS versions: 9.0 - 9.999
 * Tested with Adobe Connect API-Version 12.5
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD",

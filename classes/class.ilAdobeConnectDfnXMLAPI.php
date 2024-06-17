@@ -1,31 +1,29 @@
 <?php
 
-require_once 'class.ilAdobeConnectXMLAPI.php';
-
 class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 {
     /**
      * @param array $params
      * @return string
      */
-    protected function getApiUrl($params): string
+    protected function getApiUrl(array $params): string
     {
         $server = $this->server;
         if (substr($server, -1) == '/') {
             $server = substr($server, 0, -1);
         }
-        
+
         if (!$this->port || $this->port == '8080') {
             $api_url = $server;
         } else {
             $api_url = $server . ':' . $this->port;
         }
-        
+
         $api_url .= '/lmsapi/xml?' . http_build_query($params);
-        
+
         return $api_url;
     }
-    
+
     /**
      * @param string $login
      * @param string $email
@@ -35,11 +33,11 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
      * @param string $session
      * @return bool
      */
-    public function addUser($login, $email, $pass, $first_name, $last_name, $session)
+    public function addUser($login, $email, $pass, $first_name, $last_name, $session): bool
     {
         global $DIC;
         $ilLog = $DIC->logger()->root();
-        
+
         $url = $this->getApiUrl(array(
             'action' => 'lms-user-create',
             'login' => $login,
@@ -47,11 +45,11 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
             'last-name' => $last_name,
             'session' => $session
         ));
-        
+
         $ilLog->write("addUser URL: " . $url);
-        
+
         $xml = simplexml_load_file($url);
-        
+
         if ($xml->status['code'] == 'ok') {
             return true;
         } else {
@@ -62,7 +60,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
             return false;
         }
     }
-    
+
     /**
      * @param string $login
      * @param string $session
@@ -72,19 +70,19 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
     {
         global $DIC;
         $ilLog = $DIC->logger()->root();
-        
-        $url = $this->getApiUrl(array(
+
+        $url = $this->getApiUrl([
             'login' => $login,
             'action' => 'lms-user-exists',
             'session' => $session
-        ));
+        ]);
         $xml = simplexml_load_file($url);
-        
+
         if ($xml->status['code'] == 'ok') {
             $list = $xml->{'principal-list'};
-            
+
             $id = (string) $list->principal['principal-id'];
-            
+
             return $id;
         } else {
             // user doesn't exist at adobe connect server
@@ -95,7 +93,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
             return false;
         }
     }
-    
+
     /**
      * @param null $user
      * @param null $pass
@@ -107,68 +105,62 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
         global $DIC;
         $ilLog = $DIC->logger()->root();
         $lng = $DIC->language();
-        
-        $url = $this->getApiUrl(array(
+
+        $url = $this->getApiUrl([
             'action' => 'lms-user-login',
             'login' => $user,
             'session' => $session
-        ));
-        
-        $context = array(
-            'http' => array('timeout' => 4),
-            'https' => array('timeout' => 4)
-        );
-        
+        ]);
+
+        $context = [
+            'http' => ['timeout' => 4],
+            'https' => ['timeout' => 4]
+        ];
+
         $ctx = $this->proxy($context);
         $xml_string = file_get_contents($url, false, $ctx);
         $xml = simplexml_load_string($xml_string);
-        
+
         if ($xml->status['code'] == 'ok') {
             return (string) $xml->cookie;
         }
-        
+
         $ilLog->write('AdobeConnect lms-user-login Request: ' . $url);
         $ilLog->write('AdobeConnect lms-user-login failed:  ' . $user);
-        ilUtil::sendFailure($lng->txt('login_failed'));
+        $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $lng->txt('login_failed'));
         return false;
     }
-    
-    /**
-     * @param string $user
-     * @param string $pass
-     * @param string $session
-     * @return bool
-     */
-    public function login($user, $pass, $session)
+
+    public function login(string $user, string $pass, string $session): bool
     {
         global $DIC;
         $ilLog = $DIC->logger()->root();
         $lng = $DIC->language();
-        
+
         if (isset(self::$loginsession_cache[$session])) {
             return true;
         }
-        
-        $url = $this->getApiUrl(array(
+
+        $url = $this->getApiUrl([
             'action' => 'login',
             'login' => $user,
             'password' => $pass,
             'session' => $session
-        ));
-        
-        $context = array(
-            'http' => array(
+        ]);
+
+        $context = [
+            'http' => [
                 'timeout' => 4
-            ),
-            'https' => array(
+            ],
+            'https' => [
                 'timeout' => 4
-            )
-        );
-        
+            ]
+        ];
+
         $ctx = $this->proxy($context);
         $xml_string = file_get_contents($url, false, $ctx);
         $xml = simplexml_load_string($xml_string);
-        
+
         if ($xml->status['code'] == 'ok') {
             self::$loginsession_cache[$session] = true;
             return true;
@@ -179,24 +171,15 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
                 $ilLog->write('AdobeConnect login Response: ' . $xml->asXML());
             }
             $ilLog->write('AdobeConnect login failed: ' . $user);
-            ilUtil::sendFailure($lng->txt('login_failed'));
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $lng->txt('login_failed'));
             return false;
         }
     }
-    
-    /**
-     * @param String $session
-     * @return bool|void
-     */
-    public function logout($session)
+
+    public function logout(string $session): bool
     {
     }
-    
-    /**
-     * @param String $login
-     * @param String $session
-     * @return null|String
-     */
+
     public function getPrincipalId($login, $session)
     {
         return $this->searchUser($login, $session);

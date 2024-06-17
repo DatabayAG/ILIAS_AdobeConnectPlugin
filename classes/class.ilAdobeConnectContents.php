@@ -11,9 +11,6 @@ class ilAdobeConnectContents
     
     public function addContent($attributes): void
     {
-        $pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
-        $pluginObj->includeClass('class.ilAdobeConnectContent.php');
-        
         $this->contents[] = new ilAdobeConnectContent($attributes);
     }
     

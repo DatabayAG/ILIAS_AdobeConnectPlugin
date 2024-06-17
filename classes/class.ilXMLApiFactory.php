@@ -1,5 +1,4 @@
 <?php
-include_once dirname(__FILE__) . "/class.ilAdobeConnectServer.php";
 
 class ilXMLApiFactory
 {
@@ -17,7 +16,7 @@ class ilXMLApiFactory
                 self::$classname = 'ilAdobeConnectXMLAPI';
             }
         }
-        
+        // @Todo V9 Fix this!
         include_once dirname(__FILE__) . '/class.' . self::$classname . '.php';
         return new self::$classname();
     }

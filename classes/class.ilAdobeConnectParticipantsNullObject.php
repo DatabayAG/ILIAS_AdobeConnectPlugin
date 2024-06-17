@@ -1,7 +1,5 @@
 <?php
 
-include_once('./Services/Membership/classes/class.ilParticipants.php');
-
 class ilAdobeConnectParticipantsNullObject extends ilParticipants
 {
     public function __construct()

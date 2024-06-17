@@ -35,7 +35,7 @@ class ilAdobeConnectRoles
         
         $role_list = $rbacreview->getRoleListByObject($this->getRefId());
         if (!$role_list) {
-            ilUtil::sendFailure($lng->txt('missing_rolelist'));
+            $DIC->ui()->mainTemplate()->setOnScreenMessage('failure', $lng->txt('missing_rolelist'));
             return false;
             
         }

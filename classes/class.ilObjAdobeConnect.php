@@ -4,9 +4,6 @@
  * and open the template in the editor.
  */
 
-//include_once("./Services/Repository/classes/class.ilObjectPlugin.php");
-//include_once("./Services/Calendar/classes/class.ilDateTime.php");
-
 class ilObjAdobeConnect extends ilObjectPlugin
 {
     public const ACCESS_LEVEL_PRIVATE = 'denied';  // no guests !
@@ -52,10 +49,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
         parent::__construct($a_ref_id);
         $this->ref_id = $a_ref_id;
-        $this->pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
+        $this->pluginObj = ilAdobeConnectPlugin::getInstance();
 
         if (!$ilCtrl->isAsynch()) {
-            $this->pluginObj->includeClass('class.ilAdobeConnectContents.php');
             $this->contents = new ilAdobeConnectContents();
         }
 
@@ -72,8 +68,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
         if ($this->getRefId() > 0) {
             global $DIC;
             $tree = $DIC->repositoryTree();
-
-            $this->pluginObj->includeClass('class.ilAdobeConnectContainerParticipants.php');
 
             $parent_ref = $tree->checkForParentType($this->getRefId(), 'grp');
             if (!$parent_ref) {
@@ -107,11 +101,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
         }
 
         //check if there is a xavc-login already saved in ilias-db
-        $this->pluginObj->includeClass('class.ilXAVCMembers.php');
         $tmp_xavc_login = (string) ilXAVCMembers::_lookupXAVCLogin($user_id);
 
         if (!$tmp_xavc_login) {
-            $this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
             $externalLogin = ilAdobeConnectUserUtil::generateXavcLoginName($user_id);
             ilXAVCMembers::addXAVCUser($user_id, $externalLogin);
         } else {
@@ -237,7 +229,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
                 $this->setPermission(ilObjAdobeConnect::ACCESS_LEVEL_PROTECTED);
             }
 
-            $this->pluginObj->includeClass('class.ilXAVCPermissions.php');
             $this->setReadContents(
                 ilXAVCPermissions::lookupPermission(
                     AdobeConnectPermissions::PERM_READ_CONTENTS,
@@ -510,12 +501,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
             $all_participants = array_unique(array_merge($admins, $tutors, $members));
         }
 
-        $this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
         $xavcRoles = new ilAdobeConnectRoles($ref_id);
 
         foreach ($all_participants as $user_id) {
-            $this->pluginObj->includeClass('class.ilAdobeConnectUserUtil.php');
-
             //check if there is an adobe connect account at the ac-server
             $ilAdobeConnectUser = new ilAdobeConnectUserUtil((int) $user_id);
             $ilAdobeConnectUser->ensureAccountExistence();
@@ -528,8 +516,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
         // receive breeze session
         $session = $this->xmlApi->getBreezeSession();
-
-        $this->pluginObj->includeClass('class.ilXAVCMembers.php');
 
         if ($session != null && $this->xmlApi->login($this->adminLogin, $this->adminPass, $session)) {
             foreach ($admins as $user_id) {
@@ -651,9 +637,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     public function deleteCrsGrpMembers($sco_id, $delete_user_ids): void
     {
-        $this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
-        $this->pluginObj->includeClass('class.ilXAVCMembers.php');
-
         $xavcRoles = new ilAdobeConnectRoles($this->getRefId());
 
         if (is_array($delete_user_ids) && count($delete_user_ids) > 0) {
@@ -729,7 +712,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
             $minutes = floor(($unix_duration - $hours * 3600) / 60);
             $this->duration = array("hours" => $hours, "minutes" => $minutes);
 
-            $this->pluginObj->includeClass('class.ilAdobeConnectContents.php');
             $this->contents = new ilAdobeConnectContents();
 
             $this->access_level = $this->xmlApi->getPermissionId($this->sco_id, $session);
@@ -854,9 +836,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
         $row = $ilDB->fetchAssoc($res);
         $new_sco_id = $row['sco_id'];
-
-        $this->pluginObj->includeClass('class.ilXAVCMembers.php');
-        $this->pluginObj->includeClass('class.ilAdobeConnectRoles.php');
 
         $xavcMemberObj = new ilXAVCMembers($new_obj->getRefId(), $ilUser->getId());
         $xavcMemberObj->setPresenterStatus();
@@ -1169,9 +1148,9 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     /**
      * Updates a content on the Adobe Connect server
-     * @param String $sco_id
-     * @param String $title
-     * @param String $description
+     * @param string $sco_id
+     * @param string $title
+     * @param string $description
      * @throws ilAdobeConnectDuplicateContentException
      */
     public function updateContent($sco_id, $title, $description)
@@ -1185,7 +1164,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     /**
      *  Removes a content from the Adobe Connect server
-     * @param String $sco_id
+     * @param string $sco_id
      */
     public function deleteContent($sco_id)
     {
@@ -1198,8 +1177,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     /**
      *  Uploads a content to the Adobe Connect server
-     * @param String $sco_id
-     * @return String
+     * @param string $sco_id
+     * @return string
      */
     public function uploadContent($sco_id)
     {
@@ -1231,7 +1210,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     /**
      *  Add a new host to the meeting
-     * @param String $login
+     * @param string $login
      * @return boolean              Returns true if everything is ok
      */
     public function addParticipant($login)
@@ -1247,8 +1226,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     /**
      *  Add a new participant to the meeting
-     * @param String $login
-     * @param String $status
+     * @param string $login
+     * @param string $status
      * @return boolean Returns true if everything is ok
      */
     public function addSwitchParticipant($login, $status)
@@ -1274,7 +1253,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     /**
      *  Deletes a host from the meeting
-     * @param String $login
+     * @param string $login
      * @return boolean          Returns true if everything is ok
      */
     public function deleteParticipant($login)
@@ -1288,8 +1267,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     /**
      *  Check whether a user is host in this virtual classroom.
-     * @param String $login
-     * @return boolean
      */
     public function isParticipant($login)
     {
@@ -1300,7 +1277,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
         }
     }
 
-    public function getPermissionId()
+    public function getPermissionId(): string
     {
         $session = $this->xmlApi->getBreezeSession();
 
@@ -1317,9 +1294,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
         $rbacadmin = $DIC->rbac()->admin();
         $rbacreview = $DIC->rbac()->review();
-
-//        include_once 'class.ilObjAdobeConnectAccess.php';
-//        include_once './Services/AccessControl/classes/class.ilObjRole.php';
 
         ilObjAdobeConnectAccess::getLocalAdminRoleTemplateId();
         ilObjAdobeConnectAccess::getLocalMemberRoleTemplateId();
@@ -1358,7 +1332,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
      */
     public function checkConcurrentMeetingDates(): array
     {
-        require_once dirname(__FILE__) . '/class.ilAdobeConnectQuota.php';
         $quota = new ilAdobeConnectQuota();
 
         return $quota->checkConcurrentMeetingDates(
@@ -1508,7 +1481,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
         $postResult = curl_exec($curl);
         curl_close($curl);
 
-        $this->pluginObj->includeClass('class.ilAdobeConnectContentUploadException.php');
         try {
             $GLOBALS['ilLog']->write("AdobeConnect: addContent result ...");
             $GLOBALS['ilLog']->write($postResult);

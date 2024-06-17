@@ -84,7 +84,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         // try reading permission template for local admin role
         $res = $ilDB->queryf(
             'SELECT obj_id FROM object_data WHERE type = %s AND title = %s',
-            array('text', 'text'), array('rolt', 'il_xavc_admin')
+            ['text', 'text'],
+            ['rolt', 'il_xavc_admin']
         );
 
         $admin_rolt_id = 0;
@@ -108,7 +109,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         // try reading permission template for local admin role
         $res = $ilDB->queryf(
             'SELECT obj_id FROM object_data WHERE type = %s AND title = %s',
-            array('text', 'text'), array('rolt', 'il_xavc_member')
+            ['text', 'text'],
+            ['rolt', 'il_xavc_member']
         );
 
         $participant_rolt_id = 0;
@@ -134,13 +136,13 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         $admin_rolt_id = 0;
 
         $res = $ilDB->queryF(
-            "SELECT obj_id FROM object_data WHERE type = %s AND title = %s",
-            array('text', 'text'), array('rolt', 'il_xavc_admin')
+            'SELECT obj_id FROM object_data WHERE type = %s AND title = %s',
+            ['text', 'text'],
+            ['rolt', 'il_xavc_admin']
         );
 
         while ($row = $ilDB->fetchObject($res)) {
             $admin_rolt_id = $row->obj_id;
-            # break;
         }
 
         if ((int) $admin_rolt_id >= 0) {
@@ -151,24 +153,25 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
             $admin_rolt_id = $ilDB->nextId('object_data');
 
             $ilDB->manipulateF(
-                "INSERT INTO object_data (obj_id, type, title, description, owner, create_date, last_update) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                array('integer', 'text', 'text', 'text', 'integer', 'timestamp', 'timestamp'),
-                array(
+                'INSERT INTO object_data (obj_id, type, title, description, owner, create_date, last_update) VALUES (%s, %s, %s, %s, %s, %s, %s)',
+                ['integer', 'text', 'text', 'text', 'integer', 'timestamp', 'timestamp'],
+                [
                     $admin_rolt_id,
                     'rolt',
                     'il_xavc_admin',
                     'Administrator role template for Adobe Connect Interface Object',
                     -1,
-                    ilUtil::now(),
-                    ilUtil::now()
-                )
+                    date('Y-m-d H:i:s'),
+                    date('Y-m-d H:i:s')
+                ]
             );
 
             // link permissions assignable on object's role folder
             $rolf_typ_id = 0;
             $res = $ilDB->queryF(
-                "SELECT obj_id FROM object_data WHERE type = %s AND title = %s",
-                array('text', 'text'), array('typ', 'rolf')
+                'SELECT obj_id FROM object_data WHERE type = %s AND title = %s',
+                ['text', 'text'],
+                ['typ', 'rolf']
             );
 
             while ($row = $ilDB->fetchObject($res)) {
@@ -178,7 +181,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
             $xavc_rolf_ops = array();
             $res = $ilDB->queryF(
                 "SELECT ops_id FROM rbac_ta WHERE typ_id = %s",
-                array('integer'), array($rolf_typ_id)
+                ['integer'],
+                [$rolf_typ_id]
             );
 
             while ($row = $ilDB->fetchObject($res)) {
@@ -193,7 +197,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
             $xavc_obj_ops = array();
             $res = $ilDB->queryF(
                 "SELECT ops_id FROM rbac_ta WHERE typ_id = %s",
-                array('integer'), array($xavc_typ_id)
+                ['integer'],
+                [$xavc_typ_id]
             );
             while ($row = $ilDB->fetchObject($res)) {
                 $xavc_obj_ops[] = (int) $row->ops_id;
@@ -223,7 +228,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
         $res = $ilDB->queryF(
             "SELECT obj_id FROM object_data WHERE type = %s AND title = %s",
-            array('text', 'text'), array('rolt', 'il_xavc_member')
+            ['text', 'text'],
+            ['rolt', 'il_xavc_member']
         );
 
         while ($row = $ilDB->fetchObject($res)) {
@@ -240,25 +246,25 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 
             $ilDB->manipulateF(
                 "INSERT INTO object_data (obj_id, type, title, description, owner, create_date, last_update) VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                array('integer', 'text', 'text', 'text', 'integer', 'timestamp', 'timestamp'),
-                array(
+                ['integer', 'text', 'text', 'text', 'integer', 'timestamp', 'timestamp'],
+                [
                     $member_rolt_id,
                     'rolt',
                     'il_xavc_member',
                     'Member role template for Adobe Connect Interface Object',
                     -1,
-                    ilUtil::now(),
-                    ilUtil::now()
-                )
+                    date('Y-m-d H:i:s'),
+                    date('Y-m-d H:i:s')
+                ]
             );
 
             // link permissions assignable on object
-            $xavc_obj_ops = array();
+            $xavc_obj_ops = [];
             $res = $ilDB->queryF(
-                "SELECT rbac_ta.ops_id, rbac_operations.operation FROM rbac_ta LEFT JOIN rbac_operations ON rbac_ta.ops_id = rbac_operations.ops_id " .
-                "WHERE rbac_ta.typ_id = %s AND rbac_operations.operation IN(%s,%s,%s)",
-                array('integer', 'text', 'text', 'text'),
-                array($xavc_typ_id, 'visible', 'read', 'member')
+                'SELECT rbac_ta.ops_id, rbac_operations.operation FROM rbac_ta LEFT JOIN rbac_operations ON rbac_ta.ops_id = rbac_operations.ops_id ' .
+                'WHERE rbac_ta.typ_id = %s AND rbac_operations.operation IN(%s,%s,%s)',
+                ['integer', 'text', 'text', 'text'],
+                [$xavc_typ_id, 'visible', 'read', 'member']
             );
 
             while ($row = $ilDB->fetchObject($res)) {
@@ -286,8 +292,9 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         // lookup obj_id of xavc type definition
         $xavc_typ_id = 0;
         $res = $ilDB->queryF(
-            "SELECT obj_id FROM object_data WHERE type = %s AND title = %s",
-            array('text', 'text'), array('typ', 'xavc')
+            'SELECT obj_id FROM object_data WHERE type = %s AND title = %s',
+            ['text', 'text'],
+            ['typ', 'xavc']
         );
         while ($row = $ilDB->fetchObject($res)) {
             $xavc_typ_id = (int) $row->obj_id;
@@ -297,16 +304,17 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
         //check initialized permissions
         $check = $ilDB->queryF(
             'SELECT ops_id FROM rbac_ta WHERE typ_id = %s',
-            array('integer'), array($xavc_typ_id)
+            ['integer'],
+            [$xavc_typ_id]
         );
 
-        $init_ops = array();
+        $init_ops = [];
         while ($row = $ilDB->fetchAssoc($check)) {
             $init_ops[] = $row['ops_id'];
         }
         //insert or update additional permissions for object type
         // general permissions: visible, read, write, delete, copy
-        $xavc_ops_ids = array();
+        $xavc_ops_ids = [];
         $res_1 = $ilDB->queryF(
             '
 				SELECT ops_id, operation FROM rbac_operations
@@ -316,8 +324,8 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
 				OR operation = %s
 				OR operation = %s
 				OR operation = %s)',
-            array('text', 'text', 'text', 'text', 'text', 'text'),
-            array('general', 'visible', 'read', 'write', 'delete', 'copy')
+            ['text', 'text', 'text', 'text', 'text', 'text'],
+            ['general', 'visible', 'read', 'write', 'delete', 'copy']
         );
 
         while ($row_1 = $ilDB->fetchAssoc($res_1)) {
@@ -329,10 +337,10 @@ class ilObjAdobeConnectAccess extends ilObjectPluginAccess
                 //insert missing operation
                 $ilDB->insert(
                     'rbac_ta',
-                    array(
-                        'typ_id' => array('integer', $xavc_typ_id),
-                        'ops_id' => array('integer', $x_id)
-                    )
+                    [
+                        'typ_id' => ['integer', $xavc_typ_id],
+                        'ops_id' => ['integer', $x_id]
+                    ]
                 );
             }
         }

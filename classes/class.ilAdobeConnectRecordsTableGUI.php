@@ -1,9 +1,6 @@
 <?php
 /* Copyright (c) 1998-2011 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-require_once 'Services/Table/classes/class.ilTable2GUI.php';
-require_once 'Services/Calendar/classes/class.ilDatePresentation.php';
-
 class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
 {
     public const MODE_VIEW = 1;

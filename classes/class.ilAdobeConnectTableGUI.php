@@ -3,8 +3,6 @@
 
 abstract class ilAdobeConnectTableGUI extends ilTable2GUI
 {
-//    protected $ctrl;
-    
     protected array $visibleOptionalColumns = [];
     
     /**
@@ -31,7 +29,7 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
      * Get the registered provider instance
      * @return ilAdobeConnectTableDataProvider
      */
-    public function getProvider()
+    public function getProvider(): ilAdobeConnectTableDataProvider
     {
         return $this->provider;
     }
@@ -49,7 +47,6 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
      * This method can be used to prepare values for sorting (e.g. translations), to filter items etc.
      * It is called before sorting and segmentation.
      * @param array $data
-     * @return array
      */
     protected function prepareData(array &$data)
     {
@@ -64,18 +61,12 @@ abstract class ilAdobeConnectTableGUI extends ilTable2GUI
     {
     }
     
-    /**
-     * Define a final formatting for a cell value
-     * @param mixed $column
-     * @param array $row
-     * @return mixed
-     */
-    protected function formatCellValue($column, array $row)
+    protected function formatCellValue($column, array $row): string
     {
-        return $row[$column];
+        return (string) $row[$column];
     }
     
-    final protected function fillRow($row): void
+    final protected function fillRow(array $row): void
     {
         $this->prepareRow($row);
         

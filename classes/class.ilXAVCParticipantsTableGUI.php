@@ -1,8 +1,5 @@
 <?php
 
-require_once dirname(__FILE__) . '/class.ilAdobeConnectTableGUI.php';
-require_once 'Services/UIComponent/AdvancedSelectionList/classes/class.ilAdvancedSelectionListGUI.php';
-
 class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 {
     public ilCtrl $ctrl;
@@ -47,15 +44,15 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         foreach ($roles as $role_id) {
             $role_title = ilObject::_lookupTitle($role_id);
             if (strpos($role_title, 'admin')) {
-                $this->local_roles[$role_id] = array(
+                $this->local_roles[$role_id] = [
                     'role_id' => $role_id,
                     'role_title' => $DIC->language()->txt('administrator')
-                );
+                ];
             } elseif (strpos($role_title, 'member')) {
-                $this->local_roles[$role_id] = array(
+                $this->local_roles[$role_id] = [
                     'role_id' => $role_id,
                     'role_title' => $DIC->language()->txt('member')
-                );
+                ];
             }
         }
     }
@@ -66,7 +63,6 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         $ilUser = $DIC->user();
         $lng = $DIC->language();
 
-        $this->parent_obj->pluginObj->includeClass('class.ilXAVCPermissions.php');
         $is_owner = $ilUser->getId() == $this->parent_obj->object->getOwner();
 
         if ($is_owner || ilXAVCPermissions::hasAccess(
@@ -94,9 +90,9 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         if ((int) $row['user_id']) {
             $this->ctrl->setParameter($this->parent_obj, 'usr_id', '');
             if ($row['user_id'] == $this->parent_obj->object->getOwner()) {
-                $row['checkbox'] = ilUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], false);
+                $row['checkbox'] = ilLegacyFormElementsUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], false);
             } else {
-                $row['checkbox'] = ilUtil::formCheckbox(
+                $row['checkbox'] = ilLegacyFormElementsUtil::formCheckbox(
                     false, 'usr_id[]', $row['user_id'],
                     (int) $row['user_id'] ? false : true
                 );
@@ -137,7 +133,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
             ];
 
             if ($row['xavc_status']) {
-                $row['xavc_status'] = ilUtil::formSelect(
+                $row['xavc_status'] = ilLegacyFormElementsUtil::formSelect(
                     $row['xavc_status'], 'xavc_status[' . $row['user_id'] . ']',
                     $xavc_options
                 );
@@ -170,20 +166,18 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 
     public function getSelectableColumns(): array
     {
-        $cols = [
+        return [
             'login' => ['txt' => $this->lng->txt('login'), 'default' => true],
             'email' => ['txt' => $this->lng->txt('email'), 'default' => false]
         ];
-
-        return $cols;
     }
 
-    protected function formatCellValue($column, array $row)
+    protected function formatCellValue($column, array $row): string
     {
-        return $row[$column];
+        return (string) $row[$column];
     }
 
-    public function numericOrdering($field): bool
+    public function numericOrdering(string $field): bool
     {
         $sortables = [];
 
@@ -194,6 +188,9 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         return false;
     }
 
+    /**
+     * @return string[]
+     */
     protected function getStaticData(): array
     {
         return ['checkbox', 'user_name', 'login', 'xavc_status', 'xavc_roles'];

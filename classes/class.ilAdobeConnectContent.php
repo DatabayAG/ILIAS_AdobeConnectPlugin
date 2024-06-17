@@ -2,10 +2,7 @@
 
 class ilAdobeConnectContent
 {
-    /**
-     * @var ilAdobeConnectContentAttributes
-     */
-    private $attributes;
+    private ilAdobeConnectContentAttributes $attributes;
     
     /**
      * ilAdobeConnectContent constructor.
@@ -14,19 +11,13 @@ class ilAdobeConnectContent
      */
     public function __construct($attributes)
     {
-        /**
-         * @var $pluginObj ilPlugin
-         */
-        $pluginObj = ilPlugin::getPluginObject('Services', 'Repository', 'robj', 'AdobeConnect');
-        $pluginObj->includeClass('class.ilAdobeConnectContentAttributes.php');
-        
         $this->attributes = new ilAdobeConnectContentAttributes($attributes);
     }
     
     /**
      * @return ilAdobeConnectContentAttributes
      */
-    public function getAttributes()
+    public function getAttributes(): ilAdobeConnectContentAttributes
     {
         return $this->attributes;
     }

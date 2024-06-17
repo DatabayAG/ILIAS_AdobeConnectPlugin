@@ -38,10 +38,10 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI
     }
 
     public function insertCommands(
-        $a_use_asynch = false,
-        $a_get_asynch_commands = false,
-        $a_asynch_url = "",
-        $a_header_actions = false
+        bool $use_async = false,
+        bool $get_async_commands = false,
+        string $async_url = '',
+        bool $header_actions = false
     ): string {
         global $DIC;
         $ilUser = $DIC->user();
@@ -79,42 +79,41 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI
             $this->commands = $this->initCommands();
         }
 
-        return parent::insertCommands($a_use_asynch, $a_get_asynch_commands, $a_asynch_url);
+        return parent::insertCommands($use_async, $get_async_commands, $async_url);
     }
 
     public function getProperties(): array
     {
         $props = [];
 
-        $this->plugin->includeClass('class.ilObjAdobeConnect.php');
         $objectData = ilObjAdobeConnect::getObjectData($this->obj_id);
 
         if ($objectData->permanent_room == 1) {
-            $props[] = array(
+            $props[] = [
                 'alert' => false,
                 'value' => $this->plugin->txt('permanent_room')
-            );
+            ];
         } else {
             if ((int) $objectData->start_date > time() || (int) $objectData->end_date < time()) {
-                $props[] = array(
+                $props[] = [
                     'alert' => false,
                     'value' => $this->plugin->txt('meeting_not_available')
-                );
+                ];
             } else {
-                $props[] = array(
+                $props[] = [
                     'alert' => false,
                     'property' => $this->txt('start_date'),
                     'value' => ilDatePresentation::formatDate(new ilDateTime($objectData->start_date, IL_CAL_UNIX))
-                );
+                ];
 
-                $props[] = array(
+                $props[] = [
                     'alert' => false,
                     'property' => $this->txt('duration'),
                     'value' => ilDatePresentation::formatPeriod(
                         new ilDateTime($objectData->start_date, IL_CAL_UNIX),
                         new ilDateTime($objectData->end_date, IL_CAL_UNIX)
                     )
-                );
+                ];
             }
         }
         return $props;
