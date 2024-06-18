@@ -41,6 +41,10 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
     public string $ac_language = 'de';
     public bool $html_client = false;
+    /**
+     * @var ilXAVCTemplates[]
+     */
+    public array $xavc_templates = [];
 
     public function __construct($a_ref_id = 0)
     {
@@ -149,28 +153,32 @@ class ilObjAdobeConnect extends ilObjectPlugin
             $this->publishCreationAC();
             return;
         } else {
-            if (isset($_POST['tpl_id']) && (int) $_POST['tpl_id'] > 0) {
-                $tpl_id = (int) $_POST['tpl_id'];
+            if (isset($_POST['tpl_id']) && (string) $_POST['tpl_id'] > 0) {
+                $tpl_id = (string) $_POST['tpl_id'];
             } else {
                 throw new ilException('no_template_id_given');
             }
 
-            //@todo V9: Fix this. Move abandoned ilias template handling to xavc_settings
-            //            include_once "Services/Administration/classes/class.ilSettingsTemplate.php";
-            //            $templates = ilSettingsTemplate::getAllSettingsTemplates("xavc");
-
-            foreach ($templates as $template) {
-                if ((int) $template['id'] == $tpl_id) {
-                    $template_settings = array();
-                    if ($template['id']) {
-                        $objTemplate = new ilSettingsTemplate($template['id']);
-                        $template_settings = $objTemplate->getSettings();
-                    }
-                }
+//            //@todo V9: Fix this. Move abandoned ilias template handling to xavc_settings
+//            //            include_once "Services/Administration/classes/class.ilSettingsTemplate.php";
+//            //            $templates = ilSettingsTemplate::getAllSettingsTemplates("xavc");
+//
+//            foreach ($templates as $template) {
+//                if ((int) $template['id'] == $tpl_id) {
+//                    $template_settings = array();
+//                    if ($template['id']) {
+//                        $objTemplate = new ilSettingsTemplate($template['id']);
+//                        $template_settings = $objTemplate->getSettings();
+//                    }
+//                }
+//            }
+            foreach (ilXAVCTemplates::XAVC_TEMPLATES as $type) {
+                $this->xavc_templates[$type] = ilXAVCTemplates::_getInstanceByType($type);
             }
+            $template_settings = $this->xavc_templates[$tpl_id];
 
             // reuse existing ac-room
-            if (isset($_POST['creation_type']) && $_POST['creation_type'] == 'existing_vc' && $template_settings['reuse_existing_rooms']['hide'] == '0') {
+            if (isset($_POST['creation_type']) && $_POST['creation_type'] == 'existing_vc' && $template_settings->getReuseExistingRoomsHide() == '0') {
                 // 1. the sco-id will be assigned to this new ilias object
                 $sco_id = (int) $_POST['available_rooms'];
                 try {
@@ -251,12 +259,12 @@ class ilObjAdobeConnect extends ilObjectPlugin
         try {
             if (isset($_POST['start_date']) && is_string($_POST['start_date']) && strlen(
                     $_POST['start_date']
-                ) > 0 && $template_settings['start_date']['hide'] == '0') {
+                ) > 0 && $template_settings->getStartDateHide() == '0') {
                 $this->start_date = new ilDateTime($_POST['start_date'], IL_CAL_DATETIME);
             } else {
                 if (isset($_POST['start_date']) && is_array(
                         $_POST['start_date']
-                    ) && $template_settings['start_date']['hide'] == '0') {
+                    ) && $template_settings->getStartDateHide() == '0') {
                     $this->start_date = new ilDateTime(
                         $_POST['start_date']['date'] . ' ' . $_POST['start_date']['time'],
                         IL_CAL_DATETIME
@@ -269,7 +277,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
             // duration
             if (isset($_POST['duration']['hh']) && isset($_POST['duration']['mm'])
                 && ($_POST['duration']['hh'] > 0 || $_POST['duration']['mm'] > 0)
-                && $template_settings['duration']['hide'] == '0') {
+                && $template_settings->getDurationHide() == '0') {
                 $this->duration = array(
                     'hours' => $_POST['duration']['hh'],
                     'minutes' => $_POST['duration']['mm']
@@ -1037,7 +1045,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
     {
         $session = $this->xmlApi->getBreezeSession();
 
-        $ids = array();
+        $ids = [];
 
         if ($session != null && $this->xmlApi->login($this->adminLogin, $this->adminPass, $session)) {
             $ids = ($this->xmlApi->getContentIds($this->sco_id, $session) ? $this->xmlApi->getContentIds(

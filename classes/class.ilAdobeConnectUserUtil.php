@@ -254,7 +254,7 @@ class ilAdobeConnectUserUtil
     private function generatePass(): string
     {
         $caracteres = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        mt_srand(microtime() * 1000000);
+        mt_srand(time() * 1000000);
         
         $password = '';
         for ($i = 0; $i < 8; $i++) {

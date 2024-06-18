@@ -20,7 +20,7 @@ class ilAdobeConnectPlugin extends ilRepositoryObjectPlugin
 
         if (self::$instance === null) {
             $component_factory = $DIC["component.factory"];
-            $plugin_obj = $component_factory->getPlugin('pdfcorr');
+            $plugin_obj = $component_factory->getPlugin('xavc');
             return self::$instance =  $plugin_obj;
         }
 

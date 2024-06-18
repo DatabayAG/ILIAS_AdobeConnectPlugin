@@ -4,7 +4,7 @@ use ILIAS\Container;
 
 /**
  * Class ilAdobeConnectConfigGUI
- * @author Nadia Matuschek <nmatuschek@databay.de>
+ * @author            Nadia Matuschek <nmatuschek@databay.de>
  * @ilCtrl_isCalledBy ilAdobeConnectConfigGUI: ilObjComponentSettingsGUI
  */
 class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectPermissions
@@ -13,10 +13,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
     private ilTabsGUI $tabs;
     private ilGlobalTemplateInterface $tpl;
 
-    /**
-     * @var $pluginObj ilPlugin
-     */
-    public $pluginObj = null;
     public ?ilPropertyFormGUI $form = null;
 
     public function performCommand(string $cmd): void
@@ -25,8 +21,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
         $this->tabs = $DIC->tabs();
         $this->tpl = $DIC->ui()->mainTemplate();
-        $this->pluginObj = ilAdobeConnectPlugin::getInstance();
-
         $this->getTabs();
         switch ($cmd) {
             default:
@@ -167,7 +161,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     private function getAdobeSettingsValues(): void
     {
-        $values = array();
+        $values = [];
 
         $values['server'] = ilAdobeConnectServer::getSetting('server') ?: '';
         $values['port'] = ilAdobeConnectServer::getSetting('port') ?: '';
@@ -192,7 +186,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
     public function editAdobeSettings(): void
     {
         global $DIC;
-
         $tpl = $DIC->ui()->mainTemplate();
 
         $this->tabs->activateTab('editAdobeSettings');
@@ -216,7 +209,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
             $url = parse_url(trim($this->form->getInput('server')));
             $url_2 = parse_url(trim($this->form->getInput('presentation_server')));
 
-            //@todo V9: Fix this
             if ((self::isIPv4($url['host']) || self::isDN($url['host']))
                 && (self::isIPv4($url_2['host']) || self::isDN($url_2['host']))) {
                 $params = array(
@@ -243,7 +235,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
                 // Set values from form into database
                 foreach ($params as $key => $v) {
-                    $value = trim($this->form->getInput($key));
+                    $value = trim((string) $this->form->getInput($key));
                     if (in_array($key, array('server', 'presentation_server')) && '/' == substr($value, -1)) {
                         $value = substr($value, 0, -1);
                     }
@@ -400,17 +392,17 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
         $this->tabs->addTab(
             'editAdobeSettings',
-            $this->pluginObj->txt('editAdobeSettings'),
+            $this->getPluginObject()->txt('editAdobeSettings'),
             $ilCtrl->getLinkTarget($this, 'editAdobeSettings')
         );
         $this->tabs->addTab(
             'editRoomAllocation',
-            $this->pluginObj->txt('editRoomAllocation'),
+            $this->getPluginObject()->txt('editRoomAllocation'),
             $ilCtrl->getLinkTarget($this, 'editRoomAllocation')
         );
         $this->tabs->addTab(
             'editIliasSettings',
-            $this->pluginObj->txt('editIliasSettings'),
+            $this->getPluginObject()->txt('editIliasSettings'),
             $ilCtrl->getLinkTarget($this, 'editIliasSettings')
         );
     }
@@ -427,14 +419,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $tpl->setContent($this->form->getHTML());
     }
 
-
-    private function addTemplateCheckboxes($xavc_template)
-    {
-        $cb_simple = new ilCheckboxOption($this->pluginObj->txt($item['setting']), $item['type']);
-        $cb_group->addOption($cb_simple);
-    }
-
-
     public function initIliasSettingsForm(): void
     {
         global $DIC;
@@ -450,30 +434,35 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $this->form->addCommandButton('cancelIliasSettings', $lng->txt('cancel'));
 
         $cb_group = new ilCheckboxGroupInputGUI(
-            $this->pluginObj->txt('object_creation_settings'),
+            $this->getPluginObject()->txt('object_creation_settings'),
             'obj_creation_settings'
         );
 
-        //@todo V9: Test this!
-        $this->addTemplateCheckboxes(ilXAVCTemplates::_getInstanceByType(ilXAVCTemplates::TPL_DEFAULT));
-        $this->addTemplateCheckboxes(ilXAVCTemplates::_getInstanceByType(ilXAVCTemplates::TPL_EXTENDED));
+        foreach (ilXAVCTemplates::XAVC_TEMPLATES as $template_type) {
+            $xavc_tpl = ilXAVCTemplates::_getInstanceByType($template_type);
+            $cb_option = new ilCheckboxOption(
+                $this->getPluginObject()->txt($xavc_tpl->getLangVar()),
+                $xavc_tpl->getType());
 
-        $cb_group->setInfo($this->pluginObj->txt('template_info'));
+            $cb_group->addOption($cb_option);
+        }
+
+        $cb_group->setInfo($this->getPluginObject()->txt('template_info'));
         $this->form->addItem($cb_group);
 
-        $obj_title_suffix = new ilCheckboxInputGUI($this->pluginObj->txt('obj_title_suffix'), 'obj_title_suffix');
-        $obj_title_suffix->setInfo($this->pluginObj->txt('obj_title_suffix_info'));
+        $obj_title_suffix = new ilCheckboxInputGUI($this->getPluginObject()->txt('obj_title_suffix'), 'obj_title_suffix');
+        $obj_title_suffix->setInfo($this->getPluginObject()->txt('obj_title_suffix_info'));
         $this->form->addItem($obj_title_suffix);
 
         try {
             $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-            $templateOptions = $xmlAPI->getTemplates($this->pluginObj);
+            $templateOptions = $xmlAPI->getTemplates($this->getPluginObject());
 
             $use_meeting_template = new ilCheckboxInputGUI(
-                $this->pluginObj->txt('use_meeting_template'),
+                $this->getPluginObject()->txt('use_meeting_template'),
                 'use_meeting_template'
             );
-            $use_meeting_template->setInfo($this->pluginObj->txt('use_meeting_template_info'));
+            $use_meeting_template->setInfo($this->getPluginObject()->txt('use_meeting_template_info'));
             $template_source = new ilSelectInputGUI('', 'template_sco_id');
             $template_source->setOptions($templateOptions);
 
@@ -483,48 +472,48 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         }
 
         $crs_grp_trigger = new ilCheckboxInputGUI(
-            $this->pluginObj->txt('allow_crs_grp_trigger'),
+            $this->getPluginObject()->txt('allow_crs_grp_trigger'),
             'allow_crs_grp_trigger'
         );
-        $crs_grp_trigger->setInfo($this->pluginObj->txt('allow_crs_grp_trigger_info'));
+        $crs_grp_trigger->setInfo($this->getPluginObject()->txt('allow_crs_grp_trigger_info'));
         $this->form->addItem($crs_grp_trigger);
 
-        $show_free_slots = new ilCheckboxInputGUI($this->pluginObj->txt('show_free_slots'), 'show_free_slots');
-        $show_free_slots->setInfo($this->pluginObj->txt('show_free_slots_info'));
+        $show_free_slots = new ilCheckboxInputGUI($this->getPluginObject()->txt('show_free_slots'), 'show_free_slots');
+        $show_free_slots->setInfo($this->getPluginObject()->txt('show_free_slots_info'));
         $this->form->addItem($show_free_slots);
 
-        $enable_perm_room = new ilCheckboxInputGUI($this->pluginObj->txt('enable_perm_room'), 'enable_perm_room');
-        $enable_perm_room->setInfo($this->pluginObj->txt('enable_perm_room_info'));
+        $enable_perm_room = new ilCheckboxInputGUI($this->getPluginObject()->txt('enable_perm_room'), 'enable_perm_room');
+        $enable_perm_room->setInfo($this->getPluginObject()->txt('enable_perm_room_info'));
 
-        $default_perm_room = new ilCheckboxInputGUI($this->pluginObj->txt('default_perm_room'), 'default_perm_room');
-        $default_perm_room->setInfo($this->pluginObj->txt('default_perm_room_info'));
+        $default_perm_room = new ilCheckboxInputGUI($this->getPluginObject()->txt('default_perm_room'), 'default_perm_room');
+        $default_perm_room->setInfo($this->getPluginObject()->txt('default_perm_room_info'));
         $enable_perm_room->addSubItem($default_perm_room);
         $this->form->addItem($enable_perm_room);
 
-        $add_to_desktop = new ilCheckboxInputGUI($this->pluginObj->txt('add_to_desktop'), 'add_to_desktop');
-        $add_to_desktop->setInfo($this->pluginObj->txt('add_to_desktop_info'));
+        $add_to_desktop = new ilCheckboxInputGUI($this->getPluginObject()->txt('add_to_desktop'), 'add_to_desktop');
+        $add_to_desktop->setInfo($this->getPluginObject()->txt('add_to_desktop_info'));
         $this->form->addItem($add_to_desktop);
 
-        $content_file_types = new ilTextInputGUI($this->pluginObj->txt('content_file_types'), 'content_file_types');
+        $content_file_types = new ilTextInputGUI($this->getPluginObject()->txt('content_file_types'), 'content_file_types');
         $content_file_types->setRequired(true);
-        $content_file_types->setInfo($this->pluginObj->txt('content_file_types_info'));
+        $content_file_types->setInfo($this->getPluginObject()->txt('content_file_types_info'));
         $this->form->addItem($content_file_types);
 
-        $user_folders = new ilCheckboxInputGUI($this->pluginObj->txt('use_user_folders'), 'use_user_folders');
-        $user_folders->setInfo($this->pluginObj->txt('use_user_folders_info'));
+        $user_folders = new ilCheckboxInputGUI($this->getPluginObject()->txt('use_user_folders'), 'use_user_folders');
+        $user_folders->setInfo($this->getPluginObject()->txt('use_user_folders_info'));
         if (ilAdobeConnectServer::getSetting('user_assignment_mode') == ilAdobeConnectServer::ASSIGN_USER_DFN_EMAIL) {
             $user_folders->setDisabled(true);
         }
         $this->form->addItem($user_folders);
 
         $xavc_options = [
-            'host' => $this->pluginObj->txt('presenter'),
-            'mini-host' => $this->pluginObj->txt('moderator'),
-            'view' => $this->pluginObj->txt('participant'),
-            'denied' => $this->pluginObj->txt('denied')
+            'host' => $this->getPluginObject()->txt('presenter'),
+            'mini-host' => $this->getPluginObject()->txt('moderator'),
+            'view' => $this->getPluginObject()->txt('participant'),
+            'denied' => $this->getPluginObject()->txt('denied')
         ];
 
-        $mapping_crs = new ilNonEditableValueGUI($this->pluginObj->txt('default_crs_mapping'), 'default_crs_mapping');
+        $mapping_crs = new ilNonEditableValueGUI($this->getPluginObject()->txt('default_crs_mapping'), 'default_crs_mapping');
 
         $crs_admin = new ilSelectInputGUI($lng->txt('il_crs_admin'), 'crs_admin');
         $crs_admin->setOptions($xavc_options);
@@ -540,7 +529,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
         $this->form->addItem($mapping_crs);
 
-        $mapping_grp = new ilNonEditableValueGUI($this->pluginObj->txt('default_grp_mapping'), 'default_grp_mapping');
+        $mapping_grp = new ilNonEditableValueGUI($this->getPluginObject()->txt('default_grp_mapping'), 'default_grp_mapping');
 
         $grp_admin = new ilSelectInputGUI($lng->txt('il_grp_admin'), 'grp_admin');
         $grp_admin->setOptions($xavc_options);
@@ -556,14 +545,14 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $tbl = "<table width='100%' >
 		<tr>
 		<td> </td> 
-		<td>" . $this->pluginObj->txt('presenter') . "</td>
-		<td>" . $this->pluginObj->txt('moderator') . "</td>
-		<td>" . $this->pluginObj->txt('participant') . "</td>
-		<td>" . $this->pluginObj->txt('denied') . "</td>
+		<td>" . $this->getPluginObject()->txt('presenter') . "</td>
+		<td>" . $this->getPluginObject()->txt('moderator') . "</td>
+		<td>" . $this->getPluginObject()->txt('participant') . "</td>
+		<td>" . $this->getPluginObject()->txt('denied') . "</td>
 		
 		</tr>";
         foreach ($ac_permissions as $ac_permission => $ac_roles) {
-            $tbl .= "<tr> <td>" . $this->pluginObj->txt($ac_permission) . "</td>";
+            $tbl .= "<tr> <td>" . $this->getPluginObject()->txt($ac_permission) . "</td>";
 
             foreach ($ac_roles as $ac_role => $ac_access) {
                 $tbl .= "<td>";
@@ -579,16 +568,16 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
             $tbl .= "</tr>";
         }
         $tbl .= "</table>";
-        $matrix = new ilCustomInputGUI($this->pluginObj->txt('ac_permissions'), '');
+        $matrix = new ilCustomInputGUI($this->getPluginObject()->txt('ac_permissions'), '');
         $matrix->setHtml($tbl);
 
         $this->form->addItem($matrix);
 
-        $api_version = new ilNonEditableValueGUI($this->pluginObj->txt('api_version'), 'api_version');
+        $api_version = new ilNonEditableValueGUI($this->getPluginObject()->txt('api_version'), 'api_version');
         $this->form->addItem($api_version);
 
-        $html_client = new ilCheckboxInputGUI($this->pluginObj->txt('html_client'), 'html_client');
-        $html_client->setInfo($this->pluginObj->txt('html_client_info'));
+        $html_client = new ilCheckboxInputGUI($this->getPluginObject()->txt('html_client'), 'html_client');
+        $html_client->setInfo($this->getPluginObject()->txt('html_client_info'));
         if (version_compare(ilAdobeConnectServer::getSetting('api_version'), '10.0.0', '<')) {
             $html_client->setDisabled(true);
         }
@@ -613,7 +602,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $values['use_meeting_template'] = ilAdobeConnectServer::getSetting('use_meeting_template') ?: 0;
         $values['template_sco_id'] = ilAdobeConnectServer::getSetting('template_sco_id') ?: 0;
 
-        $values['obj_creation_settings'] = unserialize(
+        $values['obj_creation_settings'] = (array) unserialize(
             ilAdobeConnectServer::getSetting('obj_creation_settings'),
             ['allowed_classes' => false]
         ) ?: '0';
