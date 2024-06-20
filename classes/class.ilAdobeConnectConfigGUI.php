@@ -12,15 +12,24 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
     public static array $template_cache = [];
     private ilTabsGUI $tabs;
     private ilGlobalTemplateInterface $tpl;
+    private ilLanguage $lng;
+    private ilCtrlInterface $ctrl;
 
     public ?ilPropertyFormGUI $form = null;
 
-    public function performCommand(string $cmd): void
+    public function __construct()
     {
         global $DIC;
 
         $this->tabs = $DIC->tabs();
         $this->tpl = $DIC->ui()->mainTemplate();
+        $this->lng = $DIC->language();
+        $this->ctrl = $DIC->ctrl();
+    }
+
+
+    public function performCommand(string $cmd): void
+    {
         $this->getTabs();
         switch ($cmd) {
             default:
@@ -43,35 +52,31 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     private function initAdobeSettingsForm(): void
     {
-        global $DIC;
-        $lng = $DIC->language();
-        $ilCtrl = $DIC->ctrl();
-
         $this->tabs->activateTab('editAdobeSettings');
         $this->form = new ilPropertyFormGUI();
 
-        $this->form->setFormAction($ilCtrl->getFormAction($this, 'saveAdobeSettings'));
+        $this->form->setFormAction($this->ctrl->getFormAction($this, 'saveAdobeSettings'));
         $this->form->setTitle($this->getPluginObject()->txt('adobe_settings'));
 
-        $this->form->addCommandButton('saveAdobeSettings', $lng->txt('save'));
-        $this->form->addCommandButton('cancelAdobeSettings', $lng->txt('cancel'));
+        $this->form->addCommandButton('saveAdobeSettings', $this->lng->txt('save'));
+        $this->form->addCommandButton('cancelAdobeSettings', $this->lng->txt('cancel'));
 
-        $form_server = new ilTextInputGUI($lng->txt('server'), 'server');
+        $form_server = new ilTextInputGUI($this->lng->txt('server'), 'server');
         $form_server->setRequired(true);
         $form_server->setInfo($this->getPluginObject()->txt('xavc_host_info'));
         $this->form->addItem($form_server);
 
-        $form_port = new ilNumberInputGUI($lng->txt('port'), 'port');
+        $form_port = new ilNumberInputGUI($this->lng->txt('port'), 'port');
         $form_port->setSize(5);
         $form_port->setMaxLength(5);
         $form_port->setInfo($this->getPluginObject()->txt('xavc_port_info'));
         $this->form->addItem($form_port);
 
-        $form_login = new ilTextInputGUI($lng->txt('login'), 'login');
+        $form_login = new ilTextInputGUI($this->lng->txt('login'), 'login');
         $form_login->setRequired(true);
         $this->form->addItem($form_login);
 
-        $form_passwd = new ilPasswordInputGUI($lng->txt('password'), 'password');
+        $form_passwd = new ilPasswordInputGUI($this->lng->txt('password'), 'password');
         $form_passwd->setSkipSyntaxCheck(true);
         $form_passwd->setRequired(true);
         $form_passwd->setRetype(false);
@@ -167,7 +172,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
         $values['port'] = ilAdobeConnectServer::getSetting('port') ?: '';
         $values['login'] = ilAdobeConnectServer::getSetting('login') ?: '';
         $values['password'] = ilAdobeConnectServer::getSetting('password') ?: '';
-        $values['cave'] = ilAdobeConnectServer::getSetting('cave') ?: '';
         $values['schedule_lead_time'] = ilAdobeConnectServer::getSetting('schedule_lead_time') ?: 0;
 
         ilAdobeConnectServer::getSetting('user_assignment_mode')
@@ -185,25 +189,16 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     public function editAdobeSettings(): void
     {
-        global $DIC;
-        $tpl = $DIC->ui()->mainTemplate();
-
         $this->tabs->activateTab('editAdobeSettings');
 
         $this->initAdobeSettingsForm();
         $this->getAdobeSettingsValues();
 
-        $tpl->setContent($this->form->getHTML());
+        $this->tpl->setContent($this->form->getHTML());
     }
 
     public function saveAdobeSettings()
     {
-        global $DIC;
-
-        $lng = $DIC->language();
-        $ilCtrl = $DIC->ctrl();
-        $tpl = $DIC->ui()->mainTemplate();
-
         $this->initAdobeSettingsForm();
         if ($this->form->checkInput()) {
             $url = parse_url(trim($this->form->getInput('server')));
@@ -211,17 +206,16 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
             if ((self::isIPv4($url['host']) || self::isDN($url['host']))
                 && (self::isIPv4($url_2['host']) || self::isDN($url_2['host']))) {
-                $params = array(
+                $params = [
                     'server' => null,
                     'port' => null,
                     'login' => null,
                     'password' => null,
-                    'cave' => null,
                     'user_assignment_mode' => null,
                     'schedule_lead_time' => null,
                     'presentation_server' => null,
                     'presentation_port' => null
-                );
+                ];
                 $params['auth_mode'] = $this->form->getInput('auth_mode');
 
                 if ($this->form->getInput('auth_mode') == 'auth_mode_header') {
@@ -254,8 +248,8 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
                     $this->readApiVersion();
 
-                    $this->tpl->setOnScreenMessage('success', $lng->txt('settings_saved'), true);
-                    $ilCtrl->redirect($this, 'editAdobeSettings');
+                    $this->tpl->setOnScreenMessage('success', $this->lng->txt('settings_saved'), true);
+                    $this->ctrl->redirect($this, 'editAdobeSettings');
                 } catch (Exception $e) {
                     // rollback
                     foreach ($params as $key => $val) {
@@ -288,7 +282,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
         $this->tpl->setOnScreenMessage('failure', $this->getPluginObject()->txt('check_input'));
         $this->form->setValuesByPost();
-        return $tpl->setContent($this->form->getHTML());
+        return $this->tpl->setContent($this->form->getHTML());
     }
 
     // ROOM-ALLOCATION
@@ -300,16 +294,12 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     private function initRoomAllocationForm(): void
     {
-        global $DIC;
-        $lng = $DIC->language();
-        $ilCtrl = $DIC->ctrl();
-
         $this->form = new ilPropertyFormGUI();
-        $this->form->setFormAction($ilCtrl->getFormAction($this, 'saveRoomAllocation'));
+        $this->form->setFormAction($this->ctrl->getFormAction($this, 'saveRoomAllocation'));
         $this->form->setTitle($this->getPluginObject()->txt('room_allocation'));
 
-        $this->form->addCommandButton('saveRoomAllocation', $lng->txt('save'));
-        $this->form->addCommandButton('cancelRoomAllocation', $lng->txt('cancel'));
+        $this->form->addCommandButton('saveRoomAllocation', $this->lng->txt('save'));
+        $this->form->addCommandButton('cancelRoomAllocation', $this->lng->txt('cancel'));
 
         $form_ac_obj = new ilNumberInputGUI(
             $this->getPluginObject()->txt('ac_interface_objects'),
@@ -327,7 +317,7 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     public function getRoomAllocationValues(): void
     {
-        $values = array();
+        $values = [];
 
         $values['num_max_vc'] = ilAdobeConnectServer::getSetting('num_max_vc') ?: 1;
         $values['ac_interface_objects'] = ilAdobeConnectServer::getSetting('ac_interface_objects') ?: 0;
@@ -337,22 +327,15 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     public function editRoomAllocation(): void
     {
-        global $DIC;
-        $tpl = $DIC->ui()->mainTemplate();
-
         $this->tabs->activateTab('editRoomAllocation');
         $this->initRoomAllocationForm();
         $this->getRoomAllocationValues();
 
-        $tpl->setContent($this->form->getHTML());
+        $this->tpl->setContent($this->form->getHTML());
     }
 
     public function saveRoomAllocation()
     {
-        global $DIC;
-        $ilCtrl = $DIC->ctrl();
-        $tpl = $DIC->ui()->mainTemplate();
-
         $this->initRoomAllocationForm();
         if ($this->form->checkInput()) {
             $max_num_vc = (int) $this->form->getInput('num_max_vc');
@@ -360,14 +343,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
             $num_ac_obj_buffer = (int) $this->form->getInput('ac_interface_objects_buffer');
 
             $sum = $num_ac_obj + $num_ac_obj_buffer;
-            /*if((int)$num_ac_obj > 0 && $sum > $max_num_vc)
-            {
-                $this->form->getItemByPostVar('num_max_vc')->setAlert($this->getPluginObject()->txt('err_num_of_required_rooms_gt_max_vc'));
-                ilUtil::sendFailure($this->getPluginObject()->txt('check_input'));
-                $this->form->setValuesByPost();
-                return $tpl->setContent($this->form->getHTML());
-            }*/
-
             ilAdobeConnectServer::setSetting('num_max_vc', (string) $this->form->getInput('num_max_vc'));
             ilAdobeConnectServer::setSetting('ac_interface_objects', (string) $num_ac_obj);
             ilAdobeConnectServer::setSetting('ac_interface_objects_buffer', (string) $num_ac_obj_buffer);
@@ -377,61 +352,50 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
                 $this->getPluginObject()->txt('extt_adobe_room_allocation_saved'),
                 true
             );
-            $ilCtrl->redirect($this, 'editRoomAllocation');
+            $this->ctrl->redirect($this, 'editRoomAllocation');
         } else {
             $this->tpl->setOnScreenMessage('failure', $this->getPluginObject()->txt('check_input'));
             $this->form->setValuesByPost();
-            return $tpl->setContent($this->form->getHTML());
+            return $this->tpl->setContent($this->form->getHTML());
         }
     }
 
     public function getTabs(): void
     {
-        global $DIC;
-        $ilCtrl = $DIC->ctrl();
-
         $this->tabs->addTab(
             'editAdobeSettings',
             $this->getPluginObject()->txt('editAdobeSettings'),
-            $ilCtrl->getLinkTarget($this, 'editAdobeSettings')
+            $this->ctrl->getLinkTarget($this, 'editAdobeSettings')
         );
         $this->tabs->addTab(
             'editRoomAllocation',
             $this->getPluginObject()->txt('editRoomAllocation'),
-            $ilCtrl->getLinkTarget($this, 'editRoomAllocation')
+            $this->ctrl->getLinkTarget($this, 'editRoomAllocation')
         );
         $this->tabs->addTab(
             'editIliasSettings',
             $this->getPluginObject()->txt('editIliasSettings'),
-            $ilCtrl->getLinkTarget($this, 'editIliasSettings')
+            $this->ctrl->getLinkTarget($this, 'editIliasSettings')
         );
     }
 
     public function editIliasSettings(): void
     {
-        global $DIC;
-        $tpl = $DIC->ui()->mainTemplate();
-
         $this->tabs->activateTab('editIliasSettings');
         $this->initIliasSettingsForm();
         $this->getIliasSettingsValues();
 
-        $tpl->setContent($this->form->getHTML());
+        $this->tpl->setContent($this->form->getHTML());
     }
 
     public function initIliasSettingsForm(): void
     {
-        global $DIC;
-
-        $lng = $DIC->language();
-        $ilCtrl = $DIC->ctrl();
-
         $this->form = new ilPropertyFormGUI();
-        $this->form->setFormAction($ilCtrl->getFormAction($this, 'saveIliasSettings'));
+        $this->form->setFormAction($this->ctrl->getFormAction($this, 'saveIliasSettings'));
         $this->form->setTitle($this->getPluginObject()->txt('general_settings'));
 
-        $this->form->addCommandButton('saveIliasSettings', $lng->txt('save'));
-        $this->form->addCommandButton('cancelIliasSettings', $lng->txt('cancel'));
+        $this->form->addCommandButton('saveIliasSettings', $this->lng->txt('save'));
+        $this->form->addCommandButton('cancelIliasSettings', $this->lng->txt('cancel'));
 
         $cb_group = new ilCheckboxGroupInputGUI(
             $this->getPluginObject()->txt('object_creation_settings'),
@@ -515,15 +479,15 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
         $mapping_crs = new ilNonEditableValueGUI($this->getPluginObject()->txt('default_crs_mapping'), 'default_crs_mapping');
 
-        $crs_admin = new ilSelectInputGUI($lng->txt('il_crs_admin'), 'crs_admin');
+        $crs_admin = new ilSelectInputGUI($this->lng->txt('il_crs_admin'), 'crs_admin');
         $crs_admin->setOptions($xavc_options);
         $mapping_crs->addSubItem($crs_admin);
 
-        $crs_tutor = new ilSelectInputGUI($lng->txt('il_crs_tutor'), 'crs_tutor');
+        $crs_tutor = new ilSelectInputGUI($this->lng->txt('il_crs_tutor'), 'crs_tutor');
         $crs_tutor->setOptions($xavc_options);
         $mapping_crs->addSubItem($crs_tutor);
 
-        $crs_member = new ilSelectInputGUI($lng->txt('il_crs_member'), 'crs_member');
+        $crs_member = new ilSelectInputGUI($this->lng->txt('il_crs_member'), 'crs_member');
         $crs_member->setOptions($xavc_options);
         $mapping_crs->addSubItem($crs_member);
 
@@ -531,11 +495,11 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
         $mapping_grp = new ilNonEditableValueGUI($this->getPluginObject()->txt('default_grp_mapping'), 'default_grp_mapping');
 
-        $grp_admin = new ilSelectInputGUI($lng->txt('il_grp_admin'), 'grp_admin');
+        $grp_admin = new ilSelectInputGUI($this->lng->txt('il_grp_admin'), 'grp_admin');
         $grp_admin->setOptions($xavc_options);
         $mapping_grp->addSubItem($grp_admin);
 
-        $grp_member = new ilSelectInputGUI($lng->txt('il_grp_member'), 'grp_member');
+        $grp_member = new ilSelectInputGUI($this->lng->txt('il_grp_member'), 'grp_member');
         $grp_member->setOptions($xavc_options);
         $mapping_grp->addSubItem($grp_member);
         $this->form->addItem($mapping_grp);
@@ -578,9 +542,11 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
         $html_client = new ilCheckboxInputGUI($this->getPluginObject()->txt('html_client'), 'html_client');
         $html_client->setInfo($this->getPluginObject()->txt('html_client_info'));
+
         if (version_compare(ilAdobeConnectServer::getSetting('api_version'), '10.0.0', '<')) {
             $html_client->setDisabled(true);
         }
+
         $this->form->addItem($html_client);
     }
 
@@ -634,12 +600,6 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
 
     public function saveIliasSettings()
     {
-        global $DIC;
-
-        $lng = $DIC->language();
-        $ilCtrl = $DIC->ctrl();
-        $tpl = $DIC->ui()->mainTemplate();
-
         if (is_array($_POST['permissions']) || $_POST['permissions'] == null) {
             if ($_POST['permissions'] == null) {
                 $permissions = [];
@@ -702,12 +662,13 @@ class ilAdobeConnectConfigGUI extends ilPluginConfigGUI implements AdobeConnectP
             ilAdobeConnectServer::setSetting('grp_member', (string) $this->form->getInput('grp_member'));
             ilAdobeConnectServer::setSetting('html_client', (string) (int) $this->form->getInput('html_client'));
 
-            $this->tpl->setOnScreenMessage('success', $lng->txt('settings_saved'), true);
-            $ilCtrl->redirect($this, 'editIliasSettings');
+            $this->tpl->setOnScreenMessage('success', $this->lng->txt('settings_saved'), true);
+            $this->ctrl->redirect($this, 'editIliasSettings');
         } else {
             $this->tpl->setOnScreenMessage('failure', $this->getPluginObject()->txt('check_input'));
             $this->form->setValuesByPost();
-            return $tpl->setContent($this->form->getHTML());
+
+            return $this->tpl->setContent($this->form->getHTML());
         }
     }
 

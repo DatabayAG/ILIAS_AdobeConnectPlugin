@@ -14,14 +14,14 @@ class ilAdobeConnectContents
         $this->contents[] = new ilAdobeConnectContent($attributes);
     }
     
-    public function search($search_criteria = null): array
+    public function search(array $search_criteria = []): array
     {
-        $results = array();
+        $results = [];
         /**
-         * @var $content  ilAdobeConnectContent
+         * @var $content ilAdobeConnectContent
          */
         foreach ($this->contents as $content) {
-            if ($search_criteria != null) {
+            if (count($search_criteria) > 0) {
                 if ($content->getAttributes()->match($search_criteria)) {
                     $results[] = $content;
                 }

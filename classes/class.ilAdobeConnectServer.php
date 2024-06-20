@@ -159,34 +159,34 @@ class ilAdobeConnectServer
     /**
      *  Sets the number of max. VirtualClassrooms running at the server.
      */
-    public function setNumMaxVirtualClassrooms($a_num_max_vc)
+    public function setNumMaxVirtualClassrooms($a_num_max_vc): void
     {
-        $this->num_max_vc = $a_num_max_vc;
+        $this->num_max_vc = (string) $a_num_max_vc;
     }
     
-    public function getNumMaxVirtualClassrooms()
+    public function getNumMaxVirtualClassrooms(): string
     {
         return $this->num_max_vc;
     }
     
-    public function setPublicVcEnabled($a_public_vc_enabled)
+    public function setPublicVcEnabled($a_public_vc_enabled): void
     {
-        $this->public_vc_enabled = $a_public_vc_enabled;
+        $this->public_vc_enabled = (bool) $a_public_vc_enabled;
     }
     
-    public function getPublicVcEnabled()
+    public function getPublicVcEnabled(): bool
     {
         return $this->public_vc_enabled;
     }
     
-    public function setNumPublicVc($a_num_public_vc)
+    public function setNumPublicVc($a_num_public_vc): void
     {
-        $this->num_public_vc = $a_num_public_vc;
+        $this->num_public_vc = (int) $a_num_public_vc;
     }
     
-    public function getNumPublicVc()
+    public function getNumPublicVc(): int
     {
-        return $this->num_public_vc;
+        return (int) $this->num_public_vc;
     }
     
     public function getBufferBefore(): int
@@ -199,23 +199,24 @@ class ilAdobeConnectServer
         return $this->buffer_seconds_after;
     }
     
-    public function getScheduleLeadTime()
+    public function getScheduleLeadTime(): int
     {
-        if (!is_null($tmp = self::getSetting('schedule_lead_time'))) {
-            $this->schedule_lead_time = $tmp;
+        $tmp = self::getSetting('schedule_lead_time', '');
+        if ($tmp !== '') {
+            $this->schedule_lead_time = (int) $tmp;
         }
         return $this->schedule_lead_time;
     }
     
     public function setScheduleLeadTime($time): void
     {
-        $this->schedule_lead_time = $time;
-        $this->setSetting('schedule_lead_time', $time);
+        $this->schedule_lead_time = (int) $time;
+        $this->setSetting('schedule_lead_time', (string) $time);
     }
     
     public function setAuthMode($auth_mode): void
     {
-        $this->auth_mode = $auth_mode;
+        $this->auth_mode = (string) $auth_mode;
     }
     
     public function getAuthMode(): ?string
@@ -223,7 +224,7 @@ class ilAdobeConnectServer
         return $this->auth_mode;
     }
     
-    public function setXUserId($x_user_id)
+    public function setXUserId($x_user_id): void
     {
         $this->x_user_id = $x_user_id;
     }
@@ -270,8 +271,11 @@ class ilAdobeConnectServer
         $ilDB = $DIC->database();
         
         if ($ilDB->tableExists('rep_robj_xavc_settings')) {
-            $res = $ilDB->queryF('SELECT value FROM rep_robj_xavc_settings WHERE keyword = %s',
-                array('text'), array($a_keyword));
+            $res = $ilDB->queryF(
+                'SELECT value FROM rep_robj_xavc_settings WHERE keyword = %s',
+                ['text'],
+                [$a_keyword]
+            );
             
             if ($row = $ilDB->fetchAssoc($res)) {
                 return (string) $row['value'];
@@ -287,13 +291,16 @@ class ilAdobeConnectServer
         $ilDB = $DIC->database();
         
         if ($ilDB->tableExists('rep_robj_xavc_settings')) {
-            $ilDB->manipulateF("DELETE FROM rep_robj_xavc_settings WHERE keyword = %s",
-                array('text'), array($a_keyword));
+            $ilDB->manipulateF(
+                'DELETE FROM rep_robj_xavc_settings WHERE keyword = %s',
+                ['text'],
+                [$a_keyword]
+            );
             
-            $ilDB->insert("rep_robj_xavc_settings", array(
-                "keyword" => array("text", $a_keyword),
-                "value" => array("text", $a_value)
-            ));
+            $ilDB->insert('rep_robj_xavc_settings', [
+                'keyword' => ['text', $a_keyword],
+                'value' => ['text', $a_value]
+            ]);
         }
     }
     
@@ -319,12 +326,12 @@ class ilAdobeConnectServer
         global $DIC;
         $ilDB = $DIC->database();
         
-        $keywords = array('crs_owner', 'crs_admin', 'crs_tutor', 'crs_member', 'grp_owner', 'grp_admin', 'grp_member');
+        $keywords = ['crs_owner', 'crs_admin', 'crs_tutor', 'crs_member', 'grp_owner', 'grp_admin', 'grp_member'];
         
         $res = $ilDB->query('SELECT * FROM rep_robj_xavc_settings WHERE ' .
             $ilDB->in('keyword', $keywords, false, 'text'));
         
-        $map = array();
+        $map = [];
         while ($row = $ilDB->fetchAssoc($res)) {
             $map[$row['keyword']] = $row['value'];
         }

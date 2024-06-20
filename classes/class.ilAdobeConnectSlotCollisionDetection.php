@@ -3,18 +3,18 @@
 class ilAdobeConnectSlotCollisionDetection
 {
     
-    private $maxConcurrent;
+    private int $maxConcurrent = 0;
     
-    private $usedTimeslots = array();
+    private array $usedTimeslots = [];
     
-    private $minDuration = 2;
+    private int $minDuration = 2;
     
     /**
      * @param int $maxConcurrent the max number of concurrent blocked timeslots at any time
      */
     public function __construct($maxConcurrent)
     {
-        $this->maxConcurrent = $maxConcurrent;
+        $this->maxConcurrent = (int) $maxConcurrent;
     }
     
     /**

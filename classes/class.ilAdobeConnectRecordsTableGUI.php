@@ -10,7 +10,7 @@ class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
     
     private int $viewMode = self::MODE_VIEW;
     
-    private $template_context = '';
+    private string $template_context = '';
     
     public function __construct($a_parent_obj, $a_parent_cmd = '', $a_template_context = '', $view_mode)
     {
@@ -62,7 +62,7 @@ class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
     public function fillRow($a_set): void
     {
         foreach ($a_set as $key => $value) {
-            $value = $this->formatCellValue($key, array($key => $value));
+            $value = $this->formatCellValue($key, [$key => $value]);
             $this->tpl->setVariable(strtoupper($key), $this->formatField($key, $value));
         }
     }

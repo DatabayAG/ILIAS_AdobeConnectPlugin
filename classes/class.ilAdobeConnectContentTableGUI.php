@@ -67,15 +67,13 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
 
     public function getSelectableColumns(): array
     {
-        $cols = [
+        return [
             'type' => ['txt' => $this->parent_obj->pluginObj->txt('content_type'), 'default' => false],
             'date_created' => [
                 'txt' => $this->parent_obj->pluginObj->txt('content_date_created'),
                 'default' => false
             ]
         ];
-
-        return $cols;
     }
 
     protected function formatCellValue($column, array $row)

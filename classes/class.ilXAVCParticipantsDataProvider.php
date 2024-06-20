@@ -33,7 +33,7 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
     {
         $where = [];
 
-        $where[] = ' rep_robj_xavc_members.ref_id = ' . $this->db->quote($this->parent_obj->ref_id, 'integer');
+        $where[] = ' rep_robj_xavc_members.ref_id = ' . $this->db->quote($this->parent_obj->getObject()->getRefId(), 'integer');
 
         return implode(' AND ', $where);
     }
@@ -58,14 +58,14 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
                 throw new InvalidArgumentException('Please provide a valid order field.');
             }
 
-            $fields = array(
+            $fields = [
                 'user_id',
                 'firstname',
                 'lastname',
                 'login',
                 'email',
                 'xavc_status'
-            );
+            ];
 
             if (!in_array($params['order_field'], $fields)) {
                 $params['order_field'] = 'user_id';
@@ -87,7 +87,7 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
 
     protected function getAdditionalItems($data): array
     {
-        $xavc_participants = $this->parent_obj->object->getParticipants();
+        $xavc_participants = $this->parent_obj->getObject()->getParticipants();
         $selected_user_ids = [];
 
         foreach ($data['items'] as $db_item) {
@@ -123,15 +123,16 @@ class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProv
                     }
                 } else {
                     $firstname = $participant['name'];
+                    $lastname = '';
                     $user_mail = '';
                 }
 
-                $ac_user['user_id'] = $user_id;
-                $ac_user['firstname'] = $firstname;
-                $ac_user['lastname'] = $lastname;
-                $ac_user['login'] = $participant['login'];
-                $ac_user['email'] = $user_mail;
-                $ac_user['xavc_status'] = $participant['status'];
+                $ac_user['user_id'] = (int) $user_id;
+                $ac_user['firstname'] = (string) $firstname?: '';
+                $ac_user['lastname'] = (string)  $lastname ?: '';
+                $ac_user['login'] = (string)  $participant['login']?: '';
+                $ac_user['email'] = (string) $user_mail?: '';
+                $ac_user['xavc_status'] = (string) $participant['status']?: '';
 
                 $data['items'][] = $ac_user;
             }

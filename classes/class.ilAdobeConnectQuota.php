@@ -13,14 +13,14 @@ class ilAdobeConnectQuota
      * by the current ILIAS client
      * @var array
      */
-    private $currentMeetings;
+    private ?array $currentMeetings = null;
     
     /**
      * Stores the current number of public and scheduled rooms in the
      * field $currentState[$type . '_meetings'].
      * @var int[]
      */
-    private $currentState = array();
+    private array $currentState = [];
     
     
     public function __construct()
@@ -40,8 +40,8 @@ class ilAdobeConnectQuota
         global $DIC;
         $ilDB = $DIC->database();
         
-        $ids = array();
-        $currentMeetings = array();
+        $ids = [];
+        $currentMeetings = [];
         foreach ($data as $sco) {
             $scoObject = new stdClass();
             $scoObject->name = $sco['name'];
@@ -54,8 +54,12 @@ class ilAdobeConnectQuota
         $currentState->public_meetings = 0;
         $currentState->scheduled_meetings = 0;
         
-        $query = 'SELECT sco_id, "scheduled" AS type FROM rep_robj_xavc_data WHERE ' . $ilDB->in('sco_id', $ids, false,
-                'integer');
+        $query = 'SELECT sco_id, "scheduled" AS type FROM rep_robj_xavc_data WHERE ' . $ilDB->in(
+            'sco_id',
+            $ids,
+            false,
+            'integer'
+        );
         $rset = $ilDB->query($query);
         while ($row = $ilDB->fetchObject($rset)) {
             $id = $row->sco_id;
@@ -68,14 +72,14 @@ class ilAdobeConnectQuota
         return $currentMeetings;
     }
     
-    private function getCurrentMeetings($forceReload = false)
+    private function getCurrentMeetings(bool $forceReload = false): array
     {
-        if ($forceReload || !isset($this->currentMeetings)) {
+        if ($forceReload || $this->currentMeetings == null || !is_array($this->currentMeetings)) {
             $m = $this->fetchCurrentMeetings();
             if (is_array($m) && $m) {
                 $this->currentMeetings = $this->buildCurrentMeetings($m);
             } else {
-                $this->currentMeetings = array();
+                $this->currentMeetings = [];
             }
         }
         return $this->currentMeetings;
@@ -84,9 +88,9 @@ class ilAdobeConnectQuota
     /**
      * Returns true if there is an available slot for starting a scheduled meeting.
      * The number of available slots includes the buffer as set in the administration.
-     * @return boolean
+     * @return bool
      */
-    public function mayStartScheduledMeeting($sco_id)
+    public function mayStartScheduledMeeting($sco_id): bool
     {
         $scheduledSlots = (int) $this->adcInfo->getSetting('ac_interface_objects');
         if ((int) $scheduledSlots <= 0) {
@@ -95,11 +99,13 @@ class ilAdobeConnectQuota
         $bufferSlots = (int) $this->adcInfo->getSetting('ac_interface_objects_buffer');
         $this->getCurrentMeetings();
         
-        return ($bufferSlots + $scheduledSlots) > $this->currentState->scheduled_meetings || array_key_exists($sco_id,
-                $this->currentMeetings);
+        return ($bufferSlots + $scheduledSlots) > $this->currentState->scheduled_meetings || array_key_exists(
+            $sco_id,
+            $this->currentMeetings
+        );
     }
     
-    public function checkConcurrentMeetingDates(ilDateTime $endDate, ilDateTime $startDate = null, $ignoreId = null)
+    public function checkConcurrentMeetingDates(ilDateTime $endDate, ilDateTime $startDate = null, $ignoreId = null): array
     {
         global $DIC;
         $ilDB = $DIC->database();
@@ -108,24 +114,24 @@ class ilAdobeConnectQuota
             $startDate = new ilDateTime(time(), IL_CAL_UNIX);
         }
         
-        $sim = array();
+        $sim = [];
         
         $srv = ilAdobeConnectServer::_getInstance();
         
         $new_start_date = $startDate->getUnixTime() - $srv->getBufferBefore();
         $new_end_date = $endDate->getUnixTime() + $srv->getBufferAfter();
         
-        $query = array(
+        $query = [
             'SELECT * FROM rep_robj_xavc_data',
             'WHERE (',
             '(%s > start_date AND %s < end_date) OR',
             '(%s > start_date AND %s < end_date) OR',
             '(%s < start_date AND %s > end_date)',
             ')'
-        );
+        ];
         
-        $types = array('integer', 'integer', 'integer', 'integer', 'integer', 'integer');
-        $values = array($new_start_date, $new_start_date, $new_end_date, $new_end_date, $new_start_date, $new_end_date);
+        $types = ['integer', 'integer', 'integer', 'integer', 'integer', 'integer'];
+        $values = [$new_start_date, $new_start_date, $new_end_date, $new_end_date, $new_start_date, $new_end_date];
         
         if ($ignoreId !== null) {
             $query[] = 'AND id <> %s';

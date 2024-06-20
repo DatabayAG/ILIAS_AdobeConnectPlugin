@@ -2,7 +2,6 @@
 
 class ilAdobeConnectRoles
 {
-    
     private ilDBInterface $db;
     private int $ref_id = 0;
     
@@ -14,18 +13,18 @@ class ilAdobeConnectRoles
         $this->ref_id = (int) $a_ref_id;
     }
     
-    public function setRefId($a_ref_id)
+    public function setRefId($a_ref_id): void
     {
         $this->ref_id = $a_ref_id;
     }
     
-    public function getRefId()
+    public function getRefId(): int
     {
         return $this->ref_id;
     }
     
     // Local Administrator Role
-    public function addAdministratorRole($a_usr_id)
+    public function addAdministratorRole($a_usr_id): bool
     {
         global $DIC;
         
@@ -55,7 +54,7 @@ class ilAdobeConnectRoles
         }
     }
     
-    public function detachAdministratorRole($a_usr_id)
+    public function detachAdministratorRole($a_usr_id): bool
     {
         global $DIC;
         $rbacreview = $DIC->rbac()->review();
@@ -97,13 +96,13 @@ class ilAdobeConnectRoles
         return false;
     }
     
-    public function getCurrentAdministrators()
+    public function getCurrentAdministrators(): array
     {
         global $DIC;
         $rbacreview = $DIC->rbac()->review();
         
         $roles = $rbacreview->getRoleListByObject($this->getRefId());
-        $assigned_users = array();
+        $assigned_users = [];
         foreach ($roles as $role) {
             if (strpos($role['title'], 'il_xavc_admin') !== false) {
                 $assigned_users = $rbacreview->assignedUsers((int)$role['rol_id']);
@@ -111,7 +110,7 @@ class ilAdobeConnectRoles
             }
         }
         
-        $admins = array();
+        $admins = [];
         foreach ($assigned_users as $user) {
             $admins[] = ilObjUser::_lookupName((int)$user);
         }
@@ -119,7 +118,7 @@ class ilAdobeConnectRoles
     }
     
     // Local Member-Role
-    public function addMemberRole($a_usr_id)
+    public function addMemberRole($a_usr_id): bool
     {
         global $DIC;
         $rbacreview = $DIC->rbac()->review();
@@ -143,7 +142,7 @@ class ilAdobeConnectRoles
         return false;
     }
     
-    public function detachMemberRole($a_usr_id)
+    public function detachMemberRole($a_usr_id): bool
     {
         global $DIC;
         $rbacreview = $DIC->rbac()->review();
@@ -172,7 +171,7 @@ class ilAdobeConnectRoles
         $rbacreview = $DIC->rbac()->review();
         
         $roles = $rbacreview->getRoleListByObject($this->getRefId());
-        $assigned_users = array();
+        $assigned_users = [];
         
         foreach ($roles as $role) {
             if (strpos($role['title'], 'il_xavc_member') !== false) {
@@ -180,7 +179,7 @@ class ilAdobeConnectRoles
                 break;
             }
         }
-        $members = array();
+        $members = [];
         foreach ($assigned_users as $user) {
             $members[] = ilObjUser::_lookupName((int)$user);
         }
@@ -193,8 +192,8 @@ class ilAdobeConnectRoles
         $rbacreview = $DIC->rbac()->review();
         
         $roles = $rbacreview->getRoleListByObject($this->getRefId());
-        $admins = array();
-        $members = array();
+        $admins = [];
+        $members = [];
         foreach ($roles as $role) {
             if (strpos($role['title'], 'il_xavc_admin') !== false) {
                 $admins = $rbacreview->assignedUsers((int)$role['rol_id']);
@@ -207,5 +206,5 @@ class ilAdobeConnectRoles
         $assigned_users = array_unique(array_merge($admins, $members));
         return $assigned_users;
     }
-    
+
 }

@@ -24,7 +24,7 @@ class ilAdobeConnectUsersGalleryCollectionProvider extends ilAbstractUsersGaller
         $unique_users = array_unique(array_merge($admins, $tutors, $members));
 
         foreach ([[$unique_users, false, '']] as $users) {
-            $group = $this->getPopulatedGroup($this->getUsers($users[0]));
+            $group = $this->getPopulatedGroup($this->getUsers());
             $group->setHighlighted($users[1]);
             $group->setLabel($users[2]);
             $groups[] = $group;

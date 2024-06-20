@@ -26,10 +26,10 @@ abstract class ilAdobeConnectTableDatabaseDataProvider implements ilAdobeConnect
      */
     public function getList(array $params, array $filter): array
     {
-        $data = array(
-            'items' => array(),
+        $data = [
+            'items' => [],
             'cnt' => 0
-        );
+        ];
         
         $select = $this->getSelectPart($filter);
         $where = $this->getWherePart($filter);
@@ -37,8 +37,7 @@ abstract class ilAdobeConnectTableDatabaseDataProvider implements ilAdobeConnect
         $order = $this->getOrderByPart($params);
         $group = $this->getGroupByPart();
         $having = $this->getHavingPart($filter);
-        
-        
+
         if (isset($params['group'])) {
             if (!is_string($params['group'])) {
                 throw new InvalidArgumentException('Please provide a valid group field parameter.');

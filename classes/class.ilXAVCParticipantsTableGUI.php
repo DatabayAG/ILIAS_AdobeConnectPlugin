@@ -40,7 +40,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
     {
         global $DIC;
 
-        $roles = $DIC->rbac()->review()->getLocalRoles($this->parent_obj->object->getRefId());
+        $roles = $DIC->rbac()->review()->getLocalRoles($this->parent_obj->getObject()->getRefId());
         foreach ($roles as $role_id) {
             $role_title = ilObject::_lookupTitle($role_id);
             if (strpos($role_title, 'admin')) {
@@ -63,7 +63,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         $ilUser = $DIC->user();
         $lng = $DIC->language();
 
-        $is_owner = $ilUser->getId() == $this->parent_obj->object->getOwner();
+        $is_owner = $ilUser->getId() == $this->parent_obj->getObject()->getOwner();
 
         if ($is_owner || ilXAVCPermissions::hasAccess(
                 $ilUser->getId(), $this->parent_obj->ref_id,
@@ -89,7 +89,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 
         if ((int) $row['user_id']) {
             $this->ctrl->setParameter($this->parent_obj, 'usr_id', '');
-            if ($row['user_id'] == $this->parent_obj->object->getOwner()) {
+            if ($row['user_id'] == $this->parent_obj->getObject()->getOwner()) {
                 $row['checkbox'] = ilLegacyFormElementsUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], false);
             } else {
                 $row['checkbox'] = ilLegacyFormElementsUtil::formCheckbox(
@@ -126,10 +126,10 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 
         if ($row['xavc_status']) {
             $xavc_options = [
-                "host" => $this->parent_obj->pluginObj->txt("presenter"),
-                "mini-host" => $this->parent_obj->pluginObj->txt("moderator"),
-                "view" => $this->parent_obj->pluginObj->txt("participant"),
-                "denied" => $this->parent_obj->pluginObj->txt("denied")
+                'host' => $this->parent_obj->pluginObj->txt('presenter'),
+                'mini-host' => $this->parent_obj->pluginObj->txt('moderator'),
+                'view' => $this->parent_obj->pluginObj->txt('participant'),
+                'denied' => $this->parent_obj->pluginObj->txt('denied')
             ];
 
             if ($row['xavc_status']) {
@@ -138,7 +138,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
                     $xavc_options
                 );
 
-                if ($row['user_id'] == $this->parent_obj->object->getOwner()) {
+                if ($row['user_id'] == $this->parent_obj->getObject()->getOwner()) {
                     $row['xavc_status'] .= ' (' . $this->lng->txt("owner") . ')  ';
                 }
             } else {
@@ -155,11 +155,13 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
     {
         $this->addColumn('', '', '1px', true);
         $this->addColumn($this->lng->txt('name'), 'user_name');
-        $this->optionalColumns = (array) $this->getSelectableColumns();
-        $this->visibleOptionalColumns = (array) $this->getSelectedColumns();
+        $this->optionalColumns =  $this->getSelectableColumns();
+        $this->visibleOptionalColumns = $this->getSelectedColumns();
+
         foreach ($this->visibleOptionalColumns as $column) {
             $this->addColumn($this->optionalColumns[$column]['txt'], $column);
         }
+
         $this->addColumn($this->parent_obj->pluginObj->txt('user_status'), 'xavc_status');
         $this->addColumn($this->parent_obj->pluginObj->txt('local_roles'), 'xavc_roles');
     }
@@ -174,7 +176,11 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 
     protected function formatCellValue($column, array $row): string
     {
-        return (string) $row[$column];
+        if (array_key_exists($column, $row)) {
+            return (string) $row[$column];
+        }
+
+        return '';
     }
 
     public function numericOrdering(string $field): bool

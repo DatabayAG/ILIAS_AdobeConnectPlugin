@@ -2,9 +2,9 @@
 
 class ilXAVCMembers
 {
-    public $user_id = 0;
-    public $ref_id = 0;
-    public $sco_id = 0;
+    public int $user_id = 0;
+    public int $ref_id = 0;
+    public int $sco_id = 0;
     public $status = null;
     public $xavc_login = null;
     public $principal_id = null;
@@ -190,12 +190,12 @@ class ilXAVCMembers
         }
     }
 
-    public static function _lookupXAVCLogin(int $a_user_id)
+    public static function _lookupXAVCLogin(int $a_user_id): string
     {
         global $DIC;
         $ilDB = $DIC->database();
 
-        $xavc_login = null;
+        $xavc_login = '';
 
         $res = $ilDB->queryf(
             'SELECT xavc_login FROM rep_robj_xavc_users
@@ -205,7 +205,7 @@ class ilXAVCMembers
         );
 
         while ($row = $ilDB->fetchAssoc($res)) {
-            $xavc_login = $row['xavc_login'];
+            $xavc_login = trim($row['xavc_login']);
         }
         return $xavc_login;
     }

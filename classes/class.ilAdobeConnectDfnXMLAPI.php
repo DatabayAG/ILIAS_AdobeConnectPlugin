@@ -2,10 +2,6 @@
 
 class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
 {
-    /**
-     * @param array $params
-     * @return string
-     */
     protected function getApiUrl(array $params): string
     {
         $server = $this->server;
@@ -33,7 +29,7 @@ class ilAdobeConnectDfnXMLAPI extends ilAdobeConnectXMLAPI
      * @param string $session
      * @return bool
      */
-    public function addUser($login, $email, $pass, $first_name, $last_name, $session): bool
+    public function addUser(string $login, $email, $pass, $first_name, $last_name, $session): bool
     {
         global $DIC;
         $ilLog = $DIC->logger()->root();
