@@ -71,10 +71,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                 $profile_gui->setBackUrl($this->ctrl->getLinkTarget($this, 'showMembersGallery'));
                 $this->tabs->activateTab('participants');
                 $this->setSubTabs('participants');
-                $this->tabs->activateSubTab("editParticipants");
+                $this->tabs->activateSubTab('editParticipants');
                 $html = $this->ctrl->forwardCommand($profile_gui);
 
-                $this->tpl->setVariable("ADM_CONTENT", $html);
+                $this->tpl->setVariable('ADM_CONTENT', $html);
                 break;
             case 'ilcommonactiondispatchergui':
                 $gui = ilCommonActionDispatcherGUI::getInstanceFromAjaxCall();
@@ -717,7 +717,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                         $data[$i]['link'] = $this->ctrl->getLinkTarget($this, 'requestAdobeConnectContent');
                 }
 
-                $data[$i]['date_created'] = $content->getAttributes()->getAttribute('date-created')->getUnixTime();
+                $data[$i]['date_created'] =strtotime(substr($content->getAttributes()->getAttribute('date-created'), 0, 19));
                 $data[$i]['description'] = $content->getAttributes()->getAttribute('description');
                 if ($has_access && $content_type == $by_type) {
                     $content_id = $content->getAttributes()->getAttribute('sco-id');
@@ -860,7 +860,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $tbl_admin = new ilXAVCTableGUI($this, 'addCrsGrpMembers');
         $this->ctrl->setParameter($this, 'cmd', 'editParticipants');
 
-        $tbl_admin->setTitle($this->lng->txt("crs_members"));
+        $tbl_admin->setTitle($this->lng->txt('crs_members'));
         $tbl_admin->setId('tbl_admins');
         $tbl_admin->setRowTemplate(
             $this->pluginObj->getDirectory() . "/templates/default/tpl.meeting_participant_row.html",
@@ -882,7 +882,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
     public function performAddCrsGrpMembers()
     {
-        $user_ids = $this->retrieveListOfIntFrom(self::$TYPE_LIST_INT, 'usr_id');
+        $user_ids = $this->retrieveListOfIntFrom(self::$REQUEST_POST, 'usr_id');
         if (count($user_ids) === 0) {
             $this->tpl->setOnScreenMessage('failure', $this->txt('participants_select_one'));
             return $this->addCrsGrpMembers();
@@ -903,7 +903,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $roles = $this->retrieveListOfStringFrom(self::$REQUEST_POST, 'roles');
         $xavc_status = $this->retrieveListOfStringFrom(self::$REQUEST_POST, 'xavc_status');
 
-        $user_ids = $this->retrieveListOfIntFrom(self::$TYPE_LIST_INT, 'usr_id');
+        $user_ids = $this->retrieveListOfIntFrom(self::$REQUEST_POST, 'usr_id');
 
         if (count($xavc_status) === 0 || count($user_ids) === 0) {
             $this->tpl->setOnScreenMessage('failure', $this->txt('participants_select_one'));
@@ -1219,7 +1219,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
      */
     public function addParticipant(int $a_user_id): void
     {
-        $this->tabs->activateTab("participants");
+        $this->tabs->activateTab('participants');
 
         //check if there is an adobe connect account at the ac-server
         $ilAdobeConnectUser = new ilAdobeConnectUserUtil((int) $a_user_id);
@@ -1391,7 +1391,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
                 $object_search = new ilLikeObjectSearch($query_parser);
 
-                $object_search->setFilter(array('file'));
+                $object_search->setFilter(['file']);
 
                 $res = $object_search->performSearch();
                 $res->setUserId($this->user->getId());
@@ -1600,13 +1600,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         // @todo V9 This needs to be tested!
         $content_ids = $this->retrieveFromRequest('content_id', self::$TYPE_LIST_INT);
 
-//        if (is_array($_POST['content_id']) && count($_POST['content_id']) > 0) {
-//            $content_ids = $_POST['content_id'];
-//        } else {
-//            if (isset($_GET['content_id']) && (int) $_GET['content_id'] > 0) {
-//                $content_ids[] = $_GET['content_id'];
-//            }
-//        }
+        //        if (is_array($_POST['content_id']) && count($_POST['content_id']) > 0) {
+        //            $content_ids = $_POST['content_id'];
+        //        } else {
+        //            if (isset($_GET['content_id']) && (int) $_GET['content_id'] > 0) {
+        //                $content_ids[] = $_GET['content_id'];
+        //            }
+        //        }
 
         if (count($content_ids) == 0) {
             $this->tpl->setOnScreenMessage('failure', $this->txt('content_select_one'));
@@ -2423,7 +2423,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $table->setProvider(new ilXAVCParticipantsDataProvider($DIC->database(), $this));
         $table->populate();
 
-        $my_tpl->setVariable('FORM', $table->getHTML() . $this->getPerformTriggerHtml());
+        $my_tpl->setVariable('FORM', $table->getHTML());
 
         $this->tpl->setContent($my_tpl->get());
     }
@@ -2468,28 +2468,21 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
     public function getPerformTriggerHtml()
     {
-        global $DIC;
-        $ilCtrl = $DIC->ctrl();
-
         iljQueryUtil::initjQuery();
 
-        $trigger_tpl = new ilTemplate(
-            $this->pluginObj->getDirectory() . "/templates/default/tpl.perform_trigger.html",
-            true,
-            true
+        $jsTpl = new ilTemplate($this->pluginObj->getDirectory() . '/templates/js/performTrigger.js', true, true);
+        $jsTpl->setVariable(
+            'TRIGGER_TARGET',
+            $this->ctrl->getLinkTarget($this, 'performCrsGrpTrigger', '', true, false)
         );
 
-        $target = $ilCtrl->getLinkTarget($this, 'performCrsGrpTrigger', '', true, false);
-        $trigger_tpl->setVariable('TRIGGER_TARGET', $target);
-
-        $trigger_tpl->parseCurrentBlock();
-        return $trigger_tpl->get();
+        $this->tpl->addOnLoadCode($jsTpl->get());
     }
 
     public function infoScreenObject(): void
     {
-        $this->ctrl->setCmd("showSummary");
-        $this->ctrl->setCmdClass("ilinfoscreengui");
+        $this->ctrl->setCmd('showSummary');
+        $this->ctrl->setCmdClass('ilinfoscreengui');
         $this->infoScreen();
     }
 
@@ -2559,12 +2552,13 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $info->addProperty($this->pluginObj->txt('duration'), $duration_text);
         $info->addProperty($this->pluginObj->txt('meeting_url'), $href);
 
-        $tpl->setContent($info->getHTML() . $this->getPerformTriggerHtml());
+        $tpl->setContent($info->getHTML());
     }
 
     public function showContent(): void
     {
         global $DIC;
+
         $ilUser = $DIC->user();
         $tpl = $DIC->ui()->mainTemplate();
         $ilAccess = $DIC->access();

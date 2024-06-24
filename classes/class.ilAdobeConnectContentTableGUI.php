@@ -12,13 +12,13 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
     private string $template_context = '';
 
     public function __construct(
-        ?object $a_parent_obj,
+        ilObjAdobeConnectGUI $a_parent_obj,
         string $a_parent_cmd = "",
         string $a_template_context = "",
-        $view_mode
+        $view_mode = ''
     ) {
-        $this->setId('xavc_cnt_' . $a_parent_obj->object->getId() . '_' . $view_mode);
-        $this->setPrefix('xavc_cnt_' . $a_parent_obj->object->getId() . '_' . $view_mode);
+        $this->setId('xavc_cnt_' . $a_parent_obj->getObject()->getId() . '_' . $view_mode);
+        $this->setPrefix('xavc_cnt_' . $a_parent_obj->getObject()->getId() . '_' . $view_mode);
         $this->viewMode = $view_mode;
         $this->template_context = $a_template_context;
 
@@ -87,7 +87,7 @@ class ilAdobeConnectContentTableGUI extends ilTable2GUI
     public function fillRow(array $a_set): void
     {
         foreach ($a_set as $key => $value) {
-            $value = $this->formatCellValue($key, array($key => $value));
+            $value = $this->formatCellValue($key, [$key => $value]);
             if (array_key_exists($key, $this->optionalColumns)) {
                 if (!$this->isColumnVisible($key)) {
                     continue;

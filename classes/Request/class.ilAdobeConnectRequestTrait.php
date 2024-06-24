@@ -81,7 +81,8 @@ trait ilAdobeConnectRequestTrait
         return $wrapper->retrieve(
             $param,
             $refinery->byTrying([
-                $refinery->kindlyTo()->dictOf($refinery->kindlyTo()->string())
+                $refinery->kindlyTo()->dictOf($refinery->kindlyTo()->string()),
+                $refinery->always([])
             ])
         );
     }
@@ -96,7 +97,8 @@ trait ilAdobeConnectRequestTrait
         return $wrapper->retrieve(
             $param,
             $refinery->byTrying([
-                $refinery->kindlyTo()->dictOf($refinery->kindlyTo()->int())
+                $refinery->kindlyTo()->dictOf($refinery->kindlyTo()->int()),
+                $refinery->always([])
             ])
         );
     }
