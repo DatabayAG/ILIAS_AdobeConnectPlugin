@@ -78,13 +78,14 @@ trait ilAdobeConnectRequestTrait
         $refinery = $DIC->refinery();
         $wrapper = $this->getWrapperByRequestType($request_type);
 
-        return $wrapper->retrieve(
+        $value =  $wrapper->retrieve(
             $param,
             $refinery->byTrying([
-                $refinery->kindlyTo()->dictOf($refinery->kindlyTo()->string()),
+                $refinery->kindlyTo()->listOf($refinery->kindlyTo()->string()),
                 $refinery->always([])
             ])
         );
+        return $value;
     }
 
     private function retrieveListOfIntFrom(string $request_type, string $param): array

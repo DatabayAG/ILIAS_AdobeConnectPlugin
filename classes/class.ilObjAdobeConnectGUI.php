@@ -21,9 +21,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
     public ilLanguage $lng;
     public ilObjUser $user;
     public $pluginObj;
-    public ilPropertyFormGUI $form;
-    public ilPropertyFormGUI $cform;
-    public ilPropertyFormGUI $csform;
+    public ?ilPropertyFormGUI $form = null;
+    public ?ilPropertyFormGUI $cform = null;
+    public ?ilPropertyFormGUI $csform = null;
 
     /**
      * @var ilXAVCTemplates[]
@@ -631,7 +631,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
                 $presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
-                $xmlAPI->logout($_SESSION['xavc_last_sso_sessid']);
+                if(array_key_exists('xavc_last_sso_sessid', $_SESSION)) {
+                    $xmlAPI->logout($_SESSION['xavc_last_sso_sessid']);
+                }
+
                 //login current user session
                 $session = $ilAdobeConnectUser->loginUser();
                 $_SESSION['xavc_last_sso_sessid'] = $session;
@@ -981,7 +984,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $ilAdobeConnectUser->ensureAccountExistence();
 
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-        $xmlAPI->logout($_SESSION['xavc_last_sso_sessid']);
+        if(array_key_exists('xavc_last_sso_sessid', $_SESSION)) {
+            $xmlAPI->logout($_SESSION['xavc_last_sso_sessid']);
+        }
+
         $session = $ilAdobeConnectUser->loginUser();
         $_SESSION['xavc_last_sso_sessid'] = $session;
 
@@ -1597,16 +1603,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
     public function askDeleteContents()
     {
-        // @todo V9 This needs to be tested!
-        $content_ids = $this->retrieveFromRequest('content_id', self::$TYPE_LIST_INT);
-
-        //        if (is_array($_POST['content_id']) && count($_POST['content_id']) > 0) {
-        //            $content_ids = $_POST['content_id'];
-        //        } else {
-        //            if (isset($_GET['content_id']) && (int) $_GET['content_id'] > 0) {
-        //                $content_ids[] = $_GET['content_id'];
-        //            }
-        //        }
+        $content_ids = $this->retrieveListOfStringFrom(self::$REQUEST_GET, 'content_id');
 
         if (count($content_ids) == 0) {
             $this->tpl->setOnScreenMessage('failure', $this->txt('content_select_one'));
@@ -1667,68 +1664,66 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
      */
     protected function initFormContent($a_mode, $a_content_id = 0): void
     {
-        if ($this->cform instanceof ilPropertyFormGUI) {
-            return;
-        }
+        if ($this->cform === null) {
+            $this->cform = new ilPropertyFormGUI();
 
-        $this->cform = new ilPropertyFormGUI();
+            switch ($a_mode) {
+                case self::CONTENT_MOD_EDIT:
+                    $positive_cmd = ($this->is_record ? 'updateRecord' : 'updateContent');
+                    $request_content_id = $this->retrieveFromRequest('content_id', self::$TYPE_INT);
 
-        switch ($a_mode) {
-            case self::CONTENT_MOD_EDIT:
-                $positive_cmd = ($this->is_record ? 'updateRecord' : 'updateContent');
-                $request_content_id = $this->retrieveFromRequest('content_id', self::$TYPE_INT);
+                    // Header
+                    $this->ctrl->setParameter($this, 'content_id', $request_content_id);
+                    $this->cform->setTitle($this->txt('edit_content'));
+                    // Buttons
+                    $this->cform->addCommandButton($positive_cmd, $this->txt('save'));
+                    $this->cform->addCommandButton('showContent', $this->txt('cancel'));
 
-                // Header
-                $this->ctrl->setParameter($this, 'content_id', $request_content_id);
-                $this->cform->setTitle($this->txt('edit_content'));
-                // Buttons
-                $this->cform->addCommandButton($positive_cmd, $this->txt('save'));
-                $this->cform->addCommandButton('showContent', $this->txt('cancel'));
+                    // Form action
+                    if ($a_content_id) {
+                        $this->ctrl->setParameter($this, 'content_id', $a_content_id);
+                    }
+                    $this->cform->setFormAction($this->ctrl->getFormAction($this, $positive_cmd));
+                    break;
+                case self::CONTENT_MOD_ADD:
+                    // Header
+                    $this->cform->setTitle($this->txt('add_new_content'));
+                    // Buttons
+                    $this->cform->addCommandButton('addContent', $this->txt('save'));
+                    $this->cform->addCommandButton('showContent', $this->txt('cancel'));
 
-                // Form action
-                if ($a_content_id) {
-                    $this->ctrl->setParameter($this, 'content_id', $a_content_id);
-                }
-                $this->cform->setFormAction($this->ctrl->getFormAction($this, $positive_cmd));
-                break;
-            case self::CONTENT_MOD_ADD:
-                // Header
-                $this->cform->setTitle($this->txt('add_new_content'));
-                // Buttons
-                $this->cform->addCommandButton('addContent', $this->txt('save'));
-                $this->cform->addCommandButton('showContent', $this->txt('cancel'));
-
-                // Form action
-                $this->cform->setFormAction($this->ctrl->getFormAction($this, 'addContent'));
-                break;
-        }
-
-        // Title
-        $tit = new ilTextInputGUI($this->txt('title'), 'tit');
-        //		$tit->setRequired(true);
-        $tit->setSize(40);
-        $tit->setMaxLength(127);
-        $this->cform->addItem($tit);
-
-        // Description
-        $des = new ilTextAreaInputGUI($this->txt('description'), 'des');
-        $des->setRows(3);
-        $this->cform->addItem($des);
-
-        if ($this->is_record == false) {
-            // File
-            $fil = new ilFileInputGUI($this->txt('file'), 'file');
-            if ($a_mode == self::CONTENT_MOD_ADD) {
-                $fil->setRequired(true);
+                    // Form action
+                    $this->cform->setFormAction($this->ctrl->getFormAction($this, 'addContent'));
+                    break;
             }
 
-            $content_file_types = strlen(
-                ilAdobeConnectServer::getSetting('content_file_types')
-            ) > 1 ? ilAdobeConnectServer::getSetting(
-                'content_file_types'
-            ) : 'ppt, pptx, flv, swf, pdf, gif, jpg, png, mp3, html';
-            $fil->setSuffixes(explode(',', str_replace(' ', '', $content_file_types)));
-            $this->cform->addItem($fil);
+            // Title
+            $tit = new ilTextInputGUI($this->txt('title'), 'tit');
+            //		$tit->setRequired(true);
+            $tit->setSize(40);
+            $tit->setMaxLength(127);
+            $this->cform->addItem($tit);
+
+            // Description
+            $des = new ilTextAreaInputGUI($this->txt('description'), 'des');
+            $des->setRows(3);
+            $this->cform->addItem($des);
+
+            if ($this->is_record == false) {
+                // File
+                $fil = new ilFileInputGUI($this->txt('file'), 'file');
+                if ($a_mode == self::CONTENT_MOD_ADD) {
+                    $fil->setRequired(true);
+                }
+
+                $content_file_types = strlen(
+                    ilAdobeConnectServer::getSetting('content_file_types')
+                ) > 1 ? ilAdobeConnectServer::getSetting(
+                    'content_file_types'
+                ) : 'ppt, pptx, flv, swf, pdf, gif, jpg, png, mp3, html';
+                $fil->setSuffixes(explode(',', str_replace(' ', '', $content_file_types)));
+                $this->cform->addItem($fil);
+            }
         }
     }
 
@@ -2437,6 +2432,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $response->succcess = false;
 
         if ((int) ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') == 0) {
+            // @todo V9 async call doesn't work. must be fixed soon.
+            return;
+
             echo json_encode($response);
             exit();
         }
@@ -2461,13 +2459,20 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                 }
             }
         }
+        // @todo V9 async call doesn't work. must be fixed soon.
+        return;
+
         $response->succcess = true;
         echo json_encode($response);
         exit();
     }
 
-    public function getPerformTriggerHtml()
+    public function getPerformTriggerHtml(): void
     {
+        // @todo V9 async call doesn't work. must be fixed soon.
+        $this->performCrsGrpTrigger();
+        return;
+
         iljQueryUtil::initjQuery();
 
         $jsTpl = new ilTemplate($this->pluginObj->getDirectory() . '/templates/js/performTrigger.js', true, true);
