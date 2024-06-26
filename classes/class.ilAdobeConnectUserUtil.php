@@ -28,7 +28,7 @@ class ilAdobeConnectUserUtil
         $ilDB = $DIC->database();
         
         $result = $ilDB->queryF(
-            "SELECT email,login,passwd,firstname,lastname FROM usr_data WHERE usr_id= %s",
+            'SELECT email,login,passwd,firstname,lastname FROM usr_data WHERE usr_id= %s',
             ['integer'],
             [$this->getId()]
         );
@@ -42,8 +42,7 @@ class ilAdobeConnectUserUtil
         }
         
         $login_res = $ilDB->queryf(
-            '
-			SELECT xavc_login FROM rep_robj_xavc_users WHERE user_id = %s',
+            'SELECT xavc_login FROM rep_robj_xavc_users WHERE user_id = %s',
             ['integer'],
             array($this->getId())
         );

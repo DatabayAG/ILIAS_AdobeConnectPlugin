@@ -61,7 +61,8 @@ class ilXAVCPermissions
 			LEFT JOIN rep_robj_xavc_gloperm perm ON mem.xavc_status = perm.role
 			WHERE mem.user_id = %s AND mem.ref_id = %s
 			AND perm.permission = %s',
-            ['integer', 'integer', 'text'], [$user_id, $ref_id, $permission]
+            ['integer', 'integer', 'text'],
+            [$user_id, $ref_id, $permission]
         );
 
         $access = false;
@@ -85,7 +86,8 @@ class ilXAVCPermissions
             '
 			SELECT has_access FROM rep_robj_xavc_gloperm 
 			WHERE permission = %s AND role = %s',
-            ['text', 'text'], [$permission, $role]
+            ['text', 'text'],
+            [$permission, $role]
         );
 
         $row = $ilDB->fetchAssoc($res);

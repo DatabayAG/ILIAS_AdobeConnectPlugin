@@ -18,7 +18,11 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI
         $this->copy_enabled = false;
 
         $command_array = [];
-        $command_array[] = ['permission' => 'read', 'cmd' => 'showContent', 'lang_var' => 'content'];
+        $command_array[] = [
+            'permission' => 'read',
+            'cmd' => 'showContent',
+            'lang_var' => 'content'
+        ];
 
         $command_array[] = [
             'permission' => 'read',
@@ -119,4 +123,3 @@ class ilObjAdobeConnectListGUI extends ilObjectPluginListGUI
         return $props;
     }
 }
-

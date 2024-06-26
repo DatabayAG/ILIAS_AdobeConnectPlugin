@@ -2,7 +2,6 @@
 
 /* Copyright (c) 1998-2013 ILIAS open source, Extended GPL, see docs/LICENSE */
 
-
 class ilXAVCParticipantsDataProvider extends ilAdobeConnectTableDatabaseDataProvider
 {
     protected function getSelectPart(array $filter): string

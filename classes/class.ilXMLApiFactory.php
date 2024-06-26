@@ -17,7 +17,6 @@ class ilXMLApiFactory
             }
         }
         // @Todo V9 Fix this!
-        include_once dirname(__FILE__) . '/class.' . self::$classname . '.php';
         return new self::$classname();
     }
 }

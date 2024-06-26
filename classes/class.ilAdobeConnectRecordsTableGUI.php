@@ -5,8 +5,8 @@ class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
 {
     public const MODE_VIEW = 1;
     public const MODE_EDIT = 2;
-    protected array $visibleOptionalColumns = array();
-    protected array $optionalColumns = array();
+    protected array $visibleOptionalColumns = [];
+    protected array $optionalColumns = [];
     
     private int $viewMode = self::MODE_VIEW;
     
@@ -14,8 +14,8 @@ class ilAdobeConnectRecordsTableGUI extends ilTable2GUI
     
     public function __construct($a_parent_obj, $a_parent_cmd = '', $a_template_context = '', $view_mode)
     {
-        $this->setId('xavc_cnt_' . $a_parent_obj->object->getId() . '_' . $view_mode);
-        $this->setPrefix('xavc_cnt_' . $a_parent_obj->object->getId() . '_' . $view_mode);
+        $this->setId('xavc_cnt_' . $a_parent_obj->getObject()->getId() . '_' . $view_mode);
+        $this->setPrefix('xavc_cnt_' . $a_parent_obj->getObject()->getId() . '_' . $view_mode);
         $this->viewMode = $view_mode;
         $this->template_context = $a_template_context;
         

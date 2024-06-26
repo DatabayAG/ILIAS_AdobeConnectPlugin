@@ -6,6 +6,8 @@
 
 class ilObjAdobeConnect extends ilObjectPlugin
 {
+    use ilAdobeConnectRequestTrait;
+
     public const ACCESS_LEVEL_PRIVATE = 'denied';  // no guests !
     public const ACCESS_LEVEL_PROTECTED = 'remove';
     public const ACCESS_LEVEL_PUBLIC = 'view-hidden';
@@ -50,7 +52,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
     public function __construct($a_ref_id = 0)
     {
         global $DIC;
-        
+
         $this->ctrl = $DIC->ctrl();
         $this->tree = $DIC->repositoryTree();
         $this->user = $DIC->user();
@@ -172,29 +174,13 @@ class ilObjAdobeConnect extends ilObjectPlugin
                 return;
             }
 
-            if (strlen($_POST['instructions']) > 0) {
-                $post_instructions = (string) $_POST['instructions'];
-            } else {
-                if (strlen($_POST['instructions_2']) > 0) {
-                    $post_instructions = (string) $_POST['instructions_2'];
-                } else {
-                    if (strlen($_POST['instructions_3']) > 0) {
-                        $post_instructions = (string) $_POST['instructions_3'];
-                    }
-                }
-            }
+            $post_instructions = $this->retrieveStringFrom(self::$REQUEST_POST, 'instructions');
+            $post_instructions .= $this->retrieveStringFrom(self::$REQUEST_POST, 'instructions_2');
+            $post_instructions .= $this->retrieveStringFrom(self::$REQUEST_POST, 'instructions_3');
 
-            if (strlen($_POST['contact_info']) > 0) {
-                $post_contact = (string) $_POST['contact_info'];
-            } else {
-                if (strlen($_POST['contact_info_2']) > 0) {
-                    $post_contact = (string) $_POST['contact_info_2'];
-                } else {
-                    if (strlen($_POST['contact_info_3']) > 0) {
-                        $post_contact = (string) $_POST['contact_info_3'];
-                    }
-                }
-            }
+            $post_contact = $this->retrieveStringFrom(self::$REQUEST_POST, 'contact_info');
+            $post_contact .= $this->retrieveStringFrom(self::$REQUEST_POST, 'contact_info_2');
+            $post_contact .= $this->retrieveStringFrom(self::$REQUEST_POST, 'contact_info_3');
 
             $this->setInstructions($post_instructions);
             $this->setContactInfo($post_contact);
@@ -239,16 +225,17 @@ class ilObjAdobeConnect extends ilObjectPlugin
         }
 
         try {
-            if (isset($_POST['start_date']) && is_string($_POST['start_date']) && strlen(
-                    $_POST['start_date']
-                ) > 0 && $template_settings->getStartDateHide() == '0') {
-                $this->start_date = new ilDateTime($_POST['start_date'], IL_CAL_DATETIME);
+            $start_date_string = $this->retrieveStringFrom(self::$REQUEST_POST, 'start_date');
+            $start_date_array = $this->retrieveListOfStringFrom(self::$REQUEST_POST, 'start_date');
+
+            if ($start_date_string != '' && $template_settings->getStartDateHide() == '0') {
+                $this->start_date = new ilDateTime(strtotime($start_date_string), IL_CAL_UNIX);
             } else {
-                if (isset($_POST['start_date']) && is_array(
-                        $_POST['start_date']
-                    ) && $template_settings->getStartDateHide() == '0') {
+                if (array_key_exists('date', $start_date_array)
+                    && array_key_exists('time', $start_date_array)
+                    && $template_settings->getStartDateHide() == '0') {
                     $this->start_date = new ilDateTime(
-                        $_POST['start_date']['date'] . ' ' . $_POST['start_date']['time'],
+                        $start_date_array['date'] . ' ' . $start_date_array['time'],
                         IL_CAL_DATETIME
                     );
                 } else {
@@ -456,8 +443,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
     }
 
     /**
-     * @param int $ref_id ref_id of ilias ac-object
-     * @param int $sco_id
+     * @param int        $ref_id ref_id of ilias ac-object
+     * @param int        $sco_id
      * @param array|null $member_ids
      */
     public function addCrsGrpMembers(int $ref_id, int $sco_id, array $member_ids = null): void
@@ -1259,13 +1246,6 @@ class ilObjAdobeConnect extends ilObjectPlugin
         $rbacadmin->grantPermission(self::RBAC_DEFAULT_ROLE_ID, $ops, $this->getRefId());
         // Set view permission for guests
         $rbacadmin->grantPermission(self::RBAC_GUEST_ROLE_ID, [2], $this->getRefId());
-
-        // @todo V9: Check this!  return value never used
-//        $roles = [
-//            $admin_role->getId(),
-//            $member_role->getId()
-//        ];
-//        return $roles ? $roles : array();
     }
 
     /**
@@ -1328,12 +1308,15 @@ class ilObjAdobeConnect extends ilObjectPlugin
     public static function getLocalScos(): array
     {
         global $DIC;
+
         $ilDB = $DIC->database();
         $local_scos = [];
         $res = $ilDB->query('SELECT sco_id FROM rep_robj_xavc_data');
+
         while ($row = $ilDB->fetchAssoc($res)) {
             $local_scos[] = $row['sco_id'];
         }
+
         return $local_scos;
     }
 
@@ -1363,9 +1346,11 @@ class ilObjAdobeConnect extends ilObjectPlugin
 
         $session = $xmlApi->getBreezeSession();
         $scos = [];
+
         if ($session != null && $xmlApi->login($adminLogin, $adminPass, $session)) {
             $scos = $xmlApi->getScosByFolderId($folder_id, $session);
         }
+
         return $scos;
     }
 
@@ -1406,8 +1391,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
             $curlFile = '@' . realpath($filePath);
         }
 
-        $postData = array('file' => $curlFile);
-        if (strlen($title) > 0) {
+        $postData = ['file' => $curlFile];
+        if ($title != '') {
             $postData['name'] = $title;
         }
 

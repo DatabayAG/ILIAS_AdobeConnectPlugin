@@ -66,13 +66,15 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
         $is_owner = $ilUser->getId() == $this->parent_obj->getObject()->getOwner();
 
         if ($is_owner || ilXAVCPermissions::hasAccess(
-                $ilUser->getId(), $this->parent_obj->ref_id,
+                $ilUser->getId(),
+                $this->parent_obj->ref_id,
                 AdobeConnectPermissions::PERM_CHANGE_ROLE
             )) {
             $this->addMultiCommand('updateParticipants', $lng->txt('update'));
         }
         if ($is_owner || ilXAVCPermissions::hasAccess(
-                $ilUser->getId(), $this->parent_obj->ref_id,
+                $ilUser->getId(),
+                $this->parent_obj->ref_id,
                 AdobeConnectPermissions::PERM_ADD_PARTICIPANTS
             )) {
             $this->addMultiCommand('detachMember', $lng->txt('delete'));
@@ -93,7 +95,9 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
                 $row['checkbox'] = ilLegacyFormElementsUtil::formCheckbox(false, 'usr_id[]', $row['user_id'], false);
             } else {
                 $row['checkbox'] = ilLegacyFormElementsUtil::formCheckbox(
-                    false, 'usr_id[]', $row['user_id'],
+                    false,
+                    'usr_id[]',
+                    $row['user_id'],
                     (int) $row['user_id'] ? false : true
                 );
             }
@@ -134,12 +138,13 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
 
             if ($row['xavc_status']) {
                 $row['xavc_status'] = ilLegacyFormElementsUtil::formSelect(
-                    $row['xavc_status'], 'xavc_status[' . $row['user_id'] . ']',
+                    $row['xavc_status'],
+                    'xavc_status[' . $row['user_id'] . ']',
                     $xavc_options
                 );
 
                 if ($row['user_id'] == $this->parent_obj->getObject()->getOwner()) {
-                    $row['xavc_status'] .= ' (' . $this->lng->txt("owner") . ')  ';
+                    $row['xavc_status'] .= ' (' . $this->lng->txt('owner') . ')  ';
                 }
             } else {
                 $row['xavc_status'] = $this->parent_obj->pluginObj->txt('user_only_exists_at_ac_server');
@@ -155,7 +160,7 @@ class ilXAVCParticipantsTableGUI extends ilAdobeConnectTableGUI
     {
         $this->addColumn('', '', '1px', true);
         $this->addColumn($this->lng->txt('name'), 'user_name');
-        $this->optionalColumns =  $this->getSelectableColumns();
+        $this->optionalColumns = $this->getSelectableColumns();
         $this->visibleOptionalColumns = $this->getSelectedColumns();
 
         foreach ($this->visibleOptionalColumns as $column) {
