@@ -413,8 +413,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
                 $this->externalLogin,
                 $ownerObj->getEmail(),
                 $ownerObj->getPasswd(),
-                $ownerObj->getFirstName(),
-                $ownerObj->getLastName(),
+                $ownerObj->getFirstname(),
+                $ownerObj->getLastname(),
                 $session
             );
         }
@@ -667,12 +667,20 @@ class ilObjAdobeConnect extends ilObjectPlugin
                 $this->url = substr($this->xmlApi->getURL($this->sco_id, $this->folder_id, $session), 0, -1);
             }
 
-            $date_begin = $this->xmlApi->getStartDate($this->sco_id, $this->folder_id, $session);
-            $this->start_date = new ilDateTime(strtotime($date_begin), IL_CAL_UNIX);
+            $date_begin_string = $this->xmlApi->getStartDate($this->sco_id, $this->folder_id, $session);
+            if ($date_begin_string != '' && $date_begin_string != null) {
+                $date_begin_string = strtotime($date_begin_string);
+            }
+
+            $this->start_date = new ilDateTime($date_begin_string, IL_CAL_UNIX);
+
             $date_end_string = $this->xmlApi->getEndDate($this->sco_id, $this->folder_id, $session);
-            $end_date = new ilDateTime(strtotime($date_end_string), IL_CAL_UNIX);
-            $this->end_date = $end_date;
-            $unix_duration = $end_date->getUnixTime() - $this->start_date->getUnixTime();
+            if ($date_end_string != '' && $date_end_string != null) {
+                $date_end_string = strtotime($date_end_string);
+            }
+
+            $this->end_date = new ilDateTime($date_end_string, IL_CAL_UNIX);
+            $unix_duration = $this->end_date->getUnixTime() - $this->start_date->getUnixTime();
 
             $hours = floor($unix_duration / 3600);
             $minutes = floor(($unix_duration - $hours * 3600) / 60);
@@ -716,8 +724,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
         $this->db->update(
             'rep_robj_xavc_data',
             [
-                'start_date' => ['integer', $this->getStartdate()->getUnixTime()],
-                'end_date' => ['integer', $this->getEnddate()->getUnixTime()],
+                'start_date' => ['integer', $this->getStartDate()->getUnixTime()],
+                'end_date' => ['integer', $this->getEndDate()->getUnixTime()],
                 'instructions' => ['text', $this->getInstructions()],
                 'contact_info' => ['text', $this->getContactInfo()],
                 'permanent_room' => ['integer', $this->getPermanentRoom()],
@@ -775,7 +783,7 @@ class ilObjAdobeConnect extends ilObjectPlugin
         $new_obj->setReadContents($this->getReadContents());
         $new_obj->setReadRecords($this->getReadRecords());
         $new_obj->setDuration($this->getDuration());
-        $new_obj->setURL($this->getURL());
+        $new_obj->setURL($this->getUrl());
         $new_obj->setScoId($this->getScoId());
         $new_obj->setFolderId($this->getFolderId());
         $new_obj->setAcLanguage($this->getAcLanguage());
@@ -971,8 +979,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
     public function getEndDate(): ilDateTime
     {
         $end_date = new ilDateTime($this->start_date->getUnixTime(), IL_CAL_UNIX);
-        $end_date->increment(ilDateTime::HOUR, $this->duration["hours"]);
-        $end_date->increment(ilDateTime::MINUTE, $this->duration["minutes"]);
+        $end_date->increment(ilDateTime::HOUR, $this->duration['hours']);
+        $end_date->increment(ilDateTime::MINUTE, $this->duration['minutes']);
         return $end_date;
     }
 
@@ -1094,6 +1102,8 @@ class ilObjAdobeConnect extends ilObjectPlugin
         if ($session != null && $this->xmlApi->login($this->adminLogin, $this->adminPass, $session)) {
             return $this->xmlApi->addContent($this->sco_id, $title, $description, $session);
         }
+
+        return '';
     }
 
     /**

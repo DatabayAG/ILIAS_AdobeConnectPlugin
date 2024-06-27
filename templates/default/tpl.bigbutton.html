@@ -1,12 +1,14 @@
 <div class="il_ButtonGroup il_BigButton">
-	<input id="btn-enter-room-trigger" type="button" class="btn btn-default btn-primary" value="{BUTTON_TEXT}">
+    <input id="btn-enter-room-trigger" type="button" class="btn btn-default btn-primary" value="{BUTTON_TEXT}">
 </div>
 <script type="text/javascript">
-	(function($){
-		$('#btn-enter-room-trigger').on('click', function(e) {
-			window.open("{BUTTON_TARGET}");
-			e.preventDefault();
-			e.stopPropagation();
-		});
-	})(jQuery);
-</script>  
+  document.addEventListener('DOMContentLoaded', () => {
+    (function ($) {
+      $('#btn-enter-room-trigger').on('click', function (e) {
+        window.open("{BUTTON_TARGET}");
+        e.preventDefault();
+        e.stopPropagation();
+      });
+    })(jQuery);
+  });
+</script>

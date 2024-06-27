@@ -631,13 +631,14 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
                 $presentation_url = ilAdobeConnectServer::getPresentationUrl();
 
-                if(array_key_exists('xavc_last_sso_sessid', $_SESSION)) {
+                if (array_key_exists('xavc_last_sso_sessid', $_SESSION)) {
                     $xmlAPI->logout($_SESSION['xavc_last_sso_sessid']);
                 }
 
                 //login current user session
                 $session = $ilAdobeConnectUser->loginUser();
                 $_SESSION['xavc_last_sso_sessid'] = $session;
+                $html_client = '';
                 if ($settings->isHtmlClientEnabled() == 1 && $this->object->isHtmlClientEnabled() == 1) {
                     $html_client = '&html-view=true';
                 }
@@ -720,7 +721,9 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                         $data[$i]['link'] = $this->ctrl->getLinkTarget($this, 'requestAdobeConnectContent');
                 }
 
-                $data[$i]['date_created'] =strtotime(substr($content->getAttributes()->getAttribute('date-created'), 0, 19));
+                $data[$i]['date_created'] = strtotime(
+                    substr($content->getAttributes()->getAttribute('date-created'), 0, 19)
+                );
                 $data[$i]['description'] = $content->getAttributes()->getAttribute('description');
                 if ($has_access && $content_type == $by_type) {
                     $content_id = $content->getAttributes()->getAttribute('sco-id');
@@ -902,7 +905,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
     {
         global $DIC;
 
-        //@todo V9 not sure about that ...
         $roles = $this->retrieveListOfStringFrom(self::$REQUEST_POST, 'roles');
         $xavc_status = $this->retrieveListOfStringFrom(self::$REQUEST_POST, 'xavc_status');
 
@@ -984,7 +986,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $ilAdobeConnectUser->ensureAccountExistence();
 
         $xmlAPI = ilXMLApiFactory::getApiByAuthMode();
-        if(array_key_exists('xavc_last_sso_sessid', $_SESSION)) {
+        if (array_key_exists('xavc_last_sso_sessid', $_SESSION)) {
             $xmlAPI->logout($_SESSION['xavc_last_sso_sessid']);
         }
 
@@ -1527,7 +1529,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $file = $fss->getAbsolutePath() . $version_subdir . '/' . $file_name;
 
         try {
-            $this->object->uploadFile($this->object->addContent($object_title, ''), $file, $object_title);
+            $this->object->uploadFile($this->object->addContent($object_title), $file, $object_title);
             unset($_SESSION['contents']['search_result']);
             $this->tpl->setOnScreenMessage('success', $this->txt('virtualClassroom_content_added'));
             return $this->showContent();
@@ -2432,9 +2434,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         $response->succcess = false;
 
         if ((int) ilAdobeConnectServer::getSetting('allow_crs_grp_trigger') == 0) {
-            // @todo V9 async call doesn't work. must be fixed soon.
-            return;
-
             echo json_encode($response);
             exit();
         }
@@ -2459,8 +2458,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
                 }
             }
         }
-        // @todo V9 async call doesn't work. must be fixed soon.
-        return;
 
         $response->succcess = true;
         echo json_encode($response);
@@ -2469,10 +2466,6 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
 
     public function getPerformTriggerHtml(): void
     {
-        // @todo V9 async call doesn't work. must be fixed soon.
-        $this->performCrsGrpTrigger();
-        return;
-
         iljQueryUtil::initjQuery();
 
         $jsTpl = new ilTemplate($this->pluginObj->getDirectory() . '/templates/js/performTrigger.js', true, true);
@@ -2565,7 +2558,7 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         global $DIC;
 
         $ilUser = $DIC->user();
-        $tpl = $DIC->ui()->mainTemplate();
+        $tpl = $this->tpl;
         $ilAccess = $DIC->access();
 
         $has_write_permission = $ilAccess->checkAccess("write", "", $this->object->getRefId());
@@ -2720,7 +2713,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
         }
 
         $info->hideFurtherSections();
-        $tpl->setContent($info->getHTML() . $this->getPerformTriggerHtml());
+        $this->getPerformTriggerHtml();
+        $tpl->setContent($info->getHTML());
 
         $tpl->setPermanentLink('xavc', $this->object->getRefId());
     }

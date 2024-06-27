@@ -678,6 +678,7 @@ class ilAdobeConnectXMLAPI
         }
     }
 
+    /** @deprecated V9  not in use? */
     public function isActiveSco($session, $sco_id)
     {
         $url = $this->getApiUrl([
@@ -702,7 +703,7 @@ class ilAdobeConnectXMLAPI
         return 0;
     }
 
-    public function getActiveScos($session)
+    public function getActiveScos($session): array
     {
         $url = $this->getApiUrl([
             'action' => 'report-active-meetings',
@@ -729,9 +730,10 @@ class ilAdobeConnectXMLAPI
 
             return $result;
         }
-        return 0;
+        return [];
     }
 
+    /** @deprecated V9  not in use? */
     public function getAllScos($session)
     {
         $url = $this->getApiUrl([
@@ -1017,7 +1019,7 @@ class ilAdobeConnectXMLAPI
      * @return string
      * @throws ilAdobeConnectDuplicateContentException
      */
-    public function addContent($folder_id, $title, $description, $session)
+    public function addContent($folder_id, $title, $description, $session): string
     {
         $url = $this->getApiUrl([
             'action' => 'sco-update',
@@ -1046,7 +1048,7 @@ class ilAdobeConnectXMLAPI
                 }
             }
 
-            return null;
+            return '';
         }
     }
 

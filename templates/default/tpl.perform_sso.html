@@ -5,6 +5,7 @@
     <script type="text/javascript" src="{SPINNER_SRC}"></script>
     <script type="text/javascript">
 
+      document.addEventListener('DOMContentLoaded', () => {
         /*<![CDATA[*/
         Xavc_Sso = {
             buildFrame: function(c) {
@@ -68,7 +69,8 @@
                 window.location.href = '{URL}';
             }});
         };
-        /*]]>*/
+      });
+      /*]]>*/
     </script>
 </head>
 <body>
