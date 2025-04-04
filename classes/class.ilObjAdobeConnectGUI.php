@@ -25,6 +25,8 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
     public ?ilPropertyFormGUI $cform = null;
     public ?ilPropertyFormGUI $csform = null;
 
+    protected ilObject|ilObjAdobeConnect|null $object = null;
+
     /**
      * @var ilXAVCTemplates[]
      */
@@ -764,11 +766,10 @@ class ilObjAdobeConnectGUI extends ilObjectPluginGUI implements AdobeConnectPerm
             // Get contents and records
             $contents = $this->object->searchContent([]);
 
-            if ($has_access) {
-                $view_mode = ilAdobeConnectContentTableGUI::MODE_EDIT;
-            }
-
-            $table = new ilAdobeConnectRecordsTableGUI($this, 'showContent', $by_type, $view_mode);
+            $table = new ilAdobeConnectRecordsTableGUI($this, 'showContent', $by_type, $has_access
+                ? ilAdobeConnectContentTableGUI::MODE_EDIT
+                : ilAdobeConnectContentTableGUI::MODE_VIEW
+            );
 
             $table->init();
 
