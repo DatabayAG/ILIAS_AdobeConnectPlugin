@@ -70,10 +70,11 @@ class ilAdobeConnectXMLAPI
     /**
      *  Logs in user on the Adobe Connect server. The session id is caches until the
      *  logout function is called with the session id.
-     * @param string $user    Adobe Connect user login
-     * @param string $pass    Adobe Connect user password
+     * @param string $user Adobe Connect user login
+     * @param string $pass Adobe Connect user password
      * @param string $session Session id
      * @return bool          return true if everything is ok
+     * @throws Exception
      */
     public function login(string $user, string $pass, string $session): bool
     {
@@ -95,7 +96,13 @@ class ilAdobeConnectXMLAPI
             ]);
 
             $ctx = $this->proxy($context);
-            $xml_string = file_get_contents($url, false, $ctx);
+            try {
+                $xml_string = file_get_contents($url, false, $ctx);
+            } catch (Throwable $ex) {
+                throw new Exception(
+                    preg_replace('/password=.*?&/', 'password=********$', $ex->getMessage())
+                );
+            }
             $xml = simplexml_load_string($xml_string);
 
             if ($xml->status['code'] == 'ok') {
